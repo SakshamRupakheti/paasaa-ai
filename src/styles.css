@@ -1,33 +1,6 @@
-body{margin:0;padding:24px;background:#eaf2fb;}button,summary{cursor:pointer;}button:focus-visible,summary:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #1c5b9d;outline-offset:4px;}@media(max-width:420px){body{padding:0;}}
-
-    #paasaa-opening{--pa-blue:#2869ad;--pa-wash:#edf5ff;color:#183653;background:linear-gradient(155deg,#fff 28%,var(--pa-wash));font:16px/1.55 system-ui,sans-serif;border-radius:24px;padding:28px;max-width:820px;margin:auto;color-scheme:light}
-    #paasaa-opening *{box-sizing:border-box}
-    #paasaa-opening header{display:flex;justify-content:space-between;gap:20px;align-items:center}
-    #paasaa-opening .brand{font:500 25px/1.2 Georgia,serif;letter-spacing:-.8px}
-    #paasaa-opening .motto{font-size:13px;letter-spacing:.5px;color:#526a80;margin-top:5px}
-    #paasaa-opening .clock{text-align:right;color:#526a80;font-size:14px;font-variant-numeric:tabular-nums}
-    #paasaa-opening main{text-align:center;padding:34px 0 14px}
-    #paasaa-opening h1{font:400 clamp(28px,5vw,38px)/1.2 Georgia,serif;margin:0 0 10px;letter-spacing:-.7px}
-    #paasaa-opening p{margin:8px 0;color:#526a80}
-    #paasaa-opening .breath-diagram{display:block;width:230px;height:274px;max-width:100%;margin:12px auto 0;overflow:visible}
-    #paasaa-opening .lung-volume{transform-origin:120px 193px}
-    #paasaa-opening .phase{font-size:23px;font-weight:500;color:#183653;min-height:36px;margin:0}
-    #paasaa-opening .count{color:#526a80;font-variant-numeric:tabular-nums;min-height:25px}
-    #paasaa-opening .actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:20px 0 10px}
-    #paasaa-opening button{font:inherit;border-radius:100px;min-height:46px;padding:10px 23px;border:1px solid #bad0e6;color:#214b76;background:white}
-    #paasaa-opening .primary{background:var(--pa-blue);color:#fff;border-color:var(--pa-blue);min-width:170px}
-    #paasaa-opening button:disabled{opacity:.5}
-    #paasaa-opening .skip{background:transparent;border-color:transparent;text-decoration:underline;text-underline-offset:4px;font-size:14px}
-    #paasaa-opening .comfort{font-size:14px;max-width:440px;margin:12px auto}
-    #paasaa-opening footer{border-top:1px solid #d7e5f3;padding-top:18px;margin-top:8px}
-    #paasaa-opening details{font-size:14px}
-    #paasaa-opening summary{min-height:32px;color:#214b76}
-    #paasaa-opening .research{padding:8px 0 12px;max-width:640px}
-    #paasaa-opening .research a{color:#205991;text-decoration:underline}
-    #paasaa-opening .research li{margin:8px 0}
-    #paasaa-opening .note{font-size:12px;margin-top:12px;color:#617387}
-    #paasaa-opening .motion{display:flex;gap:8px;align-items:center;margin:12px 0;font-size:14px;color:#526a80}
-    #paasaa-opening input{width:18px;height:18px;accent-color:var(--pa-blue)}
-    #paasaa-opening [hidden]{display:none!important}
-    @media(max-width:420px){#paasaa-opening{padding:20px 16px}#paasaa-opening main{padding-top:26px}#paasaa-opening .brand{font-size:23px}#paasaa-opening .breath-diagram{height:240px}}
-  
+:root{color-scheme:light;font-family:'Segoe UI',system-ui,sans-serif;color:#203f5c;background:#f9fcff;--blue:#2869ad}*{box-sizing:border-box}body{margin:0}button,summary{cursor:pointer}button,input{font:inherit}button:focus-visible,summary:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #1c5b9d;outline-offset:5px}
+#paasaa-opening{min-height:100svh;padding:32px clamp(24px,6vw,90px) 24px;background:radial-gradient(ellipse at 92% 40%,#dfedfc 0%,#eef6ff 31%,#f9fcff 65%)}header{display:flex;align-items:center;justify-content:space-between;gap:24px;max-width:1200px;margin:auto}.brand{font:500 30px/1.1 Georgia,serif;letter-spacing:-1px}.motto{margin-top:7px;font-size:14px;color:#536f88}.clock{font-size:14px;text-align:right;color:#536f88}.clock time{display:block;font-size:20px;color:#203f5c;font-variant-numeric:tabular-nums}
+main{max-width:1120px;margin:68px auto 48px;display:grid;grid-template-columns:1.2fr 1fr;column-gap:60px;align-items:center}.welcome{grid-column:1}.eyebrow{display:block;color:#526f8b;font-size:12px;letter-spacing:2.4px;margin-bottom:22px}h1{font:400 clamp(38px,4.6vw,64px)/1.12 Georgia,serif;letter-spacing:-1.8px;margin:0 0 20px}.intro{color:#536f88;font-size:17px;line-height:1.8;margin:0}.visual{grid-column:2;grid-row:1/3;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 10px;background:radial-gradient(ellipse,#c9e1f8 0%,#e7f2fc88 50%,transparent 71%)}.breath-diagram{width:300px;max-width:100%;height:auto;overflow:visible}.lung-volume{transform-origin:120px 193px}.visual-caption{font:italic 22px/1.4 Georgia,serif;color:#496c8e;margin-top:28px}
+.practice{margin-top:34px;grid-column:1}.phase{font-size:21px;font-weight:500;min-height:32px}.count{color:#536f88;min-height:26px;line-height:1.6;font-size:15px;font-variant-numeric:tabular-nums;margin-top:5px}.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}button{border-radius:100px;min-height:48px;padding:12px 23px;border:1px solid #b6cee5;color:#24517f;background:#ffffffb8}button:hover{background:#e0eefb}button.primary{background:var(--blue);color:white;border-color:var(--blue);min-width:176px}button.primary:hover{background:#205b98}.skip{display:block;padding-left:0;border:0;background:transparent;margin:7px 0 10px;text-decoration:underline;text-underline-offset:4px;font-size:14px}.skip:hover{background:transparent;color:#163b63}.comfort{font-size:14px;line-height:1.65;color:#536f88;max-width:420px;margin:7px 0}
+footer{max-width:1120px;margin:auto;padding-top:22px;border-top:1px solid #cbddec;display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:14px 36px}details{flex:1 1 420px;font-size:15px;line-height:1.7}summary{color:#24517f;min-height:44px;padding:8px 0}.research{max-width:720px;color:#46647f}.research a{color:#205991;text-underline-offset:3px}.research li{margin:14px 0}.research ul{padding-left:20px}.motion{display:flex;align-items:center;gap:10px;font-size:14px;min-height:44px;color:#46647f}.motion input{width:18px;height:18px;accent-color:var(--blue)}.note{flex-basis:100%;color:#61778c;font-size:12px;line-height:1.6}[hidden]{display:none!important}
+@media(max-width:760px){#paasaa-opening{padding:24px}main{display:flex;flex-direction:column;margin:44px auto 30px;text-align:center;gap:0}.eyebrow{margin-bottom:14px}h1{font-size:clamp(34px,7vw,48px)}.intro{font-size:16px}.visual{padding:18px 26px 12px;width:100%}.breath-diagram{width:205px}.visual-caption{display:none}.practice{margin-top:12px;width:100%}.actions{justify-content:center}.skip,.comfort{margin-left:auto;margin-right:auto}.clock time{font-size:17px}.brand{font-size:27px}footer{gap:6px}details{flex-basis:100%}}

@@ -6,8 +6,12 @@
     <div class="clock"><time id="pa-time"></time><div>Your local time</div></div>
   </header>
   <main>
-    <h1 id="pa-greeting">Hello, there.</h1>
-    <p>A little space to pause.</p>
+    <div class="welcome">
+      <span class="eyebrow">A MOMENT FOR YOU</span>
+      <h1 id="pa-greeting">Hello, there.</h1>
+      <p class="intro">You don’t have to figure everything out right now.<br>Let’s start with a little space to breathe.</p>
+    </div>
+    <div class="visual">
     <svg class="breath-diagram" viewBox="0 0 240 286" role="img" aria-labelledby="pa-diagram-title pa-diagram-desc">
       <title id="pa-diagram-title">Head, upper body, and breathing guide</title>
       <desc id="pa-diagram-desc">A simplified anatomical diagram. The blue lung shapes expand during the inhale cue and settle during the exhale cue. This animation does not measure your breathing.</desc>
@@ -20,6 +24,9 @@
         <path d="M101 187 L90 208 L79 220 M90 208 L92 234 M139 187 L150 208 L161 220 M150 208 L148 234" fill="none" stroke="#d9ecfc" stroke-width="2.5" stroke-linecap="round"/>
       </g>
     </svg>
+      <span class="visual-caption">In your own time.</span>
+    </div>
+    <section class="practice" aria-label="Breathing practice">
     <div class="phase" id="pa-phase" aria-live="polite">Take a moment for yourself.</div>
     <div class="count" id="pa-count">3 seconds in · 6 seconds out</div>
     <div class="actions">
@@ -29,6 +36,7 @@
     <button class="skip cursor-interaction" id="pa-skip" type="button">Skip for now</button>
     <p class="comfort">Keep your breath gentle. You don’t need to match the count perfectly.</p>
     <p class="comfort">If you feel dizzy, short of breath, or more uncomfortable, stop and breathe normally.</p>
+    </section>
   </main>
   <footer>
     <details id="pa-evidence">
@@ -44,7 +52,7 @@
       </div>
     </details>
     <label class="motion"><input id="pa-motion" type="checkbox"> Reduce movement</label>
-    <div class="note">Design preview · Breathing rhythm provisional · AI support, not a human therapist</div>
+    <div class="note">Early preview · Breathing rhythm under review · No personal information collected</div>
   </footer>
 
 </div>
