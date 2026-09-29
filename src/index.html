@@ -1,0 +1,52 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Paasaa.ai — your best space</title><meta name="description" content="An early design preview of a gentle breathing space."><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><script src="app.js" defer></script></head><body>
+<div id="paasaa-opening">
+
+  <header>
+    <div><div class="brand">Paasaa.ai</div><div class="motto">your best space</div></div>
+    <div class="clock"><time id="pa-time"></time><div>Your local time</div></div>
+  </header>
+  <main>
+    <h1 id="pa-greeting">Hello, there.</h1>
+    <p>A little space to pause.</p>
+    <svg class="breath-diagram" viewBox="0 0 240 286" role="img" aria-labelledby="pa-diagram-title pa-diagram-desc">
+      <title id="pa-diagram-title">Head, upper body, and breathing guide</title>
+      <desc id="pa-diagram-desc">A simplified anatomical diagram. The blue lung shapes expand during the inhale cue and settle during the exhale cue. This animation does not measure your breathing.</desc>
+      <path d="M31 276 L34 189 Q35 163 64 153 L93 143 L94 116 Q79 104 78 79 L79 55 Q82 23 119 22 Q155 22 161 54 L162 79 Q162 102 145 116 L146 143 L175 153 Q204 163 206 189 L210 276" fill="#f7fbff" stroke="#8da9c4" stroke-width="2" stroke-linecap="round"/>
+      <path d="M94 116 Q120 131 145 116 M93 143 Q120 157 146 143 M64 153 Q75 160 89 159 M175 153 Q161 160 151 159" fill="none" stroke="#b2c6da" stroke-width="1.5"/>
+      <path d="M116 127 L116 168 Q116 177 100 186 M124 127 L124 168 Q124 177 140 186" fill="none" stroke="#90b7d9" stroke-width="3" stroke-linecap="round"/>
+      <g class="lung-volume" fill="#8bbce6" stroke="#5c96c5" stroke-width="1.4">
+        <path d="M107 172 Q96 164 82 180 Q61 207 63 242 Q66 255 84 251 L105 244 Q112 241 111 227 L111 185 Q111 176 107 172Z"/>
+        <path d="M133 172 Q144 164 158 180 Q179 207 177 242 Q174 255 156 251 L135 244 Q128 241 129 227 L129 185 Q129 176 133 172Z"/>
+        <path d="M101 187 L90 208 L79 220 M90 208 L92 234 M139 187 L150 208 L161 220 M150 208 L148 234" fill="none" stroke="#d9ecfc" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <div class="phase" id="pa-phase" aria-live="polite">Take a moment for yourself.</div>
+    <div class="count" id="pa-count">3 seconds in · 6 seconds out</div>
+    <div class="actions">
+      <button class="primary cursor-interaction" id="pa-start" type="button">Let’s breathe</button>
+      <button class="cursor-interaction" id="pa-own" type="button">My own pace</button>
+    </div>
+    <button class="skip cursor-interaction" id="pa-skip" type="button">Skip for now</button>
+    <p class="comfort">Keep your breath gentle. You don’t need to match the count perfectly.</p>
+    <p class="comfort">If you feel dizzy, short of breath, or more uncomfortable, stop and breathe normally.</p>
+  </main>
+  <footer>
+    <details id="pa-evidence">
+      <summary class="cursor-interaction">Why this exercise?</summary>
+      <div class="research">
+        <p>Guided breathing may help some people manage moments of stress. Results in teens are mixed, and this Paasaa exercise has not been clinically tested.</p>
+        <ul>
+          <li><a href="https://pubmed.ncbi.nlm.nih.gov/41257401/" target="_blank" rel="noopener noreferrer">Trial: 150 young people aged 12–13</a> — some physiological effects, but no improvement in reported feelings or stress recovery compared with the control. It does not validate our exact 3-in/6-out rhythm.</li>
+          <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9397716/" target="_blank" rel="noopener noreferrer">Pilot: 43 high-school students</a> — a five-week programme; anxiety changes were not statistically significant.</li>
+          <li><a href="https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/" target="_blank" rel="noopener noreferrer">NHS breathing guidance</a> — recommends comfortable, unforced breathing. This is practical guidance, not a trial of Paasaa.</li>
+        </ul>
+        <p>Proposed rhythm: 3 seconds in, 6 seconds out. Suitability for younger users and the final instructions still need clinical review.</p>
+      </div>
+    </details>
+    <label class="motion"><input id="pa-motion" type="checkbox"> Reduce movement</label>
+    <div class="note">Design preview · Breathing rhythm provisional · AI support, not a human therapist</div>
+  </footer>
+
+</div>
+
+</body></html>
