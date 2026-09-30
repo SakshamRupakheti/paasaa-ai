@@ -21,45 +21,15 @@
     <section id="breathing-screen" class="breathing-layout" aria-label="Breathing practice">
       <div class="welcome"><span class="eyebrow">A MOMENT FOR YOU</span><h1 id="pa-greeting" tabindex="-1">Hello, there.</h1><p class="intro">You don’t have to figure everything out right now.<br>Let’s start with a little space to breathe.</p></div>
       <div class="visual">
-        <svg id="body-guide" class="breath-diagram" viewBox="0 0 420 490" role="img" aria-labelledby="body-title body-desc">
-          <title id="body-title">A resting, front-facing breathing guide</title>
-          <desc id="body-desc">A seated person with relaxed shoulders and hands resting on their knees. Soft airflow branches into both visible lungs during inhalation and travels outward during exhalation. This illustration is a pacing guide, not a measurement of your breathing.</desc>
-          <defs>
-            <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4e7da"/><stop offset="1" stop-color="#c6cdd0"/></linearGradient>
-            <linearGradient id="clothing" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d9e9e9"/><stop offset="1" stop-color="#90b3c2"/></linearGradient>
-            <linearGradient id="lung-color" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#b9e6ee" stop-opacity=".95"/><stop offset="1" stop-color="#75b7d0" stop-opacity=".75"/></linearGradient>
-            <radialGradient id="chest-light"><stop stop-color="#defbff" stop-opacity=".9"/><stop offset="1" stop-color="#cde9ef" stop-opacity="0"/></radialGradient>
-            <radialGradient id="ground"><stop stop-color="#6e9aa7" stop-opacity=".24"/><stop offset="1" stop-color="#93b7c4" stop-opacity="0"/></radialGradient>
-          </defs>
-          <ellipse cx="210" cy="447" rx="190" ry="27" fill="url(#ground)"/>
-          <ellipse cx="210" cy="423" rx="147" ry="23" fill="#b7d0d5" opacity=".55"/>
-          <!-- Resting crossed legs and loose clothing. -->
-          <path d="M169 329 Q128 320 75 366 Q35 400 74 423 Q108 442 191 414 L274 382 Q264 346 241 331Z" fill="url(#clothing)" stroke="#8eafbc" stroke-width="1.4"/>
-          <path d="M250 329 Q292 327 346 370 Q382 405 344 425 Q314 442 231 415 L147 384 Q157 347 181 331Z" fill="url(#clothing)" stroke="#8eafbc" stroke-width="1.4"/>
-          <path d="M132 393 Q174 400 210 414 M284 393 Q248 405 215 413" fill="none" stroke="#7d9eac" stroke-opacity=".6" stroke-width="2"/>
-          <path d="M186 408 Q172 398 157 402 L121 416 Q114 427 132 430 L190 423Z M231 410 Q246 400 263 405 L298 418 Q304 429 285 430 L229 424Z" fill="url(#skin)" stroke="#a6b5b9"/>
-          <!-- Shoulders, arms and hands rest naturally toward the knees. -->
-          <path d="M166 173 Q143 176 131 204 L108 284 L77 346 Q69 362 82 369 Q95 375 105 359 L145 295 L165 233Z M254 173 Q277 176 289 204 L312 284 L343 346 Q351 362 338 369 Q325 375 315 359 L275 295 L255 233Z" fill="url(#clothing)" stroke="#95b4bf" stroke-width="1.5"/>
-          <path d="M82 341 Q77 350 66 354 L55 360 Q51 367 63 370 Q78 378 91 367 L99 355 M338 341 Q343 350 354 354 L365 360 Q369 367 357 370 Q342 378 329 367 L321 355" fill="url(#skin)" stroke="#a7b7bc" stroke-width="1.2"/>
-          <path id="torso" d="M184 158 L184 174 Q167 169 149 192 Q142 216 156 264 L153 322 Q173 348 210 348 Q247 348 267 322 L264 264 Q278 216 271 192 Q253 169 236 174 L236 158Z" fill="#dcebee" stroke="#94b4c1" stroke-width="1.5"/>
-          <ellipse id="chest-glow" cx="210" cy="250" rx="91" ry="100" fill="url(#chest-light)" opacity=".45"/>
-          <path d="M184 145 L184 173 Q210 196 236 173 L236 145" fill="url(#skin)" stroke="#b0bec3" stroke-width="1.2"/>
-          <path d="M171 98 Q167 72 184 57 Q209 37 237 58 Q253 72 249 102 L247 133 Q241 161 210 171 Q179 161 173 133Z" fill="url(#skin)" stroke="#a6b5bb" stroke-width="1.5"/>
-          <path d="M171 108 Q162 80 175 62 Q189 42 213 44 Q244 45 253 69 Q257 87 249 108 L244 83 Q227 88 206 69 Q193 86 177 85Z" fill="#506b77"/>
-          <path d="M183 114 Q190 118 198 114 M222 114 Q230 118 237 114 M210 115 L206 133 L212 135 M201 146 Q210 150 220 146" fill="none" stroke="#768b96" stroke-width="1.7" stroke-linecap="round"/>
-          <!-- A translucent chest reveals the simplified respiratory system. -->
-          <g id="lungs" fill="url(#lung-color)" stroke="#68a4bc" stroke-width="1.5">
-            <path d="M198 211 Q188 195 174 213 Q150 243 156 283 Q158 298 178 291 L197 283 Q203 276 200 257Z"/>
-            <path d="M222 211 Q232 195 246 213 Q270 243 264 283 Q262 298 242 291 L223 283 Q217 276 220 257Z"/>
-            <path d="M191 225 L178 248 L165 261 M178 248 L179 279 M229 225 L242 248 L255 261 M242 248 L241 279" fill="none" stroke="#effcff" stroke-width="2.2" opacity=".8"/>
-          </g>
-          <path d="M210 147 L210 214 M210 210 Q205 226 190 237 M210 210 Q215 226 230 237" fill="none" stroke="#90bfcf" stroke-width="6" stroke-linecap="round"/>
-          <path d="M210 147 L210 214" fill="none" stroke="#edfbff" stroke-width="2" opacity=".7"/>
-          <g fill="none" stroke="none"><path id="flow-left" d="M210 146 C210 169 210 193 210 210 C210 229 170 237 174 279"/><path id="flow-right" d="M210 146 C210 169 210 193 210 210 C210 229 250 237 246 279"/></g>
-          <g id="airflow" fill="none" stroke="#f2feff" stroke-width="2.8" stroke-linecap="round"></g>
-          <path d="M168 313 Q210 326 252 313" fill="none" stroke="#a4c3cd" stroke-width="1.5"/>
-        </svg>
-        <span class="visual-caption">In your own time.</span><p class="diagram-note">Follow the air. Find your own rhythm.</p>
+        <div class="photo-guide" role="img" aria-label="Realistic generated image of a woman resting with eyes closed. A visual overlay of both lungs brightens on inhale and softens on exhale. This is a pacing illustration, not a measurement of your breathing.">
+          <img src="breathing-person.png" alt="" width="1086" height="1448" fetchpriority="high">
+          <svg class="photo-light" viewBox="0 0 1086 1448" aria-hidden="true">
+            <defs><clipPath id="lung-mask"><path d="M540 740 C500 674 407 770 371 892 C337 993 330 1146 349 1231 C365 1291 407 1237 478 1208 C541 1189 575 1186 572 1114 L565 886 C561 829 561 775 540 740Z M662 727 C705 717 771 810 806 899 C850 990 858 1135 847 1219 C842 1279 802 1240 748 1207 C699 1180 645 1189 632 1151 C617 1065 629 964 635 888 C638 828 625 760 662 727Z"/></clipPath></defs>
+            <g id="photo-glow" opacity="0" clip-path="url(#lung-mask)"><image href="breathing-person.png" width="1086" height="1448"/></g>
+          </svg>
+          <span class="image-disclosure">AI-generated visual · breathing guide</span>
+        </div>
+        <span class="visual-caption">In your own time.</span><p class="diagram-note">Let the gentle light guide your breath.</p>
       </div>
       <div class="practice">
         <div class="phase" id="pa-phase" aria-live="polite">Take a moment for yourself.</div>
@@ -87,5 +57,6 @@
 <dialog id="help-dialog" aria-labelledby="help-title"><h2 id="help-title">You don’t have to handle this alone.</h2><p>This page is not monitored and cannot assess risk or contact help for you. If you may act on thoughts of harm or are in immediate danger, contact your local emergency service now.</p><p>If you’re a young person, a trusted adult, school counsellor, or health professional can help you find support.</p><ul><li><strong>United States:</strong> call or text <a href="tel:988">988</a>, available 24/7. <a href="https://988lifeline.org/" target="_blank" rel="noopener noreferrer">988 Lifeline</a></li><li><strong>UK & Ireland:</strong> call <a href="tel:116123">116 123</a> for Samaritans, day or night. <a href="https://www.samaritans.org/how-we-can-help/contact-samaritan/" target="_blank" rel="noopener noreferrer">Samaritans</a></li><li><strong>UK, under 19:</strong> call Childline on <a href="tel:08001111">0800 1111</a>. <a href="https://www.childline.org.uk/about/about-childline" target="_blank" rel="noopener noreferrer">Childline</a></li><li><strong>Other countries:</strong> <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer">find a local helpline</a>.</li></ul><p class="subtle">External support services have their own privacy policies. Contact details checked September 29, 2026.</p><form method="dialog"><button class="primary">Close support</button></form></dialog>
 <dialog id="clear-dialog" aria-labelledby="clear-title"><h2 id="clear-title">Your check-ins, your choice.</h2><p>Entries are saved only on this browser if you choose on-device saving. They are not encrypted by Paasaa or shared with a clinician. Session-only entries disappear when you refresh or close this page.</p><p>No analytics or AI processing is used. The hosting provider may retain ordinary website access logs, but this app does not send your check-in answers.</p><p>Clear saved data removes all Paasaa check-ins and the draft from this browser. This cannot be undone.</p><div class="actions"><button id="confirm-clear">Clear all saved data</button><button id="cancel-clear" class="primary">Keep my data</button></div></dialog>
 </body></html>
+
 
 

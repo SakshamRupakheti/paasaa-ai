@@ -10,14 +10,6 @@ let currentScreen = 'breathing-screen';
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 $('pa-motion').checked = reduced.matches;
 
-const airPaths = ['flow-left','flow-right'].map(id => $(id));
-const wavelets = airPaths.flatMap((path, side) => Array.from({length:6}, (_, index) => {
-  const wave = document.createElementNS('http://www.w3.org/2000/svg','path');
-  wave.setAttribute('d','M-5 -3 Q0 -7 5 -3 M-4 2 Q0 -1 4 2');
-  $('airflow').append(wave);
-  return {wave,path,index,side,length:path.getTotalLength()};
-}));
-
 function updateClock() {
   const now = new Date();
   const hour = now.getHours();
@@ -32,17 +24,7 @@ function renderBreathing() {
   const state = breathState(clock.read(), config);
   const moving = !$('pa-motion').checked && mode !== 'own';
   const expansion = moving ? state.expansion : 0;
-  $('airflow').style.visibility = moving && mode !== 'ready' ? 'visible' : 'hidden';
-  for (const {wave,path,index,length} of wavelets) {
-    const position = (expansion * .82 + index / 6) % 1;
-    const point = path.getPointAtLength(length * position);
-    const next = path.getPointAtLength(Math.min(length, length * position + 1));
-    const angle = Math.atan2(next.y - point.y,next.x - point.x) * 180 / Math.PI - 90;
-    wave.setAttribute('transform',`translate(${point.x} ${point.y}) rotate(${angle})`);
-    wave.style.opacity = String(Math.sin(position * Math.PI) * .8);
-  }
-  $('chest-glow').setAttribute('opacity',.35 + expansion * .55);
-  $('lungs').setAttribute('transform', `translate(210 250) scale(${1 + expansion * .04} ${1 + expansion * .055}) translate(-210 -250)`);
+  $('photo-glow').setAttribute('opacity', String(expansion * .72));
   $('cycle-progress').value = state.cycleProgress;
   $('count-number').textContent = mode === 'own' ? '—' : state.seconds;
   $('cycle-label').textContent = mode === 'ready'
@@ -148,6 +130,7 @@ function followLocation() {
 window.addEventListener('popstate', followLocation);
 window.addEventListener('hashchange', followLocation);
 followLocation();
+
 
 
 
