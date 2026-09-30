@@ -47,3 +47,11 @@ The 3-in/6-out rhythm is retained solely as a provisional design setting. No the
 ## Evidence disclosure pattern
 
 For every future exercise, show: what it aims to do; source link; who was studied; what was actually tested; findings; limitations; how Paasaa differs; and last review date. Mark unresolved evidence as unresolved. Do not imply a citation clinically validates the product.
+
+## Daily self-monitoring (2026-09-30)
+
+The custom daily check-in records intensity, emotions, body sensations, context, automatic thoughts, behavior and interference. It borrows self-observation concepts from the NHS thought-record resource; it does not implement the complete cognitive restructuring exercise and is not a validated diagnostic instrument: https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/self-help-cbt-techniques/thought-record/
+
+Neither the 0–10 ratings nor the seven-day descriptive-average threshold has been validated as a Paasaa clinical measure. No diagnosis, predicted risk, causal interpretation, or treatment-effect claim is produced. Clinician review and youth-specific usability/safeguarding work are pending.
+
+Support resources displayed with regional labels: https://988lifeline.org/ ; https://www.samaritans.org/how-we-can-help/contact-samaritan/ ; https://www.childline.org.uk/about/about-childline/ ; https://findahelpline.com/ . Service details checked against official pages in September 2026; periodically review them.

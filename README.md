@@ -2,39 +2,32 @@
 
 **your best space**
 
-An early-stage mental health support concept for people aged 13 and up who experience anxiety. We are developing one small, reviewable feature at a time, beginning with a breathing screen. CBT-based support is a later milestone.
+A calm, incremental self-monitoring preview for anxiety, intended for ages 13+. It supports noticing experiences between clinician appointments; it does not diagnose, deliver therapy, or replace care.
 
-## Current status
+## Run and verify
 
-Interactive design prototype only. No AI model, therapy service, accounts, analytics, or health-data storage is implemented. The proposed 3-second inhale / 6-second exhale rhythm is provisional and has not been validated as a Paasaa intervention for teens. The anatomical diagram is an early functional draft, not final artwork.
-
-## Preview locally
-
-With Node.js 22 or newer:
+Node.js 22+, no dependencies or API keys:
 
 ```sh
 npm start
-```
-
-Open http://127.0.0.1:4173. No dependencies or API keys are required. Alternatively, open `src/index.html` directly in a browser.
-
-```sh
 npm run check
+npm test
+npm run build
 ```
 
-This verifies JavaScript syntax; it does not establish browser accessibility or clinical validity.
+Open http://127.0.0.1:4173. ES modules require the preview server; opening the HTML as a file is not supported. Build output is `dist/`. Syntax checks and tests do not establish clinical validity or WCAG compliance.
 
-## Project structure
+## Current experience
 
-- `src/`: standalone opening-screen prototype, styles, and interactions.
-- `docs/product-brief.md`: agreed audience, scope, and design direction.
-- `docs/evidence-register.md`: sources, findings, limitations, and review status.
-- `docs/roadmap.md`: small milestones and outstanding decisions.
-- `scripts/`: dependency-free local preview server.
-- `.github/`: automated syntax checks and a pull request template.
+- Optional breathing entry, synchronized countdown and illustration, pause/resume, custom rhythm, self-paced option, reduced motion, evidence links, and support resources.
+- Seven optional daily check-in steps, draft resumption, explicit device-saving choice or session-only mode, completion calendar.
+- Local voice recording/playback with manually reviewed text. Automatic transcription and AI extraction are not connected.
+- No accounts, server database, AI calls, analytics, clinician access, or sharing.
 
-## Development workflow
+Device saving uses localStorage and is not encrypted by Paasaa. Anyone using the same browser profile may read it. Session-only entries disappear on reload/close. Audio is memory-only and discarded when leaving a question. Use synthetic examples for evaluation, not real patient data.
 
-Keep changes focused on one milestone. Use feature branches and pull requests after this initial repository setup. Record evidence alongside any health-related claim. Never commit credentials or real users' mental health information. See `AGENTS.md` for project instructions.
+## Architecture
 
-No public release or clinical validation is implied by this repository. An open-source license has not been selected.
+Vanilla HTML/CSS and browser ES modules preserve the original opening screen. `app.js` controls screen navigation, `breathing.js` owns deterministic timing, `checkin.js` renders the form, `checkin-model.js` owns the extensible local schema/store, and `voice.js` owns recording/review lifecycle. See `docs/implementation.md` for data boundaries, verification, and remaining work.
+
+The GitHub repository stays private. Development uses a feature branch and reviewable PR. `.openai/hosting.json` links the existing Sites deployment; generated `dist/` is ignored. No real users' mental health information or credentials belong in Git.

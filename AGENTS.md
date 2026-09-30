@@ -1,6 +1,6 @@
 # Paasaa development instructions
 
-- Build one agreed feature at a time. The active milestone is the breathing opening screen; do not expand into a full chatbot or CBT service without user direction.
+- Build one agreed feature at a time. The active milestone is breathing plus local daily self-monitoring. Keep transcription/AI and clinician sharing separate until explicitly authorized.
 - Keep the brand `Paasaa.ai` and motto `your best space`.
 - The intended audience includes ages 13+. Do not assume adult study results apply to teens.
 - Use a calm white/blue design, readable contrast, natural illustration, and optional motion. Clearly disclose AI when conversational AI is added.
@@ -10,3 +10,4 @@
 - No real health data, secrets, analytics, or external AI calls in the prototype.
 - Keep source and docs in this repository. Use feature branches and reviewable pull requests for subsequent development.
 - Run `npm run check` for code changes. Test meaningful interactions in a browser when changing their behavior. Record what was actually checked.
+

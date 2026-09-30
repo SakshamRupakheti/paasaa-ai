@@ -1,3 +1,4 @@
+import { createCheckIn } from './checkin.js';
 import { BreathClock, breathState, DEFAULT_PROTOCOL } from './breathing.js';
 const $ = id => document.getElementById(id);
 const clock = new BreathClock();
@@ -75,6 +76,8 @@ function resetBreathing() {
   renderBreathing();
 }
 function showScreen(id) {
+  if (currentScreen === 'reflection-screen' && id !== currentScreen) checkin.leave();
+  if (id === 'transition-screen' && currentScreen === 'breathing-screen') checkin.home();
   if (id !== 'breathing-screen') pauseBreathing();
   for (const screen of ['breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen']) $(screen).hidden = screen !== id;
   currentScreen = id;
@@ -110,3 +113,11 @@ $('help-open').addEventListener('click', () => { pauseBreathing(); $('help-dialo
 $('clear-session').addEventListener('click', () => { pauseBreathing(); $('clear-dialog').showModal(); });
 $('cancel-clear').addEventListener('click', () => $('clear-dialog').close());
 resetBreathing();
+
+const checkin = createCheckIn(showScreen);
+checkin.home();
+document.getElementById('review-again').addEventListener('click', () => { checkin.home(); showScreen('transition-screen'); });
+
+document.getElementById('confirm-clear').addEventListener('click', () => {
+  checkin.clear(); document.getElementById('clear-dialog').close(); showScreen('transition-screen');
+});
