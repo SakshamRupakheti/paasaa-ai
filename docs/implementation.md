@@ -60,3 +60,11 @@ The breathing entry now uses an original front-facing seated SVG with translucen
 The header exposes Breathe / Daily check-in on all screens, with a prominent start/resume check-in action beside breathing. `src/navigation.js` maps hash URLs to screens; `#check-in` is directly linkable and reloads to the consent/resume entry. Browser history moves between sections; individual questions remain within the same check-in URL. Session-only drafts survive in-page navigation, not reload. Existing device drafts retain their stored step.
 
 Changed files for this iteration: `src/index.html`, `src/styles.css`, `src/app.js`, `src/checkin.js`, new `src/navigation.js`, `scripts/serve.mjs`, `package.json`, new `tests/navigation.test.mjs`, and this document. Tests include deep-link mapping, alongside existing timing and persistence coverage. Browser checks verify direct entry, refresh, Back/Forward, draft-aware entry text, paused airflow transforms, reduced-motion static state, and desktop/mobile layout. Formal screen-reader, clinical and cross-browser audits remain pending.
+
+## Calm blue guide and graphical pacing (2026-09-30)
+
+The realistic-photo iteration was reverted. The editable seated SVG now uses a soft blue palette with no surrounding card/background. Airway paths extend outside the mouth and branch into both lungs, so curved wavelets visibly travel inward and reverse outward. Lung scaling is restrained (2–2.5%) and chest glow ranges only from .12 to .28 opacity.
+
+The graphical breathing meter is 18px high, fills blue during inhale and releases in muted teal during exhale. Phase labels remain explicit so color is not the only signal. A smaller numeric countdown remains secondary. All movement shares the existing clock; paused state freezes it. Reduced motion removes airflow and expansion and uses static phase bar states. No new features, analytics or data processing were introduced.
+
+Design references: W3C reduced-motion guidance https://www.w3.org/WAI/WCAG22/Techniques/css/C39 and guidance against using color alone https://www.w3.org/WAI/tips/designing/ . These inform the design, not a claim of audited WCAG compliance. Added a phase-boundary timing test for the new graphical meter.

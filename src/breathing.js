@@ -16,6 +16,7 @@ export function breathState(elapsed, config = DEFAULT_PROTOCOL) {
     elapsed: time, done, inhaling,
     seconds: done ? 0 : Math.ceil((phaseMs - phaseTime) / 1000),
     expansion: (1 - Math.cos(expansion * Math.PI)) / 2,
+    phaseProgress: fraction,
     cycleProgress: cycleTime / cycleMs,
     cycle: Math.min(config.cycles, Math.floor(time / cycleMs) + 1),
   };
@@ -40,3 +41,4 @@ export class BreathClock {
   }
   reset() { this.elapsed = 0; this.running = false; }
 }
+

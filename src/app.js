@@ -39,11 +39,18 @@ function renderBreathing() {
     const next = path.getPointAtLength(Math.min(length, length * position + 1));
     const angle = Math.atan2(next.y - point.y,next.x - point.x) * 180 / Math.PI - 90;
     wave.setAttribute('transform',`translate(${point.x} ${point.y}) rotate(${angle})`);
-    wave.style.opacity = String(Math.sin(position * Math.PI) * .8);
+    wave.style.opacity = String(Math.sin(position * Math.PI) * .65);
   }
-  $('chest-glow').setAttribute('opacity',.35 + expansion * .55);
-  $('lungs').setAttribute('transform', `translate(210 250) scale(${1 + expansion * .04} ${1 + expansion * .055}) translate(-210 -250)`);
-  $('cycle-progress').value = state.cycleProgress;
+  $('chest-glow').setAttribute('opacity',.12 + expansion * .16);
+  $('lungs').setAttribute('transform', `translate(210 250) scale(${1 + expansion * .02} ${1 + expansion * .025}) translate(-210 -250)`);
+  const meter = $('cycle-progress');
+  // Fill on inhale and release on exhale; text and color both identify phase.
+  const active = mode === 'running' || mode === 'paused';
+  const level = active ? (state.inhaling ? state.phaseProgress : 1 - state.phaseProgress) : 0;
+  meter.value = $('pa-motion').checked ? (state.inhaling && active ? 1 : 0) : level;
+  meter.dataset.phase = state.inhaling ? 'inhale' : 'exhale';
+  meter.setAttribute('aria-label', active ? `${state.inhaling ? 'Inhale' : 'Exhale'}${mode === 'paused' ? ', paused' : ''}` : 'Breathing pace');
+  $('count-number').hidden = mode === 'own';
   $('count-number').textContent = mode === 'own' ? '—' : state.seconds;
   $('cycle-label').textContent = mode === 'ready'
     ? `${config.cycles} cycles · ${(config.inhale + config.exhale) * config.cycles} seconds · optional`
@@ -148,6 +155,8 @@ function followLocation() {
 window.addEventListener('popstate', followLocation);
 window.addEventListener('hashchange', followLocation);
 followLocation();
+
+
 
 
 

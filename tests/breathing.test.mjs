@@ -34,3 +34,10 @@ test('configurable durations use the same clock and session end', () => {
   assert.equal(breathState(4000, config).seconds, 4);
   assert.equal(breathState(16000, config).done, true);
 });
+
+test('phase progress fills inhale and releases exhale at exact boundaries',()=>{
+ assert.equal(breathState(1500).phaseProgress,.5);
+ assert.equal(breathState(3000).phaseProgress,0);
+ assert.equal(breathState(6000).phaseProgress,.5);
+ assert.equal(breathState(9000).phaseProgress,0);
+});
