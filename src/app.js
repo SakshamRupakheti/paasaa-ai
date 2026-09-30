@@ -1,3 +1,4 @@
+import { screenForHash, hashForScreen } from './navigation.js';
 import { createCheckIn } from './checkin.js';
 import { BreathClock, breathState, DEFAULT_PROTOCOL } from './breathing.js';
 const $ = id => document.getElementById(id);
@@ -8,8 +9,14 @@ let mode = 'ready';
 let currentScreen = 'breathing-screen';
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 $('pa-motion').checked = reduced.matches;
-const airway = $('airway');
-const airwayLength = airway.getTotalLength();
+
+const airPaths = ['flow-left','flow-right'].map(id => $(id));
+const wavelets = airPaths.flatMap((path, side) => Array.from({length:6}, (_, index) => {
+  const wave = document.createElementNS('http://www.w3.org/2000/svg','path');
+  wave.setAttribute('d','M-5 -3 Q0 -7 5 -3 M-4 2 Q0 -1 4 2');
+  $('airflow').append(wave);
+  return {wave,path,index,side,length:path.getTotalLength()};
+}));
 
 function updateClock() {
   const now = new Date();
@@ -25,19 +32,17 @@ function renderBreathing() {
   const state = breathState(clock.read(), config);
   const moving = !$('pa-motion').checked && mode !== 'own';
   const expansion = moving ? state.expansion : 0;
-  const point = airway.getPointAtLength(airwayLength * expansion);
-  for (const id of ['signal', 'signal-halo']) {
-    $(id).setAttribute('cx', point.x);
-    $(id).setAttribute('cy', point.y);
-    $(id).style.visibility = moving ? 'visible' : 'hidden';
+  $('airflow').style.visibility = moving && mode !== 'ready' ? 'visible' : 'hidden';
+  for (const {wave,path,index,length} of wavelets) {
+    const position = (expansion * .82 + index / 6) % 1;
+    const point = path.getPointAtLength(length * position);
+    const next = path.getPointAtLength(Math.min(length, length * position + 1));
+    const angle = Math.atan2(next.y - point.y,next.x - point.x) * 180 / Math.PI - 90;
+    wave.setAttribute('transform',`translate(${point.x} ${point.y}) rotate(${angle})`);
+    wave.style.opacity = String(Math.sin(position * Math.PI) * .8);
   }
-  $('air-wave').style.visibility = moving ? 'visible' : 'hidden';
-  $('air-wave').setAttribute('transform', `translate(${point.x - 132} ${point.y})`);
-  $('torso').style.fill = `rgb(${245 - expansion * 9}, ${250 - expansion * 2}, 255)`;
-  $('lungs').setAttribute('transform', `translate(134 220) scale(${1 + expansion * .035} ${1 + expansion * .06}) translate(-134 -220)`);
-  $('belly').setAttribute('rx', 44 + expansion * 6);
-  $('belly').setAttribute('ry', 31 + expansion * 3);
-  $('diaphragm').setAttribute('d', `M78 280 Q134 ${246 + expansion * 30} 191 280`);
+  $('chest-glow').setAttribute('opacity',.35 + expansion * .55);
+  $('lungs').setAttribute('transform', `translate(210 250) scale(${1 + expansion * .04} ${1 + expansion * .055}) translate(-210 -250)`);
   $('cycle-progress').value = state.cycleProgress;
   $('count-number').textContent = mode === 'own' ? '—' : state.seconds;
   $('cycle-label').textContent = mode === 'ready'
@@ -69,18 +74,24 @@ function pauseBreathing() {
 }
 function resetBreathing() {
   clock.reset(); cancelAnimationFrame(frame); mode = 'ready';
-  $('pa-start').textContent = 'Let’s breathe';
+  $('pa-start').textContent = 'Start breathing';
   $('pa-phase').textContent = 'Take a moment for yourself.';
   $('pa-count').textContent = `${config.inhale} seconds in · ${config.exhale} seconds out`;
   $('companion-message').textContent = 'Breathe with me.';
   renderBreathing();
 }
-function showScreen(id) {
+function showScreen(id, fromHistory = false) {
   if (currentScreen === 'reflection-screen' && id !== currentScreen) checkin.leave();
   if (id === 'transition-screen' && currentScreen === 'breathing-screen') checkin.home();
   if (id !== 'breathing-screen') pauseBreathing();
   for (const screen of ['breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen']) $(screen).hidden = screen !== id;
   currentScreen = id;
+  const hash = hashForScreen(id);
+  if (!fromHistory && location.hash !== hash) history.pushState(null, '', hash);
+  for (const link of document.querySelectorAll('.main-nav a')) {
+    if (link.hash === hash) link.setAttribute('aria-current','page'); else link.removeAttribute('aria-current');
+  }
+  $('open-checkin').textContent = checkin.hasDraft() ? 'Resume daily check-in' : 'Start daily check-in';
   $(id).querySelector('h1')?.focus();
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
@@ -121,3 +132,22 @@ document.getElementById('review-again').addEventListener('click', () => { checki
 document.getElementById('confirm-clear').addEventListener('click', () => {
   checkin.clear(); document.getElementById('clear-dialog').close(); showScreen('transition-screen');
 });
+
+function openCheckIn() { checkin.home(); showScreen('transition-screen'); }
+$('open-checkin').addEventListener('click', openCheckIn);
+for (const link of document.querySelectorAll('.main-nav a')) link.addEventListener('click', event => {
+  event.preventDefault();
+  if (link.hash === '#check-in') openCheckIn(); else showScreen('breathing-screen');
+});
+function followLocation() {
+  if (location.hash === '#main') return;
+  const screen = screenForHash(location.hash);
+  if (screen === 'transition-screen') checkin.home();
+  showScreen(screen, true);
+}
+window.addEventListener('popstate', followLocation);
+window.addEventListener('hashchange', followLocation);
+followLocation();
+
+
+

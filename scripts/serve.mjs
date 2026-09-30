@@ -10,6 +10,7 @@ const files = new Map([
   ['/checkin.js', ['../src/checkin.js', 'text/javascript; charset=utf-8']],
   ['/checkin-model.js', ['../src/checkin-model.js', 'text/javascript; charset=utf-8']],
   ['/voice.js', ['../src/voice.js', 'text/javascript; charset=utf-8']],
+  ['/navigation.js', ['../src/navigation.js', 'text/javascript; charset=utf-8']],
   ['/favicon.svg', ['../src/favicon.svg', 'image/svg+xml']],
 ]);
 
@@ -31,4 +32,5 @@ const server = createServer(async (request, response) => {
 });
 server.on('error', error => { console.error(error.message); process.exitCode = 1; });
 server.listen(4173, '127.0.0.1', () => console.log('Paasaa preview: http://127.0.0.1:4173'));
+
 

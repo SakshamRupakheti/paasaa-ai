@@ -88,6 +88,7 @@ export function createCheckIn(showScreen) {
   }
   document.addEventListener('visibilitychange',()=>{if(document.hidden)leave();else if(!panel.hidden&&store.draft)started=performance.now();});
   window.addEventListener('pagehide',leave);
-  return {home:renderHome,clear(){leave();store.clear();renderHome();},leave};
+  return {hasDraft:()=>Boolean(store.draft),home:renderHome,clear(){leave();store.clear();renderHome();},leave};
 }
+
 
