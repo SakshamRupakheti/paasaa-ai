@@ -1,60 +1,68 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Paasaa.ai — your best space</title><meta name="description" content="An early design preview of a gentle breathing space."><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><script src="app.js" defer></script></head><body>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="A gentle space for breathing and CBT-based self-help. An early preview, not a therapy service.">
+  <title>Paasaa.ai — your best space</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
 <div id="paasaa-opening">
-
   <header>
     <div><div class="brand">Paasaa.ai</div><div class="motto">your best space</div></div>
-    <div class="clock"><time id="pa-time"></time><div>Your local time</div></div>
+    <div class="header-actions"><div class="clock"><time id="pa-time"></time><div>Your local time</div></div><button id="help-open" type="button">Help & support</button></div>
   </header>
-  <main>
-    <div class="welcome">
-      <span class="eyebrow">A MOMENT FOR YOU</span>
-      <h1 id="pa-greeting">Hello, there.</h1>
-      <p class="intro">You don’t have to figure everything out right now.<br>Let’s start with a little space to breathe.</p>
-    </div>
-    <div class="visual">
-    <svg class="breath-diagram" viewBox="0 0 240 286" role="img" aria-labelledby="pa-diagram-title pa-diagram-desc">
-      <title id="pa-diagram-title">Head, upper body, and breathing guide</title>
-      <desc id="pa-diagram-desc">A simplified anatomical diagram. The blue lung shapes expand during the inhale cue and settle during the exhale cue. This animation does not measure your breathing.</desc>
-      <path d="M31 276 L34 189 Q35 163 64 153 L93 143 L94 116 Q79 104 78 79 L79 55 Q82 23 119 22 Q155 22 161 54 L162 79 Q162 102 145 116 L146 143 L175 153 Q204 163 206 189 L210 276" fill="#f7fbff" stroke="#8da9c4" stroke-width="2" stroke-linecap="round"/>
-      <path d="M94 116 Q120 131 145 116 M93 143 Q120 157 146 143 M64 153 Q75 160 89 159 M175 153 Q161 160 151 159" fill="none" stroke="#b2c6da" stroke-width="1.5"/>
-      <path d="M116 127 L116 168 Q116 177 100 186 M124 127 L124 168 Q124 177 140 186" fill="none" stroke="#90b7d9" stroke-width="3" stroke-linecap="round"/>
-      <g class="lung-volume" fill="#8bbce6" stroke="#5c96c5" stroke-width="1.4">
-        <path d="M107 172 Q96 164 82 180 Q61 207 63 242 Q66 255 84 251 L105 244 Q112 241 111 227 L111 185 Q111 176 107 172Z"/>
-        <path d="M133 172 Q144 164 158 180 Q179 207 177 242 Q174 255 156 251 L135 244 Q128 241 129 227 L129 185 Q129 176 133 172Z"/>
-        <path d="M101 187 L90 208 L79 220 M90 208 L92 234 M139 187 L150 208 L161 220 M150 208 L148 234" fill="none" stroke="#d9ecfc" stroke-width="2.5" stroke-linecap="round"/>
-      </g>
-    </svg>
-      <span class="visual-caption">In your own time.</span>
-    </div>
-    <section class="practice" aria-label="Breathing practice">
-    <div class="phase" id="pa-phase" aria-live="polite">Take a moment for yourself.</div>
-    <div class="count" id="pa-count">3 seconds in · 6 seconds out</div>
-    <div class="actions">
-      <button class="primary cursor-interaction" id="pa-start" type="button">Let’s breathe</button>
-      <button class="cursor-interaction" id="pa-own" type="button">My own pace</button>
-    </div>
-    <button class="skip cursor-interaction" id="pa-skip" type="button">Skip for now</button>
-    <p class="comfort">Keep your breath gentle. You don’t need to match the count perfectly.</p>
-    <p class="comfort">If you feel dizzy, short of breath, or more uncomfortable, stop and breathe normally.</p>
+  <main id="main">
+    <section id="breathing-screen" class="breathing-layout" aria-label="Breathing practice">
+      <div class="welcome"><span class="eyebrow">A MOMENT FOR YOU</span><h1 id="pa-greeting" tabindex="-1">Hello, there.</h1><p class="intro">You don’t have to figure everything out right now.<br>Let’s start with a little space to breathe.</p></div>
+      <div class="visual">
+        <svg id="body-guide" class="breath-diagram" viewBox="0 0 280 380" role="img" aria-labelledby="body-title body-desc">
+          <title id="body-title">A gentle breathing guide</title><desc id="body-desc">A pacing signal travels from the mouth down the airway to the lungs and back. The diaphragm lowers and the belly expands on inhalation, then settle on exhalation. Air does not enter the stomach. This is a simplified guide, not a measurement of your breathing.</desc>
+          <defs><linearGradient id="lung-color" x2="0" y2="1"><stop stop-color="#badcf4"/><stop offset="1" stop-color="#85b8df"/></linearGradient></defs>
+          <path id="torso" d="M47 365 L43 199 Q42 171 72 158 L108 146 L110 119 Q96 108 93 91 L93 64 Q95 31 125 26 Q158 22 170 52 Q178 69 170 94 Q166 109 153 119 L154 146 L187 158 Q214 170 219 200 L223 365" fill="#f5faff" stroke="#8aaac4" stroke-width="2" stroke-linecap="round"/>
+          <path d="M109 119 Q131 129 154 119 M109 146 Q131 159 154 146 M110 78 Q115 81 120 78 M145 78 Q150 81 155 78 M132 80 L129 94 L134 95 M125 103 Q132 106 139 103" fill="none" stroke="#829fb8" stroke-width="1.5" stroke-linecap="round"/>
+          <path id="airway" d="M132 104 C131 125 134 144 134 164 C135 185 146 189 155 205" fill="none" stroke="#b1cfe4" stroke-width="5" stroke-linecap="round"/>
+          <path d="M134 164 Q132 185 109 204" fill="none" stroke="#b1cfe4" stroke-width="5" stroke-linecap="round"/>
+          <g id="lungs" fill="url(#lung-color)" stroke="#77a8cf" stroke-width="1.4">
+            <path d="M120 177 Q107 169 94 185 Q73 213 77 254 Q79 266 96 261 L117 253 Q123 249 122 229Z"/>
+            <path d="M147 177 Q160 169 174 185 Q195 213 191 254 Q189 266 172 261 L151 253 Q145 249 146 229Z"/>
+            <path d="M112 193 L100 217 L88 231 M100 217 L104 247 M155 193 L167 217 L179 231 M167 217 L164 247" fill="none" stroke="#e6f4ff" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+          <ellipse id="belly" cx="134" cy="310" rx="44" ry="31" fill="#d7eafa" opacity=".75"/>
+          <path id="diaphragm" d="M78 280 Q134 246 191 280" fill="none" stroke="#6096bf" stroke-width="2.5" stroke-linecap="round"/>
+          <path id="air-wave" d="M123 0 Q132 -5 141 0" transform="translate(0 104)" fill="none" stroke="#438bc0" stroke-width="3" opacity=".45"/><circle id="signal-halo" r="12" fill="#5caae0" opacity=".2" cx="132" cy="104"/>
+          <circle id="signal" r="5" fill="#347fb7" cx="132" cy="104"/>
+        </svg>
+        <span class="visual-caption">In your own time.</span><p class="diagram-note">Signal → lungs · gentle belly movement</p>
+      </div>
+      <div class="practice">
+        <div class="phase" id="pa-phase" aria-live="polite">Take a moment for yourself.</div>
+        <div class="count-number" id="count-number" aria-hidden="true">3</div><div class="count" id="pa-count">3 seconds in · 6 seconds out</div>
+        <progress id="cycle-progress" max="1" value="0" aria-label="Current breathing cycle"></progress>
+        <div id="cycle-label" class="subtle">5 cycles · 45 seconds · optional</div>
+        <div class="actions"><button class="primary" id="pa-start" type="button">Let’s breathe</button><button id="pa-restart" type="button">Restart</button><button id="pa-own" type="button">My own pace</button></div>
+        <button class="skip" id="pa-skip" type="button">Skip for now</button><div class="companion"><span aria-hidden="true">◌</span><div><small>Paasaa · breathing guide</small><p id="companion-message">Breathe with me.</p></div></div>
+        <p class="comfort">Keep your breath gentle. You don’t need to match the count perfectly.</p><p class="comfort">If you feel dizzy, short of breath, or more uncomfortable, stop and breathe normally.</p>
+        <details class="timing"><summary>Adjust the rhythm</summary><div class="timing-fields"><label>Inhale (seconds)<select id="inhale"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select></label><label>Exhale (seconds)<select id="exhale"><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6" selected>6</option></select></label></div><p class="subtle">Timing and the five-cycle length are design settings, not a clinically reviewed prescription. Changing timing resets the guide.</p></details>
+        <label class="motion"><input id="pa-motion" type="checkbox"> Reduce movement</label>
+      </div>
     </section>
+    <section id="transition-screen" class="flow-panel" hidden><span class="eyebrow">A LITTLE SELF-AWARENESS</span><h1 tabindex="-1">Daily check-in</h1><p class="intro">Take about 2 minutes to notice how you're doing.</p><p>No right answers. No need to change how you feel.</p><p class="privacy-note">This preview can save check-ins on this browser only. Nothing is sent to a clinician or AI. Anyone using this browser profile could read saved entries.</p><div id="checkin-home"></div><div class="actions"><button id="return-breathing">Return to breathing</button><button id="finish-transition">Finish for now</button></div></section>
+    <section id="reflection-screen" class="flow-panel" hidden aria-label="Daily check-in"></section>
+    <section id="finish-screen" class="flow-panel" hidden><span class="eyebrow">IN YOUR OWN TIME</span><h1 tabindex="-1">You can leave it here.</h1><p>You’re welcome to return whenever you want.</p><div class="actions"><button id="review-again">Daily check-in</button><button id="finish-breathe">Return to breathing</button></div></section>
+    <noscript><p>This experience needs JavaScript for the breathing guide and reflection. You can still use Help & support links below.</p><p><a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer">Find support in your country</a></p></noscript>
   </main>
   <footer>
-    <details id="pa-evidence">
-      <summary class="cursor-interaction">Why this exercise?</summary>
-      <div class="research">
-        <p>Guided breathing may help some people manage moments of stress. Results in teens are mixed, and this Paasaa exercise has not been clinically tested.</p>
-        <ul>
-          <li><a href="https://pubmed.ncbi.nlm.nih.gov/41257401/" target="_blank" rel="noopener noreferrer">Trial: 150 young people aged 12–13</a> — some physiological effects, but no improvement in reported feelings or stress recovery compared with the control. It does not validate our exact 3-in/6-out rhythm.</li>
-          <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9397716/" target="_blank" rel="noopener noreferrer">Pilot: 43 high-school students</a> — a five-week programme; anxiety changes were not statistically significant.</li>
-          <li><a href="https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/" target="_blank" rel="noopener noreferrer">NHS breathing guidance</a> — recommends comfortable, unforced breathing. This is practical guidance, not a trial of Paasaa.</li>
-        </ul>
-        <p>Proposed rhythm: 3 seconds in, 6 seconds out. Suitability for younger users and the final instructions still need clinical review.</p>
-      </div>
-    </details>
-    <label class="motion"><input id="pa-motion" type="checkbox"> Reduce movement</label>
-    <div class="note">Early preview · Breathing rhythm under review · No personal information collected</div>
+    <details id="pa-evidence"><summary>Why this exercise? Science & sources</summary><div class="research"><h2>Breathing</h2><p>Guided breathing may help some people manage moments of stress. Teen findings are mixed. Paasaa and its exact rhythm have not been clinically tested.</p><ul><li><a href="https://pubmed.ncbi.nlm.nih.gov/41257401/" target="_blank" rel="noopener noreferrer">Trial: 150 young people aged 12–13</a> — mixed physiological findings; no improvement in reported feelings or stress recovery compared with the control.</li><li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9397716/" target="_blank" rel="noopener noreferrer">Pilot: 43 high-school students</a> — anxiety changes were not statistically significant.</li><li><a href="https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/" target="_blank" rel="noopener noreferrer">NHS breathing guidance</a> — gentle, comfortable breathing without forcing it.</li></ul><h2>Self-monitoring</h2><p>The check-in records feelings, body sensations, context, thoughts, and actions. These categories reflect parts of the <a href="https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/self-help-cbt-techniques/thought-record/" target="_blank" rel="noopener noreferrer">NHS thought record</a>. This version focuses on noticing, without challenging thoughts or making diagnoses. Its 0–10 questions are personal ratings, not validated diagnostic scales. The app has not been clinically tested, and adult guidance alone does not establish suitability for every teen.</p><p>Evidence checked September 29, 2026. Qualified clinical review, especially for younger users, remains outstanding.</p></div></details>
+    <button id="clear-session" type="button">Privacy & saved data</button>
+    <div class="note">Early self-help preview · Intended for ages 13+ · Not a therapist or crisis service</div>
   </footer>
-
 </div>
-
+<dialog id="help-dialog" aria-labelledby="help-title"><h2 id="help-title">You don’t have to handle this alone.</h2><p>This page is not monitored and cannot assess risk or contact help for you. If you may act on thoughts of harm or are in immediate danger, contact your local emergency service now.</p><p>If you’re a young person, a trusted adult, school counsellor, or health professional can help you find support.</p><ul><li><strong>United States:</strong> call or text <a href="tel:988">988</a>, available 24/7. <a href="https://988lifeline.org/" target="_blank" rel="noopener noreferrer">988 Lifeline</a></li><li><strong>UK & Ireland:</strong> call <a href="tel:116123">116 123</a> for Samaritans, day or night. <a href="https://www.samaritans.org/how-we-can-help/contact-samaritan/" target="_blank" rel="noopener noreferrer">Samaritans</a></li><li><strong>UK, under 19:</strong> call Childline on <a href="tel:08001111">0800 1111</a>. <a href="https://www.childline.org.uk/about/about-childline" target="_blank" rel="noopener noreferrer">Childline</a></li><li><strong>Other countries:</strong> <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer">find a local helpline</a>.</li></ul><p class="subtle">External support services have their own privacy policies. Contact details checked September 29, 2026.</p><form method="dialog"><button class="primary">Close support</button></form></dialog>
+<dialog id="clear-dialog" aria-labelledby="clear-title"><h2 id="clear-title">Your check-ins, your choice.</h2><p>Entries are saved only on this browser if you choose on-device saving. They are not encrypted by Paasaa or shared with a clinician. Session-only entries disappear when you refresh or close this page.</p><p>No analytics or AI processing is used. The hosting provider may retain ordinary website access logs, but this app does not send your check-in answers.</p><p>Clear saved data removes all Paasaa check-ins and the draft from this browser. This cannot be undone.</p><div class="actions"><button id="confirm-clear">Clear all saved data</button><button id="cancel-clear" class="primary">Keep my data</button></div></dialog>
 </body></html>

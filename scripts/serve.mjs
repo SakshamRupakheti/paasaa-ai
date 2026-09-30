@@ -6,6 +6,7 @@ const files = new Map([
   ['/index.html', ['../src/index.html', 'text/html; charset=utf-8']],
   ['/styles.css', ['../src/styles.css', 'text/css; charset=utf-8']],
   ['/app.js', ['../src/app.js', 'text/javascript; charset=utf-8']],
+  ['/breathing.js', ['../src/breathing.js', 'text/javascript; charset=utf-8']],
   ['/favicon.svg', ['../src/favicon.svg', 'image/svg+xml']],
 ]);
 

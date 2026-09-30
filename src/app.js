@@ -1,21 +1,112 @@
-(()=>{
-    const root=document.getElementById('paasaa-opening');
-    const get=id=>root.querySelector('#'+id);
-    const start=get('pa-start'),own=get('pa-own'),phase=get('pa-phase'),count=get('pa-count'),motion=get('pa-motion'),lungs=root.querySelector('.lung-volume');
-    let running=false,elapsed=0,last=0,mode='guided',lastPhase='';
-    const preferred=window.matchMedia('(prefers-reduced-motion: reduce)');
-    motion.checked=preferred.matches;
-    function clock(){const now=new Date();const h=now.getHours();get('pa-greeting').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', there.';get('pa-time').textContent=now.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});get('pa-time').dateTime=now.toISOString();}
-    clock();setInterval(clock,30000);
+import { BreathClock, breathState, DEFAULT_PROTOCOL } from './breathing.js';
+const $ = id => document.getElementById(id);
+const clock = new BreathClock();
+let config = { ...DEFAULT_PROTOCOL };
+let frame = null;
+let mode = 'ready';
+let currentScreen = 'breathing-screen';
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+$('pa-motion').checked = reduced.matches;
+const airway = $('airway');
+const airwayLength = airway.getTotalLength();
 
-    function stop(){running=false;last=0;lungs.style.transform='scale(1)';}
-    start.addEventListener('click',()=>{if(running){stop();phase.textContent='Take your time.';count.textContent='Paused · Breathe normally';start.textContent='Resume';}else{if(mode!=='guided'){elapsed=0;mode='guided';}running=true;last=0;lastPhase='';start.textContent='Pause';}});
-    own.addEventListener('click',()=>{stop();elapsed=0;mode='own';phase.textContent='Breathe at your own pace.';count.textContent='No timer. No need to change your breath.';start.textContent='Try guided breathing';});
-    get('pa-skip').addEventListener('click',()=>{stop();elapsed=0;mode='guided';phase.textContent='You can simply take a moment.';count.textContent='Nothing to complete. Stay as long as you like.';start.textContent='Let’s breathe';});
+function updateClock() {
+  const now = new Date();
+  const hour = now.getHours();
+  $('pa-greeting').textContent = `${hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'}, there.`;
+  $('pa-time').textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  $('pa-time').dateTime = now.toISOString();
+}
+updateClock();
+setInterval(updateClock, 30000); // Wall clock only; never drives breathing.
 
-    motion.addEventListener('change',()=>{if(motion.checked)lungs.style.transform='scale(1)';});
-    preferred.addEventListener('change',event=>{motion.checked=event.matches;});
-    document.addEventListener('visibilitychange',()=>{if(document.hidden&&running){stop();phase.textContent='Paused';count.textContent='Continue when you’re ready.';start.textContent='Resume';}});
-    function tick(t){if(running){if(last)elapsed+=t-last;last=t;const cycle=elapsed%9000;const inhale=cycle<3000;const label=inhale?'Breathe in gently.':'Let your breath out gently.';if(lastPhase!==label){phase.textContent=label;lastPhase=label;}const remaining=inhale?Math.ceil((3000-cycle)/1000):Math.ceil((9000-cycle)/1000);count.textContent=remaining+(remaining===1?' second · ':' seconds · ')+(inhale?'in':'out');const progress=inhale?cycle/3000:1-(cycle-3000)/6000;const eased=(1-Math.cos(progress*Math.PI))/2;lungs.style.transform=motion.checked?'scale(1)':'scale('+(0.94+eased*.12)+')';}requestAnimationFrame(tick);}
-    requestAnimationFrame(tick);
-  })();
+function renderBreathing() {
+  const state = breathState(clock.read(), config);
+  const moving = !$('pa-motion').checked && mode !== 'own';
+  const expansion = moving ? state.expansion : 0;
+  const point = airway.getPointAtLength(airwayLength * expansion);
+  for (const id of ['signal', 'signal-halo']) {
+    $(id).setAttribute('cx', point.x);
+    $(id).setAttribute('cy', point.y);
+    $(id).style.visibility = moving ? 'visible' : 'hidden';
+  }
+  $('air-wave').style.visibility = moving ? 'visible' : 'hidden';
+  $('air-wave').setAttribute('transform', `translate(${point.x - 132} ${point.y})`);
+  $('torso').style.fill = `rgb(${245 - expansion * 9}, ${250 - expansion * 2}, 255)`;
+  $('lungs').setAttribute('transform', `translate(134 220) scale(${1 + expansion * .035} ${1 + expansion * .06}) translate(-134 -220)`);
+  $('belly').setAttribute('rx', 44 + expansion * 6);
+  $('belly').setAttribute('ry', 31 + expansion * 3);
+  $('diaphragm').setAttribute('d', `M78 280 Q134 ${246 + expansion * 30} 191 280`);
+  $('cycle-progress').value = state.cycleProgress;
+  $('count-number').textContent = mode === 'own' ? '—' : state.seconds;
+  $('cycle-label').textContent = mode === 'ready'
+    ? `${config.cycles} cycles · ${(config.inhale + config.exhale) * config.cycles} seconds · optional`
+    : `Cycle ${state.cycle} of ${config.cycles}`;
+  const phase = state.inhaling ? 'Breathe in' : 'Breathe out';
+  if (mode === 'running' || mode === 'paused') {
+    const label = mode === 'paused' ? `${phase} · paused` : phase;
+    if ($('pa-phase').textContent !== label) $('pa-phase').textContent = label;
+    $('pa-count').textContent = `${state.seconds} ${state.seconds === 1 ? 'second' : 'seconds'}${mode === 'paused' ? ' remaining · breathe normally while paused' : ' · gently'}`;
+    $('companion-message').textContent = mode === 'paused' ? 'Easy does it.' : state.inhaling ? 'No need to match the count perfectly.' : 'Let it out gently.';
+  }
+  return state;
+}
+function loop() {
+  const state = renderBreathing();
+  if (state.done) {
+    clock.pause(); mode = 'complete';
+    showScreen('transition-screen');
+    return;
+  }
+  if (clock.running) frame = requestAnimationFrame(loop);
+}
+function pauseBreathing() {
+  if (!clock.running) return;
+  clock.pause(); cancelAnimationFrame(frame);
+  mode = 'paused'; $('pa-start').textContent = 'Resume';
+  renderBreathing();
+}
+function resetBreathing() {
+  clock.reset(); cancelAnimationFrame(frame); mode = 'ready';
+  $('pa-start').textContent = 'Let’s breathe';
+  $('pa-phase').textContent = 'Take a moment for yourself.';
+  $('pa-count').textContent = `${config.inhale} seconds in · ${config.exhale} seconds out`;
+  $('companion-message').textContent = 'Breathe with me.';
+  renderBreathing();
+}
+function showScreen(id) {
+  if (id !== 'breathing-screen') pauseBreathing();
+  for (const screen of ['breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen']) $(screen).hidden = screen !== id;
+  currentScreen = id;
+  $(id).querySelector('h1')?.focus();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+$('pa-start').addEventListener('click', () => {
+  if (clock.running) { pauseBreathing(); return; }
+  if (mode === 'own' || mode === 'complete') resetBreathing();
+  clock.start(); mode = 'running'; $('pa-start').textContent = 'Pause'; loop();
+});
+$('pa-restart').addEventListener('click', resetBreathing);
+$('pa-own').addEventListener('click', () => {
+  resetBreathing(); mode = 'own'; renderBreathing();
+  $('pa-phase').textContent = 'Breathe at your own pace.';
+  $('pa-count').textContent = 'No timer. No need to change your breath.';
+  $('cycle-label').textContent = 'Continue whenever you’re ready.';
+  $('pa-start').textContent = 'Try guided breathing';
+});
+$('pa-skip').addEventListener('click', () => showScreen('transition-screen'));
+$('return-breathing').addEventListener('click', () => { if (mode === 'complete') resetBreathing(); showScreen('breathing-screen'); });
+$('finish-breathe').addEventListener('click', () => { resetBreathing(); showScreen('breathing-screen'); });
+$('finish-transition').addEventListener('click', () => showScreen('finish-screen'));
+for (const name of ['inhale', 'exhale']) $(name).addEventListener('change', () => {
+  config[name] = Number($(name).value); resetBreathing();
+});
+$('pa-motion').addEventListener('change', renderBreathing);
+reduced.addEventListener('change', event => { $('pa-motion').checked = event.matches; renderBreathing(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) pauseBreathing(); else updateClock();
+});
+$('help-open').addEventListener('click', () => { pauseBreathing(); $('help-dialog').showModal(); });
+$('clear-session').addEventListener('click', () => { pauseBreathing(); $('clear-dialog').showModal(); });
+$('cancel-clear').addEventListener('click', () => $('clear-dialog').close());
+resetBreathing();
