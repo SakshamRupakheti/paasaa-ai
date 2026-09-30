@@ -42,12 +42,19 @@ function renderBreathing() {
     wave.style.opacity = String(Math.sin(position * Math.PI) * .65);
   }
   $('chest-glow').setAttribute('opacity',.12 + expansion * .16);
-  $('lungs').setAttribute('transform', `translate(210 250) scale(${1 + expansion * .02} ${1 + expansion * .025}) translate(-210 -250)`);
+  $('lungs').setAttribute('transform', `translate(210 250) scale(${1 + expansion * .045} ${1 + expansion * .055}) translate(-210 -250)`);
   const meter = $('cycle-progress');
   // Fill on inhale and release on exhale; text and color both identify phase.
   const active = mode === 'running' || mode === 'paused';
   const level = active ? (state.inhaling ? state.phaseProgress : 1 - state.phaseProgress) : 0;
-  meter.value = $('pa-motion').checked ? (state.inhaling && active ? 1 : 0) : level;
+  // Explicit fill avoids browser-dependent native progress rendering.
+  const shownLevel = $('pa-motion').checked ? Math.round(level * 10) / 10 : level;
+  $('breath-fill').style.transform = `scaleX(${shownLevel})`;
+  meter.setAttribute('aria-valuenow', String(Math.round(level * 100)));
+  $('motion-note').hidden = !$('pa-motion').checked;
+  $('torso').setAttribute('transform', `translate(210 174) scale(${1 + expansion * .035} ${1 + expansion * .014}) translate(-210 -174)`);
+  $('belly-line').setAttribute('d', `M168 313 Q210 ${326 + expansion * 6} 252 313`);
+  $('diaphragm').setAttribute('d', `M162 303 Q210 ${274 + expansion * 23} 258 303`);
   meter.dataset.phase = state.inhaling ? 'inhale' : 'exhale';
   meter.setAttribute('aria-label', active ? `${state.inhaling ? 'Inhale' : 'Exhale'}${mode === 'paused' ? ', paused' : ''}` : 'Breathing pace');
   $('count-number').hidden = mode === 'own';
@@ -155,6 +162,7 @@ function followLocation() {
 window.addEventListener('popstate', followLocation);
 window.addEventListener('hashchange', followLocation);
 followLocation();
+
 
 
 

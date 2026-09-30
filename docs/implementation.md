@@ -68,3 +68,11 @@ The realistic-photo iteration was reverted. The editable seated SVG now uses a s
 The graphical breathing meter is 18px high, fills blue during inhale and releases in muted teal during exhale. Phase labels remain explicit so color is not the only signal. A smaller numeric countdown remains secondary. All movement shares the existing clock; paused state freezes it. Reduced motion removes airflow and expansion and uses static phase bar states. No new features, analytics or data processing were introduced.
 
 Design references: W3C reduced-motion guidance https://www.w3.org/WAI/WCAG22/Techniques/css/C39 and guidance against using color alone https://www.w3.org/WAI/tips/designing/ . These inform the design, not a claim of audited WCAG compliance. Added a phase-boundary timing test for the new graphical meter.
+
+## Visible breathing motion and meter repair
+
+Replaced native progress rendering with an explicit transform-based fill driven by the same clock: dark blue fills across the full inhale, light blue empties across the full exhale. Custom durations remain authoritative. Reduced motion uses coarse meter steps and disables figure movement; the UI explicitly explains this state instead of silently showing a static figure. Pause freezes the clock and fill.
+
+Restored warm skin and brown hair. The torso gently widens, lungs expand, the diaphragm flattens/downshifts and the abdominal contour moves outward on inhale, returning on exhale. The face, hands and seated legs remain still. This is an illustrative pacing cue, not measured human physiology; magnitudes are design choices.
+
+Physiology reference: NHLBI, How Your Body Controls Breathing, https://www.nhlbi.nih.gov/health/lungs/body-controls-breathing ; MedlinePlus diaphragm illustration, https://www.medlineplus.gov/ency/imagepages/19380.htm . These explain chest expansion and diaphragm contraction on inspiration and relaxation on expiration, not validation of the app or its rhythm.

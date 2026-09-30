@@ -25,7 +25,7 @@
           <title id="body-title">A resting, front-facing breathing guide</title>
           <desc id="body-desc">A seated person with relaxed shoulders and hands resting on their knees. Soft airflow branches into both visible lungs during inhalation and travels outward during exhalation. This illustration is a pacing guide, not a measurement of your breathing.</desc>
           <defs>
-            <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c7e5ee"/><stop offset="1" stop-color="#91bed4"/></linearGradient>
+            <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e7bc98"/><stop offset="1" stop-color="#bc8768"/></linearGradient>
             <linearGradient id="clothing" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b8dce9"/><stop offset="1" stop-color="#70a6c3"/></linearGradient>
             <linearGradient id="lung-color" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e1f4f4" stop-opacity=".95"/><stop offset="1" stop-color="#bedde5" stop-opacity=".85"/></linearGradient>
             <radialGradient id="chest-light"><stop stop-color="#defbff" stop-opacity=".9"/><stop offset="1" stop-color="#cde9ef" stop-opacity="0"/></radialGradient>
@@ -45,9 +45,10 @@
           <ellipse id="chest-glow" cx="210" cy="250" rx="91" ry="100" fill="url(#chest-light)" opacity=".45"/>
           <path d="M184 145 L184 173 Q210 196 236 173 L236 145" fill="url(#skin)" stroke="#b0bec3" stroke-width="1.2"/>
           <path d="M171 98 Q167 72 184 57 Q209 37 237 58 Q253 72 249 102 L247 133 Q241 161 210 171 Q179 161 173 133Z" fill="url(#skin)" stroke="#a6b5bb" stroke-width="1.5"/>
-          <path d="M171 108 Q162 80 175 62 Q189 42 213 44 Q244 45 253 69 Q257 87 249 108 L244 83 Q227 88 206 69 Q193 86 177 85Z" fill="#437b9f"/>
+          <path d="M171 108 Q162 80 175 62 Q189 42 213 44 Q244 45 253 69 Q257 87 249 108 L244 83 Q227 88 206 69 Q193 86 177 85Z" fill="#4a3932"/>
           <path d="M183 114 Q190 118 198 114 M222 114 Q230 118 237 114 M210 115 L206 133 L212 135 M201 146 Q210 150 220 146" fill="none" stroke="#768b96" stroke-width="1.7" stroke-linecap="round"/>
           <!-- A translucent chest reveals the simplified respiratory system. -->
+          <path id="diaphragm" d="M162 303 Q210 274 258 303" fill="none" stroke="#82aab6" stroke-width="2" opacity=".65"/>
           <g id="lungs" fill="url(#lung-color)" stroke="#68a4bc" stroke-width="1.5">
             <path d="M198 211 Q188 195 174 213 Q150 243 156 283 Q158 298 178 291 L197 283 Q203 276 200 257Z"/>
             <path d="M222 211 Q232 195 246 213 Q270 243 264 283 Q262 298 242 291 L223 283 Q217 276 220 257Z"/>
@@ -57,20 +58,20 @@
           <path d="M210 147 L210 214" fill="none" stroke="#edfbff" stroke-width="2" opacity=".7"/>
           <g fill="none" stroke="none"><path id="flow-left" d="M106 125 C145 105 163 156 210 146 C210 169 210 193 210 210 C210 229 170 237 174 279"/><path id="flow-right" d="M106 125 C145 105 163 156 210 146 C210 169 210 193 210 210 C210 229 250 237 246 279"/></g>
           <g id="airflow" fill="none" stroke="#387e9d" stroke-width="2.5" stroke-linecap="round"></g>
-          <path d="M168 313 Q210 326 252 313" fill="none" stroke="#a4c3cd" stroke-width="1.5"/>
+          <path id="belly-line" d="M168 313 Q210 326 252 313" fill="none" stroke="#a4c3cd" stroke-width="1.5"/>
         </svg>
         <span class="visual-caption">In your own time.</span><p class="diagram-note">Follow the air. Find your own rhythm.</p>
       </div>
       <div class="practice">
         <div class="phase" id="pa-phase" aria-live="polite">Take a moment for yourself.</div>
         <div class="count-number" id="count-number" aria-hidden="true">3</div><div class="count" id="pa-count">3 seconds in · 6 seconds out</div>
-        <div class="breath-meter"><div class="meter-labels" aria-hidden="true"><span>Inhale · fill</span><span>Exhale · release</span></div><progress id="cycle-progress" max="1" value="0" aria-label="Breathing pace"></progress></div>
+        <div class="breath-meter"><div class="meter-labels" aria-hidden="true"><span>Inhale · fill</span><span>Exhale · release</span></div><div id="cycle-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Breathing pace"><span id="breath-fill"></span></div></div>
         <div id="cycle-label" class="subtle">5 cycles · 45 seconds · optional</div>
         <div class="actions"><button class="primary" id="pa-start" type="button">Start breathing</button><button id="open-checkin" type="button">Start daily check-in</button></div><div class="secondary-actions"><button id="pa-restart" type="button">Restart</button><button id="pa-own" type="button">My own pace</button></div>
         <button class="skip" id="pa-skip" type="button">Skip for now</button><div class="companion"><span aria-hidden="true">◌</span><div><small>Paasaa · breathing guide</small><p id="companion-message">Breathe with me.</p></div></div>
         <p class="comfort">Keep your breath gentle. You don’t need to match the count perfectly.</p><p class="comfort">If you feel dizzy, short of breath, or more uncomfortable, stop and breathe normally.</p>
         <details class="timing"><summary>Adjust the rhythm</summary><div class="timing-fields"><label>Inhale (seconds)<select id="inhale"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select></label><label>Exhale (seconds)<select id="exhale"><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6" selected>6</option></select></label></div><p class="subtle">Timing and the five-cycle length are design settings, not a clinically reviewed prescription. Changing timing resets the guide.</p></details>
-        <label class="motion"><input id="pa-motion" type="checkbox"> Reduce movement</label>
+        <label class="motion"><input id="pa-motion" type="checkbox"> Reduce movement</label><p id="motion-note" class="subtle" hidden>Body motion is off. Uncheck Reduce movement for the animated guide.</p>
       </div>
     </section>
     <section id="transition-screen" class="flow-panel" hidden><span class="eyebrow">A LITTLE SELF-AWARENESS</span><h1 tabindex="-1">Daily check-in</h1><p class="intro">Take about 2 minutes to notice how you're doing.</p><p>No right answers. No need to change how you feel.</p><p class="privacy-note">This preview can save check-ins on this browser only. Nothing is sent to a clinician or AI. Anyone using this browser profile could read saved entries.</p><div id="checkin-home"></div><div class="actions"><button id="return-breathing">Return to breathing</button><button id="finish-transition">Finish for now</button></div></section>
@@ -87,6 +88,7 @@
 <dialog id="help-dialog" aria-labelledby="help-title"><h2 id="help-title">You don’t have to handle this alone.</h2><p>This page is not monitored and cannot assess risk or contact help for you. If you may act on thoughts of harm or are in immediate danger, contact your local emergency service now.</p><p>If you’re a young person, a trusted adult, school counsellor, or health professional can help you find support.</p><ul><li><strong>United States:</strong> call or text <a href="tel:988">988</a>, available 24/7. <a href="https://988lifeline.org/" target="_blank" rel="noopener noreferrer">988 Lifeline</a></li><li><strong>UK & Ireland:</strong> call <a href="tel:116123">116 123</a> for Samaritans, day or night. <a href="https://www.samaritans.org/how-we-can-help/contact-samaritan/" target="_blank" rel="noopener noreferrer">Samaritans</a></li><li><strong>UK, under 19:</strong> call Childline on <a href="tel:08001111">0800 1111</a>. <a href="https://www.childline.org.uk/about/about-childline" target="_blank" rel="noopener noreferrer">Childline</a></li><li><strong>Other countries:</strong> <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer">find a local helpline</a>.</li></ul><p class="subtle">External support services have their own privacy policies. Contact details checked September 29, 2026.</p><form method="dialog"><button class="primary">Close support</button></form></dialog>
 <dialog id="clear-dialog" aria-labelledby="clear-title"><h2 id="clear-title">Your check-ins, your choice.</h2><p>Entries are saved only on this browser if you choose on-device saving. They are not encrypted by Paasaa or shared with a clinician. Session-only entries disappear when you refresh or close this page.</p><p>No analytics or AI processing is used. The hosting provider may retain ordinary website access logs, but this app does not send your check-in answers.</p><p>Clear saved data removes all Paasaa check-ins and the draft from this browser. This cannot be undone.</p><div class="actions"><button id="confirm-clear">Clear all saved data</button><button id="cancel-clear" class="primary">Keep my data</button></div></dialog>
 </body></html>
+
 
 
 
