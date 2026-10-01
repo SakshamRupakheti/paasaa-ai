@@ -3,6 +3,7 @@ import {safetySignal,SAFE_PAUSE} from './safety.js';
 import {RecordStore} from './store.js';
 import {question,transcribe} from './ai.js';
 import {chatReply,validateChat} from './chat.js';
+import {conversationApi} from './conversation-api.js';
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 const fail=(message,status=400)=>{throw Object.assign(Error(message),{status});};
 export async function handleApi(request,env){
@@ -13,6 +14,7 @@ export async function handleApi(request,env){
     if(path==='/api/status')return json({ai:!!env.GROQ_API_KEY,persistence:!!env.DB,preview:true,clinicalReview:'pending'});
     if(!env.DB)return json({error:'Saved records are unavailable. Your input remains on screen.'},503);
     const store=new RecordStore(env.DB,owner);
+    if(path==='/api/conversations'||path.startsWith('/api/conversations/'))return json(await conversationApi(request,path,store,env));
     if(path==='/api/chat'&&request.method==='POST'){
       const raw=await request.text();if(raw.length>48000)fail('Message is too long',413);
       const body=JSON.parse(raw);validateChat(body);
@@ -28,7 +30,7 @@ export async function handleApi(request,env){
     }
     const match=path.match(/^\/api\/worries\/([\w-]+)(?:\/(answer|draft|back|complete|outcome|question|summary|related|consent|outcome-draft))?$/);
     if(!match)return json({error:'Not found'},404);
-    let s=await store.get(match[1]);if(!s)return json({error:'Record not found'},404);
+    let s=await store.get(match[1]);if(!s||s.kind==='conversation')return json({error:'Record not found'},404);
     const op=match[2];if(request.method==='GET'){if(op==='summary'&&s.status!=='complete')fail('Review and save this reflection first');return json(op==='summary'?clinicianSummary(s):s);}
     if(request.method!=='POST')return json({error:'Method not allowed'},405);
     const raw=await request.text();if(raw.length>24000)fail('Request is too large',413);const body=JSON.parse(raw);

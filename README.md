@@ -27,10 +27,10 @@ For optional chat and transcription, copy `.env.example` to the ignored `.env.lo
 - Optional Groq speech-to-text with explicit consent and editable transcript approval. No silent answer extraction.
 - Help me right now (`#support`): fixed-script PMR, breathing, grounding, performance/social and thought-loop support, with explicit safety escalation. See `docs/immediate-support.md` for clinical-review limitations and privacy.
 - Work through a worry (`#worry`): practical planning or prediction exploration, separate probability/distress/severity ratings, private account drafts, editable summaries and outcome reviews.
-- Talk to Paasaa (`#chat`): optional Groq questions, fixed exercise/source links, and daily check-in/worry worksheets completed inside the conversation. See `docs/chat-guide.md` for data boundaries, verification and limitations.
+- Talk to Paasaa (`#chat`): readiness-led conversation with optional stabilization, confirmed predictions, practical/evidence/coping branches, uncertainty and in-app outcome reviews. Groq adapts wording with consent; the server controls transitions. See `docs/chat-guide.md` for data boundaries, verification and limitations.
 - No analytics, automatic clinician sharing, diagnostic claims or autonomous worksheet changes.
 
-Daily check-in device saving uses localStorage and is not encrypted by Paasaa. Anyone using the same browser profile may read it. Session-only entries and chat disappear on reload/close. Worry records save to the authenticated account. Consented chat/transcription requests send text/audio to Groq; audio is not stored by Paasaa. Browser data clearing does not delete account records. Use synthetic examples for evaluation while clinical and privacy review remain pending.
+Daily check-in device saving uses localStorage and is not encrypted by Paasaa. Anyone using the same browser profile may read it. Session-only check-ins disappear on reload/close. Worry records and the new adaptive conversations save to the authenticated account, including drafts. Consented AI/transcription requests send relevant text/audio to Groq; audio is not stored by Paasaa. Browser data clearing does not delete account records. Use synthetic examples for evaluation while clinical and privacy review remain pending.
 
 ## Architecture
 

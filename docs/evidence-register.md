@@ -67,3 +67,9 @@ Evidence metadata and source links are kept in `src/support-content.js`; clinica
 - Use: explain thought records, distinguish practical action from uncertain predictions, and link to the existing worksheet. These are educational resources, not studies of this bot.
 - Population and outcome limits: no Paasaa participant study, teen-specific validation, treatment effect size or validated crisis detection is claimed. Clinical review pending. The chat does not diagnose or forecast outcomes.
 - Implementation and actual verification: see `chat-guide.md`.
+
+## Adaptive conversation revision — October 1, 2026
+- Readiness preference, optional stabilization and bounded branching are product adaptations, not validated diagnostic or therapeutic measures. No distress threshold is required to reflect.
+- [NHS breathing guidance](https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/) supports comfortable, unforced breathing. The conversation offers an optional unpaced observation and alternatives; it does not claim to reproduce that full protocol.
+- [CCI worry resources](https://www.cci.health.wa.gov.au/Resources/Looking-After-Yourself/Worry-and-Rumination) describe problem-solving, helpful thinking and uncertainty. No generic research statistic is presented as an individual's likelihood.
+- Teen-specific suitability, safety-routing sensitivity, long-term effects and the combined AI workflow remain unvalidated. Clinical review pending. See `chat-guide.md` for actual simulated and browser checks.
