@@ -36,3 +36,7 @@ The NHS thought-record and CCI worry/uncertainty resources support educational c
 Browser checks used synthetic data: settling → optional breathing → breathing refusal → grounding → one-word rejection → changed approach; reflection and editable prediction confirmation; repeated-worry candidate and changed-context choice; probability slider; pause and reload with exact 99% draft restored. A live Groq structured response recognized an already described event/outcome and returned a tentative prediction for confirmation. No real patient examples were used.
 
 Real microphone transcription, assistive-technology testing, comprehensive adversarial evaluation and clinical validation are not claimed. Wider access and account-retention/deletion policy need separate review. The current publication remains owner-private.
+
+
+## Continuous chat presentation
+The full saved conversation is shown as alternating Paasaa and user messages. A bottom composer supports Enter to send and Shift+Enter for a new line. Active exercise controls appear inside the latest reply; whole-number ratings can also be sent in the chat box. Paused, ended, and safety states retain their explicit controls. Browser verification covered sending a numeric rating with Enter and receiving the next prompt in the same thread.
