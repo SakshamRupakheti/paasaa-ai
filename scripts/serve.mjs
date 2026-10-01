@@ -11,6 +11,10 @@ const files = new Map([
   ['/checkin-model.js', ['../src/checkin-model.js', 'text/javascript; charset=utf-8']],
   ['/voice.js', ['../src/voice.js', 'text/javascript; charset=utf-8']],
   ['/navigation.js', ['../src/navigation.js', 'text/javascript; charset=utf-8']],
+  ['/support.js', ['../src/support.js', 'text/javascript; charset=utf-8']],
+  ['/support-content.js', ['../src/support-content.js', 'text/javascript; charset=utf-8']],
+  ['/support-model.js', ['../src/support-model.js', 'text/javascript; charset=utf-8']],
+  ['/support-ui.js', ['../src/support-ui.js', 'text/javascript; charset=utf-8']],
   ['/favicon.svg', ['../src/favicon.svg', 'image/svg+xml']],
 ]);
 
@@ -32,5 +36,3 @@ const server = createServer(async (request, response) => {
 });
 server.on('error', error => { console.error(error.message); process.exitCode = 1; });
 server.listen(4173, '127.0.0.1', () => console.log('Paasaa preview: http://127.0.0.1:4173'));
-
-

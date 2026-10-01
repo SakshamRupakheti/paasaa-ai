@@ -55,3 +55,9 @@ The custom daily check-in records intensity, emotions, body sensations, context,
 Neither the 0–10 ratings nor the seven-day descriptive-average threshold has been validated as a Paasaa clinical measure. No diagnosis, predicted risk, causal interpretation, or treatment-effect claim is produced. Clinician review and youth-specific usability/safeguarding work are pending.
 
 Support resources displayed with regional labels: https://988lifeline.org/ ; https://www.samaritans.org/how-we-can-help/contact-samaritan/ ; https://www.childline.org.uk/about/about-childline/ ; https://findahelpline.com/ . Service details checked against official pages in September 2026; periodically review them.
+
+## Immediate support (2026-09-30)
+
+Fixed scripts for targeted/full/discreet PMR, gentle breathing, grounding, performance/social support and non-reassurance thought-loop support are documented in `docs/immediate-support.md`. All require clinician review; no clinician reviewer is assigned. Evidence is adult-focused and does not validate this app's youth use, exact timing, two-round 16-group adaptation or outcome claims. Country-aware crisis links provide escalation, not risk assessment or contact on the user's behalf.
+
+Evidence metadata and source links are kept in `src/support-content.js`; clinical review status remains `needs clinician review`. No new sleep claims, diagnoses, independent ERP exposures or AI-generated therapeutic advice are introduced.

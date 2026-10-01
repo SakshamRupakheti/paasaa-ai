@@ -1,3 +1,4 @@
+import { createSupport } from './support.js';
 import { screenForHash, hashForScreen } from './navigation.js';
 import { createCheckIn } from './checkin.js';
 import { BreathClock, breathState, DEFAULT_PROTOCOL } from './breathing.js';
@@ -98,7 +99,8 @@ function showScreen(id, fromHistory = false) {
   if (currentScreen === 'reflection-screen' && id !== currentScreen) checkin.leave();
   if (id === 'transition-screen' && currentScreen === 'breathing-screen') checkin.home();
   if (id !== 'breathing-screen') pauseBreathing();
-  for (const screen of ['breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen']) $(screen).hidden = screen !== id;
+  for (const screen of ['breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen', 'support-screen']) $(screen).hidden = screen !== id;
+  if (currentScreen === 'support-screen' && id !== currentScreen) support.leave();
   currentScreen = id;
   const hash = hashForScreen(id);
   if (!fromHistory && location.hash !== hash) history.pushState(null, '', hash);
@@ -134,17 +136,19 @@ reduced.addEventListener('change', event => { $('pa-motion').checked = event.mat
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) pauseBreathing(); else updateClock();
 });
-$('help-open').addEventListener('click', () => { pauseBreathing(); $('help-dialog').showModal(); });
-$('clear-session').addEventListener('click', () => { pauseBreathing(); $('clear-dialog').showModal(); });
+$('help-open').addEventListener('click', () => { pauseBreathing(); support.pause(); $('help-dialog').showModal(); });
+$('clear-session').addEventListener('click', () => { pauseBreathing(); support.pause(); $('clear-dialog').showModal(); });
 $('cancel-clear').addEventListener('click', () => $('clear-dialog').close());
 resetBreathing();
 
+const support = createSupport();
 const checkin = createCheckIn(showScreen);
 checkin.home();
 document.getElementById('review-again').addEventListener('click', () => { checkin.home(); showScreen('transition-screen'); });
 
 document.getElementById('confirm-clear').addEventListener('click', () => {
-  checkin.clear(); document.getElementById('clear-dialog').close(); showScreen('transition-screen');
+  const supportError = support.clear(); checkin.clear(); document.getElementById('clear-dialog').close(); showScreen('transition-screen');
+  if (supportError) { const note = document.createElement('p'); note.textContent = supportError; document.getElementById('checkin-home').append(note); }
 });
 
 function openCheckIn() { checkin.home(); showScreen('transition-screen'); }
@@ -157,6 +161,7 @@ function followLocation() {
   if (location.hash === '#main') return;
   const screen = screenForHash(location.hash);
   if (screen === 'transition-screen') checkin.home();
+  if (screen === 'support-screen') support.entry();
   showScreen(screen, true);
 }
 window.addEventListener('popstate', followLocation);
@@ -165,6 +170,10 @@ followLocation();
 
 
 
+
+
+
+$('support-open').addEventListener('click',()=>{support.entry();showScreen('support-screen');});
 
 
 
