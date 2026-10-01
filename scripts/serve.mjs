@@ -1,38 +1,13 @@
-import { createServer } from 'node:http';
-import { readFile } from 'node:fs/promises';
-
-const files = new Map([
-  ['/', ['../src/index.html', 'text/html; charset=utf-8']],
-  ['/index.html', ['../src/index.html', 'text/html; charset=utf-8']],
-  ['/styles.css', ['../src/styles.css', 'text/css; charset=utf-8']],
-  ['/app.js', ['../src/app.js', 'text/javascript; charset=utf-8']],
-  ['/breathing.js', ['../src/breathing.js', 'text/javascript; charset=utf-8']],
-  ['/checkin.js', ['../src/checkin.js', 'text/javascript; charset=utf-8']],
-  ['/checkin-model.js', ['../src/checkin-model.js', 'text/javascript; charset=utf-8']],
-  ['/voice.js', ['../src/voice.js', 'text/javascript; charset=utf-8']],
-  ['/navigation.js', ['../src/navigation.js', 'text/javascript; charset=utf-8']],
-  ['/support.js', ['../src/support.js', 'text/javascript; charset=utf-8']],
-  ['/support-content.js', ['../src/support-content.js', 'text/javascript; charset=utf-8']],
-  ['/support-model.js', ['../src/support-model.js', 'text/javascript; charset=utf-8']],
-  ['/support-ui.js', ['../src/support-ui.js', 'text/javascript; charset=utf-8']],
-  ['/favicon.svg', ['../src/favicon.svg', 'image/svg+xml']],
-]);
-
-const server = createServer(async (request, response) => {
-  if (!['GET', 'HEAD'].includes(request.method)) {
-    response.writeHead(405, { Allow: 'GET, HEAD' }).end();
-    return;
-  }
-  const path = new URL(request.url, 'http://localhost').pathname;
-  const file = files.get(path);
-  if (!file) { response.writeHead(404).end('Not found'); return; }
-  try {
-    const body = await readFile(new URL(file[0], import.meta.url));
-    response.writeHead(200, { 'Content-Type': file[1], 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
-    response.end(request.method === 'HEAD' ? undefined : body);
-  } catch {
-    response.writeHead(500).end('Could not load the preview.');
-  }
-});
-server.on('error', error => { console.error(error.message); process.exitCode = 1; });
-server.listen(4173, '127.0.0.1', () => console.log('Paasaa preview: http://127.0.0.1:4173'));
+import {createServer} from 'node:http';
+import {readFile,readdir,mkdir} from 'node:fs/promises';
+import {DatabaseSync} from 'node:sqlite';
+import {loadEnvFile} from 'node:process';
+try { loadEnvFile('.env.local'); } catch (error) { if(error.code!=='ENOENT') throw error; }
+import {handleApi} from '../server/api.js';
+await mkdir(new URL('../work/',import.meta.url),{recursive:true});
+const sqlite=new DatabaseSync(new URL('../work/preview.sqlite',import.meta.url));
+sqlite.exec('CREATE TABLE IF NOT EXISTS local_migrations (name TEXT PRIMARY KEY)');
+for(const file of (await readdir(new URL('../drizzle/',import.meta.url))).filter(f=>f.endsWith('.sql')).sort())if(!sqlite.prepare('SELECT name FROM local_migrations WHERE name=?').get(file)){sqlite.exec(await readFile(new URL('../drizzle/'+file,import.meta.url),'utf8'));sqlite.prepare('INSERT INTO local_migrations(name) VALUES (?)').run(file);}
+const db={prepare(sql){return {bind(...values){const stmt=sqlite.prepare(sql);return {async all(){return {results:stmt.all(...values)};},async first(){return stmt.get(...values)||null;},async run(){const r=stmt.run(...values);return {meta:{changes:Number(r.changes)}};}};}};}};
+const allowed=new Set(await readdir(new URL('../src/',import.meta.url)));
+createServer(async(req,res)=>{try{const origin='http://127.0.0.1:4173',url=new URL(req.url,origin);if(url.pathname.startsWith('/api/')){const chunks=[];let size=0;for await(const chunk of req){size+=chunk.length;if(size>9*1024*1024){res.writeHead(413).end();return;}chunks.push(chunk);}const headers=new Headers(req.headers);headers.set('oai-authenticated-user-id','local-synthetic-preview');const request=new Request(url,{method:req.method,headers,body:['GET','HEAD'].includes(req.method)?undefined:Buffer.concat(chunks)});const response=await handleApi(request,{DB:db,GROQ_API_KEY:process.env.GROQ_API_KEY,GROQ_TEXT_MODEL:process.env.GROQ_TEXT_MODEL,GROQ_TRANSCRIPTION_MODEL:process.env.GROQ_TRANSCRIPTION_MODEL});res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()));return;}const name=url.pathname==='/'?'index.html':url.pathname.slice(1);if(!allowed.has(name)){res.writeHead(404).end();return;}res.writeHead(200,{'Content-Type':name.endsWith('.html')?'text/html':name.endsWith('.css')?'text/css':name.endsWith('.svg')?'image/svg+xml':'text/javascript','Cache-Control':'no-store'});res.end(await readFile(new URL('../src/'+name,import.meta.url)));}catch{res.writeHead(500).end('Preview unavailable');}}).listen(4173,'127.0.0.1',()=>console.log('Paasaa preview: http://127.0.0.1:4173 — synthetic local account only'));

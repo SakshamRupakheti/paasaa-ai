@@ -1,5 +1,6 @@
 import { CheckInStore, newDraft, localDate, toggleChoice, EMOTIONS, SYMPTOMS, CONTEXTS, BEHAVIORS, AREAS } from './checkin-model.js';
 import { mountVoice } from './voice.js';
+import {checkinQuestions,validateCheckinAnswer} from './chat-checkin.js';
 const el = (tag, text, cls) => { const n = document.createElement(tag); if (text) n.textContent = text; if (cls) n.className = cls; return n; };
 const button = (text, action, cls) => { const b = el('button', text, cls); b.type = 'button'; b.addEventListener('click', action); return b; };
 const titles = ['How anxious do you feel right now?', 'What are you feeling right now?', 'Are you noticing anything in your body?', 'What was happening around the time you noticed the anxiety?', 'What was going through your mind?', 'What did you do when you felt anxious?', 'How much did anxiety get in the way today?'];
@@ -57,10 +58,10 @@ export function createCheckIn(showScreen) {
   function textInput(root, field, labelText, placeholder) {
     const label = el('label',labelText); const input = el('textarea'); input.rows = 4; input.maxLength = 6000; input.placeholder = placeholder || ''; input.value = store.draft[field]; input.addEventListener('input',()=>{store.draft[field]=input.value;save();}); label.append(input); root.append(label);
     const voice = el('div',null,'voice'); root.append(voice);
-    cleanupVoice = mountVoice(voice, approved => {
+    cleanupVoice = mountVoice(voice, (approved, metadata) => {
       store.draft[field] = approved; input.value = approved;
       store.draft.voice.used = true; store.draft.voice.patientApprovedVersion = approved;
-      store.draft.voice.sources.push({field,transcription:null,patientApprovedVersion:approved,method:'manual-review',timestamp:new Date().toISOString()}); save();
+      store.draft.voice.sources.push({field,...metadata,patientApprovedVersion:approved,method:'speech-to-text-reviewed',timestamp:new Date().toISOString()}); save();
     });
   }
   function renderStep() {
@@ -88,7 +89,13 @@ export function createCheckIn(showScreen) {
   }
   document.addEventListener('visibilitychange',()=>{if(document.hidden)leave();else if(!panel.hidden&&store.draft)started=performance.now();});
   window.addEventListener('pagehide',leave);
-  return {hasDraft:()=>Boolean(store.draft),home:renderHome,clear(){leave();store.clear();renderHome();},leave};
+  return {hasDraft:()=>Boolean(store.draft),home:renderHome,clear(){leave();store.clear();renderHome();},leave,
+    chatRead:()=>({draft:store.draft,mode:store.mode,error:store.error,blocked:store.blocked}),
+    chatSaveDraft(field,value,cursor){if(store.draft){store.draft.chatDraft={field,value};store.draft.chatCursor=cursor;save();}},
+    chatStart(mode){leave();if(mode==='device'&&store.blocked)throw Error(store.error);store.mode=mode;store.draft ||= newDraft();save();return store.draft;},
+    chatAnswer(field,value){const q=checkinQuestions.find(q=>q.field===field);if(!store.draft||!q||!validateCheckinAnswer(q,value))throw Error('Check this answer before saving.');store.draft[field]=value;store.draft.chatDraft=null;store.draft.chatCursor=checkinQuestions.indexOf(q)+1;save();},
+    chatComplete(){const record=store.complete();renderHome(true);return record;},
+  };
 }
 
 

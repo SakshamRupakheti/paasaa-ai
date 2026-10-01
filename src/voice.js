@@ -1,34 +1,14 @@
-// No network transport, speech service, or AI is connected in this local-first preview.
-// A future adapter must return a reviewable proposal, never mutate the check-in.
-export function mountVoice(root, onApprove) {
-  let recorder, stream, timer, audioUrl, disposed=false, pending=false;
-  const make=(tag,text)=>{const n=document.createElement(tag);n.textContent=text||'';return n;};
-  const record=make('button','Record a voice note');record.type='button';
-  const status=make('p','Audio stays in memory on this tab and is discarded when you leave this question.');status.className='subtle';status.setAttribute('role','status');
-  const review=make('div');review.hidden=true;
-  const audio=make('audio');audio.controls=true;
-  const label=make('label','Write what you said, then review it');const transcript=make('textarea');transcript.rows=3;transcript.maxLength=6000;label.append(transcript);
-  const confirm=make('button','Use reviewed text');confirm.type='button';confirm.disabled=true;
-  const note=make('p','Automatic transcription and AI organizing are not connected yet. Nothing is extracted or added without your review.');note.className='subtle';
-  review.append(audio,note,label,confirm);root.append(record,status,review);
-  function release(){clearInterval(timer);stream?.getTracks().forEach(t=>t.stop());}
-  record.addEventListener('click',async()=>{
-    if(recorder?.state==='recording'){recorder.stop();release();return;}
-    if(pending)return;
-    if(!navigator.mediaDevices?.getUserMedia||!globalThis.MediaRecorder){status.textContent='Recording is unavailable in this browser. You can type your response above.';return;}
-    pending=true;record.disabled=true;status.textContent='Waiting for microphone permission…';
-    try{
-      stream=await navigator.mediaDevices.getUserMedia({audio:true});if(disposed){release();return;}
-      recorder=new MediaRecorder(stream);const chunks=[];const start=performance.now();
-      recorder.addEventListener('dataavailable',e=>{if(e.data.size)chunks.push(e.data);});
-      recorder.addEventListener('stop',()=>{release();if(disposed)return;if(audioUrl)URL.revokeObjectURL(audioUrl);audioUrl=URL.createObjectURL(new Blob(chunks,{type:recorder.mimeType}));audio.src=audioUrl;review.hidden=false;record.textContent='Record again';status.textContent='Recording stopped. Listen back and review your words.';});
-      recorder.addEventListener('error',()=>{release();status.textContent='Recording failed. You can type your response above.';record.textContent='Record a voice note';});
-      recorder.start();record.textContent='Stop recording';status.textContent='Recording · 0:00';
-      timer=setInterval(()=>{const seconds=Math.floor((performance.now()-start)/1000);status.textContent=`Recording · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')} · microphone active`;if(seconds>=120&&recorder.state==='recording'){recorder.stop();release();}},500);
-    }catch{release();if(!disposed)status.textContent='Microphone access was not available. You can type your response above.';}
-    finally{pending=false;record.disabled=false;}
-  });
-  transcript.addEventListener('input',()=>{confirm.disabled=!transcript.value.trim();});
-  confirm.addEventListener('click',()=>{onApprove(transcript.value);status.textContent='Your reviewed words have been added. You can edit them above.';});
-  return()=>{disposed=true;if(recorder?.state==='recording')recorder.stop();release();audio.pause();audio.removeAttribute('src');if(audioUrl)URL.revokeObjectURL(audioUrl);};
+// Audio is sent only after an explicit disclosure and stop; no key belongs in this module.
+export function mountVoice(root,onApprove,{target=null,available=null}={}){
+ let recorder,stream,clock,disposed=false,controller,raw='',pending=false;const make=(tag,text)=>{const n=document.createElement(tag);n.textContent=text||'';return n;};
+ const record=make('button','Speak your response');record.type='button';const status=make('p','Speech-to-text sends audio securely through Paasaa to Groq. Review and approve the text before it is used. Audio is not stored by Paasaa.');status.className='subtle';status.setAttribute('role','status');
+ const consentLabel=make('label','I agree to send this recording for transcription');const consent=make('input');consent.type='checkbox';consentLabel.prepend(consent);
+ const wave=make('div','▂ ▅ ▃ ▆ ▃ ▅ ▂');wave.className='voice-wave';wave.setAttribute('aria-hidden','true');wave.hidden=true;
+ const review=make('div');review.hidden=true;const label=make('label','Review and edit your transcript');const transcript=make('textarea');transcript.rows=3;transcript.maxLength=6000;label.append(transcript);const confirm=make('button','Approve and use this text');confirm.type='button';const discard=make('button','Discard transcript');discard.type='button';review.append(label,confirm,discard);root.append(consentLabel,record,wave,status,review);
+ const release=()=>{clearInterval(clock);stream?.getTracks().forEach(t=>t.stop());wave.hidden=true;};
+ async function capability(){try{const r=await fetch('/api/status');const d=await r.json();available=r.ok&&d.ai;}catch{available=false;}if(!disposed&&!available){record.disabled=true;status.textContent='Speech-to-text is not connected yet. You can type your response.';}}
+ if(available===null)capability();else if(!available){record.disabled=true;status.textContent='Speech-to-text is not connected yet. You can type your response.';}
+ record.onclick=async()=>{if(recorder?.state==='recording'){recorder.stop();release();return;}if(!consent.checked){status.textContent='Please approve sending audio before recording.';return;}if(pending)return;if(!navigator.mediaDevices?.getUserMedia||!globalThis.MediaRecorder){status.textContent='Microphone recording is unavailable. Please type instead.';return;}pending=true;record.disabled=true;try{stream=await navigator.mediaDevices.getUserMedia({audio:true});if(disposed){release();return;}const chunks=[];recorder=new MediaRecorder(stream);recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};recorder.onstop=async()=>{release();if(disposed)return;record.disabled=true;status.textContent='Transcribing… Your previous answer is unchanged.';controller=new AbortController();try{const form=new FormData();form.set('audio',new Blob(chunks,{type:recorder.mimeType}),'voice.webm');form.set('consent','true');const r=await fetch('/api/transcribe',{method:'POST',body:form,signal:controller.signal});const data=await r.json();if(!r.ok)throw Error(data.error||'Transcription failed.');if(disposed)return;raw=data.rawTranscript;transcript.value=raw;review.hidden=false;status.textContent='Review these words, edit anything, then approve. They have not been added to your record.';transcript.focus();}catch(e){if(!disposed)status.textContent=e.message||'Transcription failed. Type your answer or try again.';}finally{if(!disposed){record.disabled=false;record.textContent='Record again';}}};recorder.onerror=()=>{release();status.textContent='Recording failed. Please type or try again.';record.textContent='Speak your response';};recorder.start();record.textContent='Stop and transcribe';wave.hidden=false;const start=performance.now();clock=setInterval(()=>{const seconds=Math.floor((performance.now()-start)/1000);status.textContent=`Recording · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;if(seconds>=120&&recorder.state==='recording')recorder.stop();},500);}catch{release();status.textContent='Microphone permission was not available. Please type your response.';}finally{pending=false;if(!disposed)record.disabled=false;}};
+ confirm.onclick=()=>{if(!transcript.value.trim())return;const metadata={rawTranscript:raw,cleanedTranscript:null,patientApprovedText:transcript.value};if(target)target.value=transcript.value;onApprove(transcript.value,metadata);review.hidden=true;status.textContent='Approved text added. You can still edit it.';};discard.onclick=()=>{raw='';transcript.value='';review.hidden=true;status.textContent='Transcript discarded. Your earlier answer is unchanged.';};
+ return()=>{disposed=true;controller?.abort();if(recorder?.state==='recording')recorder.stop();release();raw='';};
 }

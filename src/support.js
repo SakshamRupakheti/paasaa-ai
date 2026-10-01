@@ -127,7 +127,7 @@ export function createSupport() {
  document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
  matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',e=>{reduced=e.matches;if(timer){pause();renderGuide();pause();}});
  window.addEventListener('pagehide',pause);
- return {entry,pause,leave:pause,clear(){collectTime();session=newSupportSession();try{localStorage.removeItem(SUPPORT_KEY);}catch{return 'Could not remove support summaries. Clear this site’s data in browser settings.';}}};
+ return {entry,safety,pause,leave:pause,clear(){collectTime();session=newSupportSession();try{localStorage.removeItem(SUPPORT_KEY);}catch{return 'Could not remove support summaries. Clear this site’s data in browser settings.';}}};
 }
 
 

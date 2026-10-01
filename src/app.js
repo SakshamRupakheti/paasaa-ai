@@ -1,3 +1,5 @@
+import { createWorry } from './worry.js';
+import { createChat } from './chat.js';
 import { createSupport } from './support.js';
 import { screenForHash, hashForScreen } from './navigation.js';
 import { createCheckIn } from './checkin.js';
@@ -99,8 +101,10 @@ function showScreen(id, fromHistory = false) {
   if (currentScreen === 'reflection-screen' && id !== currentScreen) checkin.leave();
   if (id === 'transition-screen' && currentScreen === 'breathing-screen') checkin.home();
   if (id !== 'breathing-screen') pauseBreathing();
-  for (const screen of ['breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen', 'support-screen']) $(screen).hidden = screen !== id;
+  for (const screen of ['breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen', 'support-screen', 'worry-screen', 'chat-screen']) $(screen).hidden = screen !== id;
   if (currentScreen === 'support-screen' && id !== currentScreen) support.leave();
+  if (currentScreen === 'worry-screen' && id !== currentScreen) worry.leave();
+  if (currentScreen === 'chat-screen' && id !== currentScreen) chat.leave();
   currentScreen = id;
   const hash = hashForScreen(id);
   if (!fromHistory && location.hash !== hash) history.pushState(null, '', hash);
@@ -142,12 +146,14 @@ $('cancel-clear').addEventListener('click', () => $('clear-dialog').close());
 resetBreathing();
 
 const support = createSupport();
+const worry = createWorry(()=>{ support.safety(); showScreen('support-screen'); });
 const checkin = createCheckIn(showScreen);
+const chat = createChat(checkin,()=>{support.safety();showScreen('support-screen');});
 checkin.home();
 document.getElementById('review-again').addEventListener('click', () => { checkin.home(); showScreen('transition-screen'); });
 
 document.getElementById('confirm-clear').addEventListener('click', () => {
-  const supportError = support.clear(); checkin.clear(); document.getElementById('clear-dialog').close(); showScreen('transition-screen');
+  const supportError = support.clear(); checkin.clear(); chat.clear(); document.getElementById('clear-dialog').close(); showScreen('transition-screen');
   if (supportError) { const note = document.createElement('p'); note.textContent = supportError; document.getElementById('checkin-home').append(note); }
 });
 
@@ -155,13 +161,15 @@ function openCheckIn() { checkin.home(); showScreen('transition-screen'); }
 $('open-checkin').addEventListener('click', openCheckIn);
 for (const link of document.querySelectorAll('.main-nav a')) link.addEventListener('click', event => {
   event.preventDefault();
-  if (link.hash === '#check-in') openCheckIn(); else showScreen('breathing-screen');
+  if (link.hash === '#chat') {showScreen('chat-screen');chat.home();} else if (link.hash === '#worry') { showScreen('worry-screen'); worry.home(); } else if (link.hash === '#check-in') openCheckIn(); else showScreen('breathing-screen');
 });
 function followLocation() {
   if (location.hash === '#main') return;
   const screen = screenForHash(location.hash);
   if (screen === 'transition-screen') checkin.home();
   if (screen === 'support-screen') support.entry();
+  if (screen === 'worry-screen') worry.home();
+  if (screen === 'chat-screen') chat.home();
   showScreen(screen, true);
 }
 window.addEventListener('popstate', followLocation);

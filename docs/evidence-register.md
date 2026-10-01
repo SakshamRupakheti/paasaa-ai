@@ -61,3 +61,9 @@ Support resources displayed with regional labels: https://988lifeline.org/ ; htt
 Fixed scripts for targeted/full/discreet PMR, gentle breathing, grounding, performance/social support and non-reassurance thought-loop support are documented in `docs/immediate-support.md`. All require clinician review; no clinician reviewer is assigned. Evidence is adult-focused and does not validate this app's youth use, exact timing, two-round 16-group adaptation or outcome claims. Country-aware crisis links provide escalation, not risk assessment or contact on the user's behalf.
 
 Evidence metadata and source links are kept in `src/support-content.js`; clinical review status remains `needs clinician review`. No new sleep claims, diagnoses, independent ERP exposures or AI-generated therapeutic advice are introduced.
+
+## Conversational guide — October 1, 2026
+- Educational basis: [NHS thought records](https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/self-help-cbt-techniques/thought-record/) and [CCI worry and rumination resources](https://www.cci.health.wa.gov.au/Resources/Looking-After-Yourself/Worry-and-Rumination).
+- Use: explain thought records, distinguish practical action from uncertain predictions, and link to the existing worksheet. These are educational resources, not studies of this bot.
+- Population and outcome limits: no Paasaa participant study, teen-specific validation, treatment effect size or validated crisis detection is claimed. Clinical review pending. The chat does not diagnose or forecast outcomes.
+- Implementation and actual verification: see `chat-guide.md`.
