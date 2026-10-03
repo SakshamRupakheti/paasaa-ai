@@ -1,14 +1,15 @@
+import {engineTurn} from './engine-api.js';
 import {newConversation,advanceConversation,conversationView,worryFromConversation,fields} from '../src/conversation-model.js';
 import {interpretConversation} from './conversation-ai.js';
 import {safetySignal} from './safety.js';
 const fail=(message,status=400)=>{throw Object.assign(Error(message),{status});};
-const response=(session,notice='')=>({session,view:conversationView(session),notice});
+const response=(session,notice='')=>{const {turnDecisions,...visible}=session;return {session:visible,view:conversationView(session),notice};};
 const globalActions=['pause','another','restart','reflect','end','back'];
 export async function conversationApi(request,path,store,env){
   if(path==='/api/conversations'){
     if(request.method==='GET'){const records=await store.list('conversation');return {records:records.map(r=>({id:r.id,state:r.state,title:r.answers.worry||r.openingMessage||'A moment for yourself',status:r.status,updatedAt:r.updatedAt,outcomeDueAt:r.outcomeDueAt,outcome:r.outcome}))};}
     if(request.method!=='POST')fail('Method not allowed',405);
-    const body=await readBody(request);return response(await store.put(newConversation(body.aiConsent===true),'conversation',0));
+    const body=await readBody(request);return response(await store.put(newConversation(body.aiConsent===true,body.companion===true),'conversation',0));
   }
   const match=path.match(/^\/api\/conversations\/([\w-]+)(?:\/(draft|turn|consent|edit))?$/);if(!match)fail('Not found',404);
   let session=await store.get(match[1]);if(!session||session.kind!=='conversation')fail('Conversation not found',404);
@@ -16,6 +17,8 @@ export async function conversationApi(request,path,store,env){
   if(request.method!=='POST')fail('Method not allowed',405);
   const body=await readBody(request);if(body.revision!==session.revision)fail('This conversation changed in another tab. Reload it before continuing; your unsent text is still here.',409);
   let notice='';const op=match[2];
+  if(op==='turn'&&(session.companion||body.action==='chat')){const result=await engineTurn(session,body,env,store);return response(result.session,result.notice);}
+  if(op==='draft'&&session.companion){session.draftText='';return response(await store.put(session,'conversation',body.revision));}
   if(op==='draft'){if(typeof body.text!=='string'||body.text.length>6000)fail('Invalid draft');session.draftText=body.text;}
   else if(op==='consent'){session.aiConsent=body.enabled===true;}
   else if(op==='edit'){
