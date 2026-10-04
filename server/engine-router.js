@@ -19,13 +19,15 @@ export function routePlan(candidate,safety,memory,message,{safetyFailed=false}={
   if(safety.needsSafetyQuestion){clear();p.responseMode='SAFETY_CHECK';p.shouldAskQuestion=!memory.safetyPending;return p;}
   if(/^(stop(?: the exercise)?|pause|end|enough)[.! ]*$/.test(t)){clear();p.responseMode='LISTEN_ONLY';p.shouldAskQuestion=false;return p;}
   if(!memory.wantsAdvice||p.userNeed==='TALK_WITHOUT_ADVICE'){clear();p.responseMode='LISTEN_ONLY';p.userNeed='TALK_WITHOUT_ADVICE';}
+  if(/don.t.*breath|no breath|stop.*breath|breath.{0,30}(?:worse|dizzy|uncomfortable|breathless)/.test(t)){clear();p.responseMode='LISTEN_ONLY';p.shouldAskQuestion=false;}
   if(!memory.questionsAllowed)p.shouldAskQuestion=false;
   if(/(?:i'm|i am) (?:okay|ok|fine) now|that's enough/.test(t)){clear();p.responseMode='CONNECT';p.shouldAskQuestion=false;}
   if(p.primaryState==='POSSIBLE_OCD_REASSURANCE_LOOP'||memory.reassuranceUrge&&/promise|100%|sure|guarantee/.test(t)){clear();p.responseMode='OCD_NON_REASSURANCE';}
   if(safetyFailed){clear();p.responseMode='CONNECT';p.shouldAskQuestion=false;}
   if(memory.interventionHistory.some(x=>['SAME','WORSE'].includes(x.outcome))&&!/(?:please|want to|let.s|can we).*(?:try|exercise|breath|relax)/.test(t)){const wasIntervention=!!p.interventionId||/^GUIDE_/.test(p.responseMode);clear();if(wasIntervention||/still bad|same|worse|nothing.*working/.test(t)){if(memory.event){p.responseMode='PERFORMANCE_SUPPORT';p.userNeed='CONTINUE_FUNCTIONING';}else p.responseMode='LISTEN_ONLY';}}
+  if(p.primaryState==='INTRUSIVE_THOUGHT'&&!/(?:please|want to|can we|help me).*(?:try|exercise|ground)/.test(t)){clear();p.responseMode='INTRUSIVE_THOUGHT_SUPPORT';}
   let item=INTERVENTIONS[p.interventionId];
-  if(!p.shouldInterveneNow||!item){clear();item=null;}
+  if(!p.shouldInterveneNow||!item||!item.allowedStates.includes(p.primaryState)){clear();item=null;}
   if(item){
     const explicitBreathing=/(?:please|want to|can we|help me|guide me).{0,18}breath/.test(t)&&!/don't|do not|no breath/.test(t);
     const prohibited=memory.interventionsRejected.includes(item.id)||memory.interventionsTried.includes(item.id);

@@ -7,7 +7,7 @@ const response=(session,notice='')=>{const {turnDecisions,...visible}=session;re
 const globalActions=['pause','another','restart','reflect','end','back'];
 export async function conversationApi(request,path,store,env){
   if(path==='/api/conversations'){
-    if(request.method==='GET'){const records=await store.list('conversation');return {records:records.map(r=>({id:r.id,state:r.state,title:r.answers.worry||r.openingMessage||'A moment for yourself',status:r.status,updatedAt:r.updatedAt,outcomeDueAt:r.outcomeDueAt,outcome:r.outcome}))};}
+    if(request.method==='GET'){const records=await store.list('conversation');return {records:records.map(r=>({id:r.id,state:r.state,companion:!!r.companion,title:r.answers.worry||r.openingMessage||'A moment for yourself',status:r.status,updatedAt:r.updatedAt,outcomeDueAt:r.outcomeDueAt,outcome:r.outcome}))};}
     if(request.method!=='POST')fail('Method not allowed',405);
     const body=await readBody(request);return response(await store.put(newConversation(body.aiConsent===true,body.companion===true),'conversation',0));
   }

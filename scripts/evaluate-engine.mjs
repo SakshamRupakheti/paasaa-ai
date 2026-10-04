@@ -18,12 +18,13 @@ const scenarios=[
  ['ordinary conversation',["What is the capital of Nepal?"]],
 ];
 const report=[];
-for(const [name,messages]of scenarios){
+const selected=process.argv.find(x=>x.startsWith('--only='))?.slice(7);
+for(const [name,messages]of scenarios.filter(([name])=>!selected||name===selected)){
   const session=newConversation(live,true);session.engineMemory=newMemory();const turns=[];
   for(const message of messages){if(live)await new Promise(resolve=>setTimeout(resolve,22000));const result=await runConversationEngine(live?process.env:{},session,message);turns.push({user:message,assistant:result.message,action:result.action,decision:result.telemetry,reviewScores:null});session.engineMemory=result.memory;session.chatAction=result.action;session.lastInterventionId=result.action?.interventionId;session.transcript.push({role:'user',text:result.storedUserText},{role:'assistant',text:result.message});}
   report.push({scenario:name,turns});console.log('Completed synthetic scenario: '+name);
 }
-await mkdir('evals/results',{recursive:true});const name=live?'live':'offline';
+await mkdir('evals/results',{recursive:true});const name=(live?'live':'offline')+(selected?'-'+selected.replaceAll(' ','-'):'');
 await writeFile(`evals/results/${name}.json`,JSON.stringify({mode:name,syntheticOnly:true,generatedAt:new Date().toISOString(),report},null,2));
 await writeFile(`evals/results/${name}.md`,'# Actual '+name+' pipeline transcripts\n\nSynthetic scenarios only. Generated responses below are unedited. Review scores remain unassigned.\n\n'+report.map(r=>'## '+r.scenario+'\n\n'+r.turns.map(t=>`User: ${t.user}\n\nPaasaa: ${t.assistant}\n\nSource: ${t.decision.responseSource}; mode: ${t.decision.planner.responseMode}; action: ${t.action?.interventionId||'none'}; latency: ${t.decision.latency.totalResponseLatency} ms.\n`).join('\n')).join('\n'));
 console.log('Saved synthetic evaluation report: evals/results/'+name+'.md');

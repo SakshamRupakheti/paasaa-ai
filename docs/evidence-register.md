@@ -73,3 +73,7 @@ Evidence metadata and source links are kept in `src/support-content.js`; clinica
 - [NHS breathing guidance](https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/) supports comfortable, unforced breathing. The conversation offers an optional unpaced observation and alternatives; it does not claim to reproduce that full protocol.
 - [CCI worry resources](https://www.cci.health.wa.gov.au/Resources/Looking-After-Yourself/Worry-and-Rumination) describe problem-solving, helpful thinking and uncertainty. No generic research statistic is presented as an individual's likelihood.
 - Teen-specific suitability, safety-routing sensitivity, long-term effects and the combined AI workflow remain unvalidated. Clinical review pending. See `chat-guide.md` for actual simulated and browser checks.
+
+
+## Conversational intelligence engine V1
+The separate safety classifier, planner, policy router, and response layer are engineering controls, not clinical validation. Existing intervention scripts and evidence notes are reused; clinician review remains pending. Groq model documentation supports API compatibility only. Initial synthetic live evaluations found invented instructions and safety false positives; retained reports document those failures and subsequent guard changes. Intended teen use has not been established by adult PMR evidence. Do not use these evaluation pass counts as treatment efficacy or diagnostic accuracy claims.

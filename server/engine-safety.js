@@ -22,6 +22,7 @@ export async function classifySafety(provider,message,recent,memory={}) {
     const result=validate(safetySchema,await provider.classifySafety(SAFETY_PROMPT,{message,recent:recent.slice(-4),unresolvedSafety:memory.safetyPending||false},safetySchema));
     const onlyRefusal=/^(?:don.t make me breathe|just talk to me,? no exercises|no exercises|no breathing|stop asking me questions)[.! ]*$/i.test(message);
     if(onlyRefusal&&!memory.safetyPending&&!recent.some(t=>localSafety(t.text||'').riskLevel!=='none'))return {safety:baseline,source:'local+model'};
+    if(baseline.riskLevel==='monitor'&&result.riskLevel==='clarify'&&!result.intentDetected&&!result.planDetected&&!result.immediacyDetected&&!result.meansMentioned&&!result.cannotStaySafe)return {safety:baseline,source:'local+model'};
     if(result.cannotStaySafe||result.needsEmergencyPath||result.riskLevel==='urgent'){result.riskLevel='urgent';result.needsEmergencyPath=true;}
     if(result.needsSafetyQuestion)result.riskLevel='clarify';
     // Local ambiguity cannot be silently dismissed by the model.

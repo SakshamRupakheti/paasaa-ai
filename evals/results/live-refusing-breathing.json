@@ -1,0 +1,130 @@
+{
+  "mode": "live-refusing-breathing",
+  "syntheticOnly": true,
+  "generatedAt": "2026-10-04T00:29:21.379Z",
+  "report": [
+    {
+      "scenario": "refusing breathing",
+      "turns": [
+        {
+          "user": "don't make me breathe",
+          "assistant": "I hear you—it sounds overwhelming right now. You can share whatever feels comfortable in your own way.",
+          "action": null,
+          "decision": {
+            "turnId": "c377a5c3-14b7-4a1a-a6f0-e5b008bb6c99",
+            "timestamp": "2026-10-04T00:28:55.789Z",
+            "planner": {
+              "primaryState": "GENERAL_DISTRESS",
+              "arousal": "unknown",
+              "userNeed": "REGULATE_BODY",
+              "responseMode": "LISTEN_ONLY",
+              "interventionId": null,
+              "confidence": 0.8
+            },
+            "safety": {
+              "riskLevel": "none",
+              "category": "none"
+            },
+            "plannerSuccess": true,
+            "responseSource": "model",
+            "promptVersions": {
+              "conversation": "1.0.0",
+              "planner": "1.0.0",
+              "safety": "1.0.0"
+            },
+            "metrics": [
+              {
+                "role": "safety",
+                "model": "openai/gpt-oss-safeguard-20b",
+                "latencyMs": 1177,
+                "status": "ok",
+                "tokens": 1253
+              },
+              {
+                "role": "planner",
+                "model": "openai/gpt-oss-20b",
+                "latencyMs": 1852,
+                "status": "ok",
+                "tokens": 2849
+              },
+              {
+                "role": "conversation",
+                "model": "openai/gpt-oss-120b",
+                "latencyMs": 560,
+                "status": "ok",
+                "tokens": 1034
+              }
+            ],
+            "latency": {
+              "safetyLatency": 1180,
+              "plannerLatency": 1853,
+              "responseFirstTokenLatency": null,
+              "responseCompleteLatency": 561,
+              "totalResponseLatency": 3600
+            }
+          },
+          "reviewScores": null
+        },
+        {
+          "user": "just talk to me, no exercises",
+          "assistant": "I’m here for you—feel free to share whatever is on your mind right now.",
+          "action": null,
+          "decision": {
+            "turnId": "4daeb373-2629-4fe4-87c0-5aaa3383be7c",
+            "timestamp": "2026-10-04T00:29:21.377Z",
+            "planner": {
+              "primaryState": "GENERAL_CONVERSATION",
+              "arousal": "unknown",
+              "userNeed": "TALK_WITHOUT_ADVICE",
+              "responseMode": "LISTEN_ONLY",
+              "interventionId": null,
+              "confidence": 1
+            },
+            "safety": {
+              "riskLevel": "none",
+              "category": "none"
+            },
+            "plannerSuccess": true,
+            "responseSource": "model",
+            "promptVersions": {
+              "conversation": "1.0.0",
+              "planner": "1.0.0",
+              "safety": "1.0.0"
+            },
+            "metrics": [
+              {
+                "role": "safety",
+                "model": "openai/gpt-oss-safeguard-20b",
+                "latencyMs": 2105,
+                "status": "ok",
+                "tokens": 2081
+              },
+              {
+                "role": "planner",
+                "model": "openai/gpt-oss-20b",
+                "latencyMs": 971,
+                "status": "ok",
+                "tokens": 1932
+              },
+              {
+                "role": "conversation",
+                "model": "openai/gpt-oss-120b",
+                "latencyMs": 507,
+                "status": "ok",
+                "tokens": 1020
+              }
+            ],
+            "latency": {
+              "safetyLatency": 2106,
+              "plannerLatency": 971,
+              "responseFirstTokenLatency": null,
+              "responseCompleteLatency": 507,
+              "totalResponseLatency": 3586
+            }
+          },
+          "reviewScores": null
+        }
+      ]
+    }
+  ]
+}

@@ -39,3 +39,7 @@ Vanilla HTML/CSS and browser ES modules preserve the original opening screen. `a
 `server/api.js` owns authenticated record and chat endpoints, `server/chat.js` bounds AI advice/actions, and `src/worry-model.js` controls worksheet transitions independently of AI. The build emits a Worker and D1 migrations; `docs/chat-guide.md` describes the current backend additions. Earlier milestone documents describe their scope at the time.
 
 The GitHub repository stays private. Development uses a feature branch and reviewable PR. `.openai/hosting.json` links the existing Sites deployment; generated `dist/` is ignored. No real users' mental health information or credentials belong in Git.
+
+
+### Conversational intelligence engine
+New Talk to Paasaa conversations use separate safety, planning, deterministic routing, and response layers. Existing guided worksheets remain available. Models are server-configurable through `.env.example`; Groq keys remain server-only. See [implementation report](docs/conversational-engine.md), [behavioral evaluations](evals/README.md), and actual synthetic transcripts under `evals/results/`. AI requires consent; free-tier rate limits use bounded fallback behavior. Clinical review is pending.
