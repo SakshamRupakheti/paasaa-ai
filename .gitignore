@@ -1,5 +1,7 @@
 node_modules/
 dist/
+dist-vercel/
+.vercel/
 coverage/
 .env
 .env.*
