@@ -10,13 +10,13 @@ export function updateMemory(previous,message,activeId=null){
   const minutes=t.match(/\bin (\d{1,3}) (?:minutes?|mins?)\b/);if(minutes)m.eventStartsInMinutes=Number(minutes[1]);
   if(/no (?:more )?exercises|no advice|don't want (?:advice|help)|just (?:talk|listen)|stop giving.*exercises|only wanted to tell|just wanted to tell/.test(t))m.wantsAdvice=false;
   if(/(?:want|please|let's|help me|can we).{0,20}(?:try|exercise|breath|relax)/.test(t)&&!/don't|do not|no /.test(t))m.wantsAdvice=true;
-  if(/stop asking|no (?:more )?questions/.test(t))m.questionsAllowed=false;
+  if(/stop asking|no (?:more )?questions|don't want to answer|cannot answer|can't answer/.test(t))m.questionsAllowed=false;
   if(/you can ask|ask me a question/.test(t))m.questionsAllowed=true;
   const rejectBreathing=/don't.*breath|no breath|stop.*breath|breath.{0,30}(?:worse|dizzy|uncomfortable|breathless)/.test(t);
   if(rejectBreathing){m.breathingRejected=true;if(/worse|dizzy|uncomfortable|breathless/.test(t))m.breathingMadeWorse=true;m.interventionsRejected.push('paced_breathing');}
   if(/intrusive|unwanted|images of hurting|thought.*don't want/.test(t))m.intrusiveThoughtPresent=true;
   if(/promise|100%|absolutely sure|are you sure|guarantee/.test(t))m.reassuranceUrge=true;
-  if(activeId&&/^(?:no|can't|cannot|stop|same|worse)|not helping|nothing|did nothing|still bad|made.*worse/.test(t)){
+  if(activeId&&/^(?:no|can't|cannot|stop|same|worse)|not helping|nothing|did nothing|still bad|still stuck|didn.t work|isn.t helping|this is annoying|made.*worse/.test(t)){
     const outcome=/worse|dizzy|pain/.test(t)?'WORSE':/same|nothing|still bad/.test(t)?'SAME':'UNKNOWN';
     m.interventionHistory.push({id:activeId,outcome});m.interventionsRejected.push(activeId);m.arousalTrend=outcome==='WORSE'?'worse':'unchanged';
   }else if(activeId&&/better|easier|helped/.test(t)){m.interventionHistory.push({id:activeId,outcome:'BETTER'});m.arousalTrend='easier';}

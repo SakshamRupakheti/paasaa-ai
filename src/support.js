@@ -1,3 +1,4 @@
+import {resourcesFor} from './safety-resources.js';
 import {REASONS,REGIONS,DISCREET,URGES,SOCIAL_ACTIONS,muscleGroups,targetedGroups,discreetGroups} from './support-content.js';
 import {GuidedTimer,pmrPlan,breathingPlan,groundingPlan,thoughtDestination,newSupportSession,saveSupportSummary,SUPPORT_KEY} from './support-model.js';
 import {node,action,choices,evidence,rating,bodyHighlight,CalmAudio} from './support-ui.js';
@@ -118,7 +119,7 @@ export function createSupport() {
   root.append(node('p','If there is immediate physical danger, a medical emergency, new/severe chest pain, fainting or severe breathing difficulty, contact your local emergency service now.','support-caution'));
   const label=node('label','Choose your country or region');const select=node('select');for(const [value,text]of [['','Choose a region'],['US','United States'],['UK','United Kingdom'],['IE','Ireland'],['other','Other country']]){const o=node('option',text);o.value=value;select.append(o);}label.append(select);root.append(label);
   const resources=node('div',null,'crisis-resources');const link=(text,href)=>{const a=node('a',text,'resource-action');a.href=href;if(href.startsWith('https')){a.target='_blank';a.rel='noopener noreferrer';}return a;};
-  function draw(){resources.replaceChildren();if(select.value==='US')resources.append(link('Call 988','tel:988'),link('Text 988','sms:988'),link('Immediate danger or medical emergency: call 911','tel:911'),link('988 Lifeline website','https://988lifeline.org/'));else if(['UK','IE'].includes(select.value))resources.append(link('Call Samaritans: 116 123','tel:116123'),link(select.value==='UK'?'Immediate danger: call 999':'Immediate danger: call 112','tel:'+(select.value==='UK'?'999':'112')),link('Samaritans website','https://www.samaritans.org/how-we-can-help/contact-samaritan/'));else resources.append(link('Find a verified helpline for your country','https://findahelpline.com/'));}
+  function draw(){resources.replaceChildren(...resourcesFor(select.value).map(([label,href])=>link(label,href)));}
   select.addEventListener('change',draw);draw();root.append(resources);
   root.append(action('Contact someone I trust',()=>{trusted.hidden=false;}));const trusted=node('div',"Call or message someone you trust and say: “I don't feel safe alone right now. Can you stay with me while I get support?” If you are a young person, contact a trusted adult nearby. Paasaa cannot send this message for you.",'privacy-note');trusted.hidden=true;root.append(trusted);
   root.append(node('p','Paasaa has not contacted anyone. This page is not monitored and cannot assess your risk. If safe to do so, move away from anything you might use to harm yourself or someone else and stay near another person.','subtle'));

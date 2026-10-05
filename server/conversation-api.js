@@ -2,6 +2,8 @@ import {engineTurn} from './engine-api.js';
 import {newConversation,advanceConversation,conversationView,worryFromConversation,fields} from '../src/conversation-model.js';
 import {interpretConversation} from './conversation-ai.js';
 import {safetySignal} from './safety.js';
+import {localSafety} from './engine-safety.js';
+import {INTERVENTIONS} from '../src/chat-interventions.js';
 const fail=(message,status=400)=>{throw Object.assign(Error(message),{status});};
 const response=(session,notice='')=>{const {turnDecisions,...visible}=session;return {session:visible,view:conversationView(session),notice};};
 const globalActions=['pause','another','restart','reflect','end','back'];
@@ -17,6 +19,25 @@ export async function conversationApi(request,path,store,env){
   if(request.method!=='POST')fail('Method not allowed',405);
   const body=await readBody(request);if(body.revision!==session.revision)fail('This conversation changed in another tab. Reload it before continuing; your unsent text is still here.',409);
   let notice='';const op=match[2];
+  // Explicit patient choice joins the existing state machine; the model cannot trigger this handoff.
+  if(op==='turn'&&session.companion&&['reflect','settle'].includes(body.action)){
+    if(session.safetyState==='needs-human-support'||session.chatSafety==='urgent'||session.chatSafety==='clarify'||session.engineMemory?.unresolvedUrgent||session.engineMemory?.safetyPending)fail('Open human support before continuing this exercise.');
+    if(['CHAT_PAUSED','CHAT_ENDED'].includes(session.state))fail('Resume this conversation before continuing.');
+    const memory=session.engineMemory||{};
+    session.companion=false;session.mode=body.action==='reflect'?'CBT_SUPPORT':'ACUTE_ANXIETY';
+    session.state='READINESS';session.aiMessage=null;session.chatAction=null;session.chatChoices=[];
+    if(memory.breathingRejected||memory.breathingMadeWorse)session.declined=[...new Set([...session.declined,'breathing'])];
+    const familyNames={breathing:['breathing'],pmr:['release'],grounding:['grounding','orientation']};
+    for(const id of memory.interventionsRejected||[])for(const name of familyNames[INTERVENTIONS[id]?.family]||[])session.declined=[...new Set([...session.declined,name])];
+    if(memory.physicalCaution)session.declined=[...new Set([...session.declined,'release'])];
+    if(memory.environment==='driving')session.declined=[...new Set([...session.declined,'release','breathing','grounding','orientation','attention'])];
+    // Leave existing confirmed answers intact and resume an interrupted worksheet.
+    if(session.cbtResume){Object.assign(session,session.cbtResume);session.cbtResume=null;if(body.action==='settle'){session.resumeCognitive={state:session.state,field:session.field,path:session.path};session.state='SETTLE';}}
+    else session=advanceConversation(session,{action:body.action},{records:[]});
+    session.transcript.push({role:'user',text:body.action==='reflect'?'Work through a worry':'Help me get unstuck',at:new Date().toISOString()},{role:'assistant',text:conversationView(session).message,at:new Date().toISOString()});
+    return response(await store.put(session,'conversation',body.revision));
+  }
+  if(op==='turn'&&body.action==='chat'&&!session.companion)session.cbtResume={state:session.state,field:session.field,path:session.path};
   if(op==='turn'&&(session.companion||body.action==='chat')){const result=await engineTurn(session,body,env,store);return response(result.session,result.notice);}
   if(op==='draft'&&session.companion){session.draftText='';return response(await store.put(session,'conversation',body.revision));}
   if(op==='draft'){if(typeof body.text!=='string'||body.text.length>6000)fail('Invalid draft');session.draftText=body.text;}
@@ -33,6 +54,8 @@ export async function conversationApi(request,path,store,env){
     if(body.voice){const v=body.voice;if(typeof v.rawTranscript!=='string'||v.rawTranscript.length>6000||v.cleanedTranscript!==null||v.patientApprovedText!==body.value)fail('Approve the transcript before sending');}
     const records=await store.list('worry');const before=session;let planned;
     try{planned=advanceConversation(session,body,{records});}catch(e){fail(e.message);}
+    const deterministicSafety=localSafety([body.value,body.prediction,...Object.values(body.details||{})].filter(x=>typeof x==='string').join(' '),session.engineMemory||{});
+    if(deterministicSafety.needsEmergencyPath){planned.state='SAFETY';planned.safetyState='needs-human-support';}
     const message=typeof body.value==='string'?body.value:'';let model;
     if(session.aiConsent&&message&&env.GROQ_API_KEY&&planned.state!=='SAFETY'&&!body.action){
       if(await store.limit()){try{model=await interpretConversation(env,session,message,planned);planned=advanceConversation(session,body,{records,model});}catch{notice='AI wording is unavailable for this turn. Your words are saved; the guided conversation still works.';}}

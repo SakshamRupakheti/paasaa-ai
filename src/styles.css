@@ -67,3 +67,6 @@ dialog h2 { font:400 28px/1.2 Georgia,serif; }
 
 
 .chat-exercise-figure{max-width:110px;margin:8px auto}.chat-exercise-figure svg{max-height:180px}
+
+/* Conversation-first landing and quiet motion. */
+.chat-welcome{padding:36px 0 16px}.chat-welcome h2{font:400 clamp(30px,5vw,44px)/1.2 Georgia,serif;letter-spacing:-.6px;margin:0 0 16px}.chat-welcome p{color:#536f88;line-height:1.7}.conversation-panel:has(.chat-welcome) .conversation-thread{min-height:0;max-height:20vh}.conversation-panel:has(.chat-welcome) .conversation-turn{display:none}.conversation-thinking{color:#526f81;font-size:14px;animation:paasaa-appear .25s ease-out}.conversation-message{animation:paasaa-appear .2s ease-out}@keyframes paasaa-appear{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){.conversation-thinking,.conversation-message{animation:none}}

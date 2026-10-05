@@ -1,3 +1,4 @@
+import {mountSafetyList} from './safety-resources.js';
 import { createWorry } from './worry.js';
 import { createChat } from './chat.js';
 import { createSupport } from './support.js';
@@ -185,3 +186,5 @@ $('support-open').addEventListener('click',()=>{support.entry();showScreen('supp
 
 
 
+
+mountSafetyList(document.querySelector('#help-dialog ul'));
