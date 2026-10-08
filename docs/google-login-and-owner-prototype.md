@@ -4,15 +4,17 @@ The Vercel frontend uses Supabase Auth and a same-origin API adapter. The server
 
 ## Google provider configuration
 
-Project created in Google Cloud: **Paasaa AI**, ID `airy-period-511004-p1`. No billing was enabled. Setup is currently paused at Google's separate API Services User Data Policy agreement; Google sign-in is not enabled yet.
+Project created in Google Cloud: **Paasaa AI**, ID `airy-period-511004-p1`. No billing was enabled. The user completed the branding agreement and authorized creation of the Web OAuth client. The client was created successfully. Google sign-in is not enabled yet: the owner must enter the new client secret directly in Supabase and save the prepared provider form.
 
-After that agreement, configure a Web application OAuth client:
+Configured Google client and saved Supabase URLs:
 
 - JavaScript origin: `https://paasaa-ai.vercel.app`
 - Google authorized redirect URI: `https://ulixwxljulespgslzahl.supabase.co/auth/v1/callback`
 - Supabase Site URL: `https://paasaa-ai.vercel.app`
 - Supabase redirect allowlist: `https://paasaa-ai.vercel.app/?auth=callback`
-- Scopes: `openid`, `email`, `profile` only.
+- Requested app scopes: `openid`, `email`, `profile` only.
+
+Client ID: `828628016344-d10lbjgedl0upotmter00umihs4t890l.apps.googleusercontent.com` (public identifier). The secret has not been saved in repository files or chat. Keep Google's creation dialog open until it has been transferred securely; Google says it cannot be viewed again after closing that dialog. The Supabase provider form has the client ID filled in, Google enabled as an unsaved change, and nonce/email checks preserved. This form still requires the owner's secret entry and Save action. Google remains in Testing mode pending sign-in verification and production audience setup.
 
 Store the Google client ID and secret privately in Supabase's Google provider configuration. Never put the secret in frontend code, Git, chat, or a public environment variable. Complete an actual Google sign-in before declaring it operational. The button checks provider availability and explains when setup is incomplete.
 
