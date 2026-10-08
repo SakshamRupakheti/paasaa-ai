@@ -1,10 +1,12 @@
+import {requireAccount} from './auth.js';
+import {apiFetch} from './api-client.js';
 import {newConversation,conversationView,fields} from './conversation-model.js';
 import {mountChatExercise} from './chat-exercise.js';
 import {mountVoice} from './voice.js';
 import {localChatContext} from './chat-context.js';
 const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
 const button=(text,fn,cls='')=>{const b=el('button',text,cls);b.type='button';b.onclick=fn;return b;};
-const api=async(path,body)=>{const r=await fetch('/api/'+path,{method:body===undefined?'GET':'POST',headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});let d;try{d=await r.json();}catch{throw Error('The connection is unavailable. Your words remain here.');}if(!r.ok)throw Error(d.error||'Could not save. Your words remain here.');return d;};
+const api=async(path,body)=>{const r=await apiFetch('/api/'+path,{method:body===undefined?'GET':'POST',headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});let d;try{d=await r.json();}catch{throw Error('The connection is unavailable. Your words remain here.');}if(!r.ok)throw Error(d.error||'Could not save. Your words remain here.');return d;};
 const display=v=>v===null||v===undefined||v===''?'Not answered':String(v);
 
 export function createChat(_checkin,openSafety){
@@ -74,7 +76,7 @@ export function createChat(_checkin,openSafety){
     const control=el('div',undefined,'conversation-controls');for(const [id,label]of (session.companion?[['reflect','Work through a worry'],['pause','Pause'],['another','Try another way'],['restart','Start again'],['end','End for now']]:[['chat','Chat freely'],['pause','Pause'],['another','Try another way'],['restart','Start again'],['reflect','Talk about the worry'],['end','End for now']]))control.append(button(label,()=>send({action:id}),'text-button'));if(!session.companion&&session.checkpoints.length)control.append(button('Go back',()=>send({action:'back'}),'text-button'));root.append(control,preferences(),button('I need human support',openSafety,'text-button'));
     setBusy(busy);requestAnimationFrame(()=>{thread.scrollTop=thread.scrollHeight;if(active&&composer&&!busy)composer.focus({preventScroll:true});});
   }
-  async function home(){active=true;if(loaded){render();return;}loaded=true;root.replaceChildren(el('p','Finding your place…'));try{const [saved,cap]=await Promise.all([api('conversations'),api('status')]);records=saved.records;available=cap.ai;const latest=records.find(r=>r.companion&&['active','paused'].includes(r.status));if(latest){const r=await api('conversations/'+latest.id);session=r.session;persisted=true;}render();}catch(e){loaded=false;root.replaceChildren(el('h1','Talk to Paasaa'),el('p',e.message),button('Try again',home),button('Use immediate support',()=>{location.hash='#support';}));}}
+  async function home(){active=true;if(!await requireAccount(root,home))return;if(loaded){render();return;}loaded=true;root.replaceChildren(el('p','Finding your place…'));try{const [saved,cap]=await Promise.all([api('conversations'),api('status')]);records=saved.records;available=cap.ai;const latest=records.find(r=>r.companion&&['active','paused'].includes(r.status));if(latest){const r=await api('conversations/'+latest.id);session=r.session;persisted=true;}render();}catch(e){loaded=false;root.replaceChildren(el('h1','Talk to Paasaa'),el('p',e.message),button('Try again',home),button('Use immediate support',()=>{location.hash='#support';}));}}
   window.addEventListener('beforeunload',event=>{if(dirty||busy||session.companion&&session.draftText){event.preventDefault();event.returnValue='';}});
   return {home,leave(){active=false;exerciseCleanup();voiceCleanup();flush().catch(e=>status(e.message));},clear(){exerciseCleanup();voiceCleanup();loaded=false;persisted=false;dirty=false;session=newConversation(false,true);}};
 }

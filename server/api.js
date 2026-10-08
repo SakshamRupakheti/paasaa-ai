@@ -4,16 +4,20 @@ import {RecordStore} from './store.js';
 import {question,transcribe} from './ai.js';
 import {chatReply,validateChat} from './chat.js';
 import {conversationApi} from './conversation-api.js';
+import {prototypeData} from './admin-prototype.js';
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 const fail=(message,status=400)=>{throw Object.assign(Error(message),{status});};
-export async function handleApi(request,env){
+// Only server adapters may supply this context. The Sites worker continues to use
+// its authenticated gateway header; public adapters must verify their own identity.
+export async function handleApi(request,env,trustedContext){
   try{
     const url=new URL(request.url),path=url.pathname;
-    const owner=request.headers.get('oai-authenticated-user-id');if(!owner)return json({error:'Sign in to use saved records.'},401);
+    const owner=trustedContext?trustedContext.owner:request.headers.get('oai-authenticated-user-id');if(!owner)return json({error:'Sign in to use saved records.'},401);
     if(!['GET','HEAD'].includes(request.method)&&request.headers.get('Origin')!==url.origin)return json({error:'This request must come from Paasaa.'},403);
-    if(path==='/api/status')return json({ai:!!env.GROQ_API_KEY,persistence:!!env.DB,preview:true,clinicalReview:'pending'});
-    if(!env.DB)return json({error:'Saved records are unavailable. Your input remains on screen.'},503);
-    const store=new RecordStore(env.DB,owner);
+    if(path==='/api/admin/prototype'&&request.method==='GET'&&env.LOCAL_SYNTHETIC_PREVIEW===true&&owner==='local-synthetic-preview')return json(prototypeData());
+    if(path==='/api/status')return json({ai:!!env.GROQ_API_KEY,persistence:!!(trustedContext?.store||env.DB),preview:true,clinicalReview:'pending'});
+    if(!trustedContext?.store&&!env.DB)return json({error:'Saved records are unavailable. Your input remains on screen.'},503);
+    const store=trustedContext?.store||new RecordStore(env.DB,owner);
     if(path==='/api/conversations'||path.startsWith('/api/conversations/'))return json(await conversationApi(request,path,store,env));
     if(path==='/api/chat'&&request.method==='POST'){
       const raw=await request.text();if(raw.length>48000)fail('Message is too long',413);

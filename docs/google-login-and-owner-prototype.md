@@ -1,0 +1,39 @@
+# Google login and owner prototype
+
+The Vercel frontend uses Supabase Auth and a same-origin API adapter. The server verifies each bearer token with Supabase before querying records through the user's JWT and row-level security. Groq credentials stay server-side. The older Sites adapter remains available; its identity header is removed by the public Vercel adapter.
+
+## Google provider configuration
+
+Project created in Google Cloud: **Paasaa AI**, ID `airy-period-511004-p1`. No billing was enabled. Setup is currently paused at Google's separate API Services User Data Policy agreement; Google sign-in is not enabled yet.
+
+After that agreement, configure a Web application OAuth client:
+
+- JavaScript origin: `https://paasaa-ai.vercel.app`
+- Google authorized redirect URI: `https://ulixwxljulespgslzahl.supabase.co/auth/v1/callback`
+- Supabase Site URL: `https://paasaa-ai.vercel.app`
+- Supabase redirect allowlist: `https://paasaa-ai.vercel.app/?auth=callback`
+- Scopes: `openid`, `email`, `profile` only.
+
+Store the Google client ID and secret privately in Supabase's Google provider configuration. Never put the secret in frontend code, Git, chat, or a public environment variable. Complete an actual Google sign-in before declaring it operational. The button checks provider availability and explains when setup is incomplete.
+
+The app uses a random PKCE verifier and SHA-256 challenge. Pending sign-in expires after ten minutes and can be consumed once. Callback query parameters are removed before the exchange. Sessions are tab-scoped; refresh tokens are not placed in localStorage.
+
+Reference: https://supabase.com/docs/guides/auth/social-login/auth-google
+
+## Owner workspace
+
+Route: `/#dashboard`. Production API: `GET /api/admin/prototype`.
+
+Set server-only `PAASAA_PROTOTYPE_OWNER_EMAIL` to the owner's verified sign-in email. Missing configuration, unverified emails, anonymous accounts and other users are denied. User-editable metadata grants no permissions.
+
+This is a read-only, explicitly synthetic prototype. It never queries real patient records or the account directory. It displays sample sign-in activity, check-in ratings, CBT estimates and optional sample transcripts. Record consent and transcript consent are separate fixture states. Withheld content is removed on the server, not merely hidden with CSS. Missing ratings stay missing; increased or unchanged estimates are preserved. No diagnoses or live monitoring are provided.
+
+Local `npm start` binds to loopback and uses a synthetic preview identity. Its dashboard shortcut does not authenticate production requests. Existing on-device daily check-ins are not uploaded by this feature.
+
+## Verification
+
+- JavaScript syntax checks passed.
+- Existing 160 tests passed; five additional OAuth, owner-access and consent tests passed.
+- Local browser: all three patient selections, separately consented transcript, hidden records and empty search checked.
+- Google login still requires provider setup and an end-to-end sign-in check.
+- Real clinician assignments, consent revocation, audit trails and live patient sharing are outside this prototype.

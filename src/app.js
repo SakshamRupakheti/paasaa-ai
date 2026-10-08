@@ -1,4 +1,7 @@
+import {completeGoogleSignIn} from './auth.js';
+import {createDashboard} from './dashboard.js';
 import {mountSafetyList} from './safety-resources.js';
+await completeGoogleSignIn();
 import { createWorry } from './worry.js';
 import { createChat } from './chat.js';
 import { createSupport } from './support.js';
@@ -102,7 +105,7 @@ function showScreen(id, fromHistory = false) {
   if (currentScreen === 'reflection-screen' && id !== currentScreen) checkin.leave();
   if (id === 'transition-screen' && currentScreen === 'breathing-screen') checkin.home();
   if (id !== 'breathing-screen') pauseBreathing();
-  for (const screen of ['breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen', 'support-screen', 'worry-screen', 'chat-screen']) $(screen).hidden = screen !== id;
+  for (const screen of ['breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen', 'support-screen', 'worry-screen', 'chat-screen', 'dashboard-screen']) $(screen).hidden = screen !== id;
   if (currentScreen === 'support-screen' && id !== currentScreen) support.leave();
   if (currentScreen === 'worry-screen' && id !== currentScreen) worry.leave();
   if (currentScreen === 'chat-screen' && id !== currentScreen) chat.leave();
@@ -146,6 +149,7 @@ $('clear-session').addEventListener('click', () => { pauseBreathing(); support.p
 $('cancel-clear').addEventListener('click', () => $('clear-dialog').close());
 resetBreathing();
 
+const dashboard = createDashboard();
 const support = createSupport();
 const worry = createWorry(()=>{ support.safety(); showScreen('support-screen'); });
 const checkin = createCheckIn(showScreen);
@@ -171,6 +175,7 @@ function followLocation() {
   if (screen === 'support-screen') support.entry();
   if (screen === 'worry-screen') worry.home();
   if (screen === 'chat-screen') chat.home();
+  if (screen === 'dashboard-screen') dashboard.home();
   showScreen(screen, true);
 }
 window.addEventListener('popstate', followLocation);
