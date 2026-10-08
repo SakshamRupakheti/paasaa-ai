@@ -25,6 +25,6 @@ export function updateMemory(previous,message,activeId=null){
   m.summary=`Context mentioned: ${m.event||'not specified'}; environment ${m.environment}; advice ${m.wantsAdvice?'allowed':'declined'}; questions ${m.questionsAllowed?'allowed':'declined'}; response to exercises ${m.arousalTrend}.`;
   return m;
 }
-export function compactContext(session,message,memory){return {message,recent:(session.transcript||[]).slice(-8).map(t=>({role:t.role,text:t.text.slice(0,900)})),memory:{...memory,unresolvedUrgent:!!memory.unresolvedUrgent},summary:memory.summary};}
+export function compactContext(session,message,memory){return {message,replyTo:(session.transcript||[]).filter(t=>t.role==='assistant').at(-1)?.text.slice(0,900)||null,recent:(session.transcript||[]).slice(-8).map(t=>({role:t.role,text:t.text.slice(0,900)})),memory:{...memory,unresolvedUrgent:!!memory.unresolvedUrgent},summary:memory.summary};}
 export const sensitiveThought=message=>/intrusive|unwanted|images of hurting|(?:hurt|kill|stab|shoot).{0,30}(?:mother|father|someone|somebody|him|her)|sexual thought/i.test(message);
 export function storedText(message){return sensitiveThought(message)?'[Private thought content omitted; support for an unwanted or harm-related thought was discussed.]':message;}

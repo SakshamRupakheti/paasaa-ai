@@ -63,7 +63,7 @@ export async function conversationApi(request,path,store,env){
     }
     session=planned;
     if(body.voice)session.voice.push({...body.voice,field:before.field||before.state,approvedAt:new Date().toISOString()});
-    if(model&&model.conversationAction!=='ESCALATE'&&model.suggestedState===(session.state==='WORK'?session.field:session.state)&&!['CONFIRM','DETAILS','SUMMARY','COMPLETE','PREVIOUS','SAFETY'].includes(session.state))session.aiMessage=model.assistantMessage;
+    if(model&&model.conversationAction!=='ESCALATE'&&model.suggestedState===(session.state==='WORK'?session.field:session.state)&&!['CONFIRM','DETAILS','SUMMARY','COMPLETE','PREVIOUS','SAFETY','NEXT_MEANING'].includes(session.state))session.aiMessage=model.assistantMessage;
     const controlLabels={pause:'Pause',another:'Try another way',restart:'Start again',reflect:'Talk about the worry',end:'End for now',back:'Go back',skip:'Leave this unanswered'};
     const label=body.action?conversationView(before).choices.find(c=>c.id===body.action)?.label||controlLabels[body.action]||body.action:body.value;
     if(label!==undefined&&label!==null)session.transcript.push({role:'user',text:String(label),at:new Date().toISOString()});

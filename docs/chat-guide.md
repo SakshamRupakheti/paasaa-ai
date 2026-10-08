@@ -40,3 +40,9 @@ Real microphone transcription, assistive-technology testing, comprehensive adver
 
 ## Continuous chat presentation
 The full saved conversation is shown as alternating Paasaa and user messages. A bottom composer supports Enter to send and Shift+Enter for a new line. Active exercise controls appear inside the latest reply; whole-number ratings can also be sent in the chat box. Paused, ended, and safety states retain their explicit controls. Browser verification covered sending a numeric rating with Enter and receiving the next prompt in the same thread.
+
+
+### Follow-up interpretation check — 2026-10-08
+Fixed the structured whatNext -> coping transition that ignored a short answer. A new meaning-confirmation step keeps ambiguous text pending, accepts correction, and offers optional wrap-up after no further consequence or uncertainty. Free-chat prompts now receive explicit replyTo context; a bounded rule clarifies short replies to consequences questions after safety routing. This rule is needed: the first synthetic live Groq run repeated the hypothetical despite prompt guidance. The final live retest returned the intended clarification. A second synthetic model reply accepted “nothing else would happen” without extending the chain.
+
+Verification: JavaScript syntax checks and all 180 unit/API tests passed. Browser-tested the synthetic presentation worksheet through “nothing,” meaning confirmation, and optional ratings/wrap-up; no fabricated coping response or changed rating. Tests include uncertainty, rephrasing, correction, skip, pause/resume/back, urgent safety precedence, and field-specific “nothing” in evidence. Screenshot: outputs/contextual-followup.png in the parent workspace. Broader language understanding remains model-dependent; no clinical efficacy or therapist equivalence is claimed.

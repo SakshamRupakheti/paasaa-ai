@@ -54,7 +54,9 @@ export function conversationView(s){
   if(s.state==='PHYSICAL')return {...base,phase:'STABILIZE',type:'choices',message:'Which, if either, feels comfortable? You can stop at any time.',choices:[...(!s.tried.includes('release')&&!s.declined.includes('release')?[choice('release','Let a little tension go')]:[]),...(!s.declined.includes('breathing')&&!s.tried.includes('breathing')?[choice('breathing','Gentle breathing')]:[]),choice('around','Try something around me')]};
   if(s.state==='STABILIZE')return {...base,phase:'STABILIZE',type:interventions[s.intervention].type,message:interventions[s.intervention].message,choices:[choice('ready','I’m ready to look at the worry'),choice('another','This isn’t helping'),choice('stay','Stay with this a moment')]};
   if(s.state==='READY')return {...base,phase:'STABILIZE',type:'choices',message:'Do you feel able to look at the worry now, or would you rather stay here a little longer?',choices:[choice('reflect','Let’s look at it'),choice('stay','Stay here'),choice('end','Stop for now')]};
+  if(s.state==='WORK'&&s.field==='coping')return {...base,phase:'WORK THROUGH',canSkip:true,message:s.answers.whatNext?'Thinking about the original worry (rather than assuming anything else happens), what support or response would be useful to you?':'What support, if any, would be useful for the original worry?'};
   if(s.state==='WORK'){const q=fields[s.field];return {...base,...q,message:s.field==='prediction'&&s.clarifications?'What is one thing you’re afraid might happen? It’s also okay to keep the uncertainty in your own words.':q.question,type:q.type||(q.choices?'choices':'text'),choices:q.choices||[],phase:q.phase||'WORK THROUGH',canSkip:!q.choices&&s.field!=='prediction'};}
+  if(s.state==='NEXT_MEANING')return {...base,type:'choices',message:'When you say “'+s.followupAnswer+'”, do you mean nothing further would happen, or that you’re not sure what comes next?',choices:[choice('nothingFurther','Nothing further would happen'),choice('notSureNext','I’m not sure'),choice('rephraseNext','Let me explain'),choice('leaveNext','Leave this question')]};
   if(s.state==='CONFIRM')return {...base,type:'prediction',message:'Is this the prediction you want to look at? You can edit it before we go on.',choices:[choice('confirm','Yes, that’s what I mean')]};
   if(s.state==='DETAILS')return {...base,type:'summary',message:'You’ve already mentioned a few useful details. Do these keep your meaning? Edit anything before using them.',choices:[choice('acceptDetails','Use these details'),choice('discardDetails','Use only my current answer')]};
   if(s.state==='REMAINING')return {...base,phase:'WORK THROUGH',type:'choices',message:'There’s a possible next step. Would it help to look at the “what if” part too, or is this enough for now?',choices:[choice('explore','Look at the “what if”'),choice('finishPlan','Keep my plan')]};
@@ -149,8 +151,24 @@ export function advanceConversation(original,event,{records=[],model=null}={}){
     if(action==='acceptDetails'){const approved=event.details||s.pending.details;for(const [field,v]of Object.entries(approved)){if(!owns(s.pending.details,field)||typeof v!=='string'||v.length>6000)throw Error('Check the suggested details.');s.answers[field]=v;}}
     if(['acceptDetails','discardDetails'].includes(action)){const previous=s.pending;s.pending=null;Object.assign(s,previous.next);afterWork(s,previous.field);}return s;
   }
+  if(s.state==='NEXT_MEANING'){
+    if(action==='rephraseNext'){s.state='WORK';s.draftText=s.followupAnswer||'';delete s.followupAnswer;return s;}
+    if(action==='nothingFurther'||/^(nothing (?:else|further)(?: would happen)?|no further consequences)$/.test(key)){
+      s.answers.whatNext=s.followupAnswer||message;delete s.followupAnswer;
+      s.state='RERATE';s.path=[];s.notice='You’re not expecting anything further. We can leave that chain of possibilities there.';return s;
+    }
+    if(action==='notSureNext'||action==='leaveNext'||/^(i dont know|not sure|idk)$/.test(key)){
+      s.answers.whatNext=action==='leaveNext'?'':s.followupAnswer||message;delete s.followupAnswer;
+      s.state='RERATE';s.path=[];s.notice='We can leave what happens next uncertain; you don’t need to invent an answer.';return s;
+    }
+    if(message){delete s.followupAnswer;s.state='WORK';}else return s;
+  }
   if(s.state==='WORK'){
     const q=fields[s.field];let approved=value;
+    if(s.field==='whatNext'&&!action&&/^(nothing(?:(?: else| further)(?: would happen)?| really| would happen)?|no|none|idk|i dont know|not sure|im not sure|no idea)$/.test(key)){
+      s.followupAnswer=message;s.state='NEXT_MEANING';return s;
+    }
+
     if(s.field==='prediction'&&message.split(/\s+/).length<4&&s.clarifications<2){s.clarifications++;s.draftText=message;return s;}
     if(q.choices){approved=action||message;if(!q.choices.some(c=>c.id===approved)){const inferred=model?.actionability;if(!inferred)return s;approved=inferred;if(!q.choices.some(c=>c.id===approved))return s;}}
     if(q.type==='slider'){approved=action==='skip'?null:value;if(approved!==null&&(!Number.isInteger(approved)||approved<0||approved>100))throw Error('Choose a number from 0 to 100, or skip.');}
@@ -178,5 +196,5 @@ export function advanceConversation(original,event,{records=[],model=null}={}){
 }
 export function worryFromConversation(s,existing=null){const r=existing||newWorry();return {...r,id:s.worryId||r.id,answers:{...s.answers},relatedIds:s.relatedIds,voice:s.voice,status:'complete',completedAt:s.completedAt||new Date().toISOString(),outcome:s.outcome,conversationId:s.id};}
 export function modelContext(s,lastPatientMessage){
-  return {currentConversationState:s.state==='WORK'?s.field:s.state,patientProfileDataAllowedForThisSession:{audience:'13+, exact age not collected'},currentWorry:s.answers.worry||s.openingMessage||'',confirmedPrediction:s.answers.prediction||null,ratings:Object.fromEntries(Object.entries(s.answers).filter(([k])=>/Probability|Distress|Severity|Confidence/.test(k))),knownEvidence:{for:s.answers.evidenceFor||null,against:s.answers.evidenceAgainst||null,coping:s.answers.coping||null},previousRelevantOutcomes:s.history.filter(r=>s.relatedIds.includes(r.id)).slice(0,10).map(r=>({prediction:r.prediction,result:r.outcome?.result})),currentConversationSummary:{question:conversationView(s).message,answeredFields:Object.keys(s.answers),lastExchange:s.transcript.slice(-2).map(t=>({role:t.role,text:t.text.slice(0,700)}))},lastPatientMessage,interventionsAlreadyTried:s.tried,interventionsDeclined:s.declined,safetyState:s.safetyState};
+  return {currentConversationState:s.state==='WORK'?s.field:s.state,patientProfileDataAllowedForThisSession:{audience:'13+, exact age not collected'},currentWorry:s.answers.worry||s.openingMessage||'',confirmedPrediction:s.answers.prediction||null,ratings:Object.fromEntries(Object.entries(s.answers).filter(([k])=>/Probability|Distress|Severity|Confidence/.test(k))),followupContext:{questionAsked:s.aiMessage||conversationView(s).message,whatNext:s.answers.whatNext??null,coreFearedOutcome:s.answers.coreFearedOutcome??null,pendingMeaning:s.followupAnswer??null},knownEvidence:{for:s.answers.evidenceFor||null,against:s.answers.evidenceAgainst||null,coping:s.answers.coping||null},previousRelevantOutcomes:s.history.filter(r=>s.relatedIds.includes(r.id)).slice(0,10).map(r=>({prediction:r.prediction,result:r.outcome?.result})),currentConversationSummary:{question:conversationView(s).message,answeredFields:Object.keys(s.answers),lastExchange:s.transcript.slice(-2).map(t=>({role:t.role,text:t.text.slice(0,700)}))},lastPatientMessage,interventionsAlreadyTried:s.tried,interventionsDeclined:s.declined,safetyState:s.safetyState};
 }

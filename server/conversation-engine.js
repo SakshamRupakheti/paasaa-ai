@@ -39,6 +39,8 @@ export async function runConversationEngine(env,session,message,{provider:inject
   if(provider&&!safety.needsEmergencyPath&&!safety.needsSafetyQuestion&&!assessment.failed){try{plan=validate(planSchema,await provider.planTurn(PLANNER_PROMPT,{...context,safety,availableInterventions:Object.values(INTERVENTIONS).map(({id,family,environmentSupport})=>({id,family,environmentSupport}))},planSchema));plannerSuccess=true;}catch{}}
   const plannerLatency=Math.round(performance.now()-plannerStart);
   plan=routePlan(plan,safety,memory,message,{safetyFailed:assessment.failed});
+  const clarifyConsequence=!assessment.failed&&!safety.needsEmergencyPath&&!safety.needsSafetyQuestion&&/what.{0,35}(?:happen|comes?).{0,15}(?:next|after)|what.{0,20}consequences/i.test(previousQuestion)&&/^(?:nothing(?: else| further| really)?|no|none|idk|i don[’']?t know|not sure)[.!?\s]*$/i.test(message.trim());
+  if(clarifyConsequence){plan={...plan,interventionId:null,shouldInterveneNow:false,responseMode:memory.questionsAllowed?'CONNECT_AND_EXPLORE':'LISTEN_ONLY',shouldAskQuestion:memory.questionsAllowed};}
   const mode=conversationMode(session,plan,safety,message);
   if(safety.needsSafetyQuestion)memory.safetyPending=true;else if(!safety.needsEmergencyPath)memory.safetyPending=false;
   let response=fallbackResponse(plan,memory,message),responseSource='fallback';const responseStart=performance.now();
@@ -60,6 +62,7 @@ export async function runConversationEngine(env,session,message,{provider:inject
     response=memory.questionsAllowed?'That didn’t land. Was my reply off, or do you need some space to vent?':'That didn’t land. I’ll drop that approach; you can say what you need to say.';
     responseSource='registry';
   }
+  if(clarifyConsequence){response=memory.questionsAllowed?'Do you mean nothing else would happen, or that you’re not sure what comes next?':'We can leave what happens next open. I won’t assume another consequence.';responseSource='registry';}
   let action=interventionAction(plan.interventionId);
   if(action){response=memory.event?`With ${memory.event} on your mind, we can keep this to one small step.`:'We can try one small step, only as long as it feels comfortable.';responseSource='registry';response+=' '+INTERVENTIONS[action.interventionId].title+' is available below; begin only if comfortable.';memory.interventionsTried.push(action.interventionId);memory.interventionsTried=[...new Set(memory.interventionsTried)];}
   const redacted=sensitiveThought(message)||plan.primaryState==='INTRUSIVE_THOUGHT'||plan.primaryState==='POSSIBLE_OCD_REASSURANCE_LOOP';
