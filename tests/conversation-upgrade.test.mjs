@@ -24,7 +24,7 @@ test('first greeting uses provided time; subsequent greeting never repeats it',a
 test('ordinary questions use model answer without a therapy pivot or fake offline facts',async()=>{
   const provider={metrics:[],classifySafety:async()=>emptySafety(),planTurn:async()=>({...fallbackPlan('hello',newMemory()),shouldAskQuestion:false}),generateResponse:async()=>({message:'Kathmandu.'})};
   const r=await runConversationEngine({},newConversation(true,true),'capital of Nepal?',{provider});assert.equal(r.message,'Kathmandu.');assert.equal(r.mode,'NORMAL');assert.deepEqual(r.choices,[]);
-  const unavailable=await runConversationEngine({},newConversation(false,true),'capital of Japan?');assert.match(unavailable.message,/trouble responding/);
+  const unavailable=await runConversationEngine({},newConversation(false,true),'capital of Japan?');assert.match(unavailable.message,/AI replies are off/);
 });
 test('acute flow offers choice; no-question request overrides offers',async()=>{
   const r=await runConversationEngine({},newConversation(false,true),'I can’t think right now');assert.equal(r.mode,'ACUTE_ANXIETY');assert.ok(r.choices.some(c=>c.id==='reflect'));
