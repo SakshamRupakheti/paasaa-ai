@@ -4,7 +4,7 @@ The Vercel frontend uses Supabase Auth and a same-origin API adapter. The server
 
 ## Google provider configuration
 
-Project created in Google Cloud: **Paasaa AI**, ID `airy-period-511004-p1`. No billing was enabled. The user completed the branding agreement and authorized creation of the Web OAuth client. The client was created successfully. Google sign-in is not enabled yet: the owner must enter the new client secret directly in Supabase and save the prepared provider form.
+Project created in Google Cloud: **Paasaa AI**, ID `airy-period-511004-p1`. No billing was enabled. The user completed the branding agreement, authorized creation of the Web OAuth client, and entered the secret directly in Supabase. Google sign-in is enabled and has passed an end-to-end production browser check.
 
 Configured Google client and saved Supabase URLs:
 
@@ -14,9 +14,9 @@ Configured Google client and saved Supabase URLs:
 - Supabase redirect allowlist: `https://paasaa-ai.vercel.app/?auth=callback`
 - Requested app scopes: `openid`, `email`, `profile` only.
 
-Client ID: `828628016344-d10lbjgedl0upotmter00umihs4t890l.apps.googleusercontent.com` (public identifier). The secret has not been saved in repository files or chat. Keep Google's creation dialog open until it has been transferred securely; Google says it cannot be viewed again after closing that dialog. The Supabase provider form has the client ID filled in, Google enabled as an unsaved change, and nonce/email checks preserved. This form still requires the owner's secret entry and Save action. Google remains in Testing mode pending sign-in verification and production audience setup.
+Client ID: `828628016344-d10lbjgedl0upotmter00umihs4t890l.apps.googleusercontent.com` (public identifier). The secret has not been saved in repository files or chat. The saved provider configuration initially had a secret but an empty client ID and Google disabled; the client ID and enabled state were corrected without reading or changing the secret. Nonce and email checks remain enforced. Google remains in Testing mode, with the owner's Google account added as a test user. Public audience release and final consent-screen branding remain separate work; no public release was claimed or performed.
 
-Store the Google client ID and secret privately in Supabase's Google provider configuration. Never put the secret in frontend code, Git, chat, or a public environment variable. Complete an actual Google sign-in before declaring it operational. The button checks provider availability and explains when setup is incomplete.
+Keep the Google client secret privately in Supabase's Google provider configuration. Never put it in frontend code, Git, chat, or a public environment variable. The button checks provider availability and explains when setup is incomplete.
 
 The app uses a random PKCE verifier and SHA-256 challenge. Pending sign-in expires after ten minutes and can be consumed once. Callback query parameters are removed before the exchange. Sessions are tab-scoped; refresh tokens are not placed in localStorage.
 
@@ -38,6 +38,6 @@ Local `npm start` binds to loopback and uses a synthetic preview identity. Its d
 - Full suite: 165 tests passed, including OAuth, owner-access and consent tests.
 - Local browser: all three patient selections, separately consented transcript, hidden records and empty search checked.
 - Production deployment `dpl_HvFtsEFKAisryE4kFDKEykKkHeAy` (code commit `e4e3a44`) is Ready at `https://paasaa-ai.vercel.app`.
-- Production browser: Google setup fallback displayed correctly; a synthetic non-owner account signed in successfully and was denied the workspace. Signed-out API access returned 401; public auth configuration returned 200. The production owner account has not yet completed a Google sign-in.
-- Google login still requires provider setup and an end-to-end sign-in check.
+- Production browser: Google setup fallback displayed correctly before provider activation; a synthetic non-owner account signed in successfully and was denied the workspace. Signed-out API access returned 401; public auth configuration returned 200.
+- Google end-to-end: Continue with Google opened the correct OAuth client, requested only name/profile picture/email, returned through Supabase to the PKCE callback, removed the callback code from the URL, and opened the signed-in chat. The same session successfully opened the owner-only synthetic dashboard. No clinical message was sent during this login check.
 - Real clinician assignments, consent revocation, audit trails and live patient sharing are outside this prototype.
