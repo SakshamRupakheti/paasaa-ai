@@ -33,7 +33,9 @@ Local `npm start` binds to loopback and uses a synthetic preview identity. Its d
 ## Verification
 
 - JavaScript syntax checks passed.
-- Existing 160 tests passed; five additional OAuth, owner-access and consent tests passed.
+- Full suite: 165 tests passed, including OAuth, owner-access and consent tests.
 - Local browser: all three patient selections, separately consented transcript, hidden records and empty search checked.
+- Production deployment `dpl_HvFtsEFKAisryE4kFDKEykKkHeAy` (code commit `e4e3a44`) is Ready at `https://paasaa-ai.vercel.app`.
+- Production browser: Google setup fallback displayed correctly; a synthetic non-owner account signed in successfully and was denied the workspace. Signed-out API access returned 401; public auth configuration returned 200. The production owner account has not yet completed a Google sign-in.
 - Google login still requires provider setup and an end-to-end sign-in check.
 - Real clinician assignments, consent revocation, audit trails and live patient sharing are outside this prototype.
