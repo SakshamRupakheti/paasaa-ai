@@ -59,3 +59,9 @@ Checked: syntax checks and 186 automated tests, including six recorder lifecycle
 ### Chat viewport and typography — 2026-10-08
 Chat route now uses a viewport-height flex layout with a independently scrolling message region and stationary composer. Route exit restores normal page scrolling. Header labels use consistent sizing, non-wrapping text, and responsive rows; chat uses a system sans-serif font with explicit message/composer line heights.
 Verified in browser with the long synthetic follow-up conversation: message scrollTop changed from 2716 to 1996 while page scrollY stayed 0 and composer top stayed 461.6px. At 390x844, document width/height matched the viewport, message region remained 331px tall, and composer bottom was 718px. Breathe route restored body overflow to visible. JavaScript syntax checks passed. No conversation logic changed.
+
+
+### Conversation canvas and sign-in layout — 2026-10-08
+Widened chat canvas and simplified composer spacing; consolidated AI/prototype and Groq text/audio processing disclosure into one footer notice (allowed to wrap on narrow screens). Added the requested Saksham Rupakheti World creator watermark at bottom right in normal footer flow. Existing help remains in the header and chat popup.
+
+Sign-in gets an account-required layout with normal page scrolling, rather than a nested scroll region inside the fixed-height chat. Browser verified the signed-out form using a local layout-only public-config fixture without submitting credentials: form overflow visible and client/scroll heights equal (647px). Verified clean chat at desktop and 390x844: no horizontal overflow, composer within viewport, watermark bottom 840px. Authentication mechanics and patient records are unchanged.
