@@ -1,3 +1,5 @@
+import {initLanguage,getLanguage,translate,formatTranslation as tf} from './i18n.js';
+initLanguage();
 import {completeGoogleSignIn} from './auth.js';
 import {createDashboard} from './dashboard.js';
 import {mountSafetyList} from './safety-resources.js';
@@ -29,10 +31,11 @@ function updateClock() {
   const now = new Date();
   const hour = now.getHours();
   $('pa-greeting').textContent = `${hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'}, there.`;
-  $('pa-time').textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  $('pa-time').textContent = now.toLocaleTimeString(getLanguage(), { hour: 'numeric', minute: '2-digit' });
   $('pa-time').dateTime = now.toISOString();
 }
 updateClock();
+document.addEventListener('paasaa-language-change',updateClock);
 setInterval(updateClock, 30000); // Wall clock only; never drives breathing.
 
 function renderBreathing() {
@@ -63,17 +66,18 @@ function renderBreathing() {
   $('belly-line').setAttribute('d', `M168 313 Q210 ${326 + expansion * 6} 252 313`);
   $('diaphragm').setAttribute('d', `M162 303 Q210 ${274 + expansion * 23} 258 303`);
   meter.dataset.phase = state.inhaling ? 'inhale' : 'exhale';
-  meter.setAttribute('aria-label', active ? `${state.inhaling ? 'Inhale' : 'Exhale'}${mode === 'paused' ? ', paused' : ''}` : 'Breathing pace');
+  const phaseName = translate(state.inhaling ? 'Inhale' : 'Exhale');
+  meter.setAttribute('aria-label', active ? (mode === 'paused' ? tf('{phase} · paused',{phase:phaseName}) : phaseName) : translate('Breathing pace'));
   $('count-number').hidden = mode === 'own';
   $('count-number').textContent = mode === 'own' ? '—' : state.seconds;
   $('cycle-label').textContent = mode === 'ready'
-    ? `${config.cycles} cycles · ${(config.inhale + config.exhale) * config.cycles} seconds · optional`
-    : `Cycle ${state.cycle} of ${config.cycles}`;
-  const phase = state.inhaling ? 'Breathe in' : 'Breathe out';
+    ? tf('{cycles} cycles · {seconds} seconds · optional',{cycles:config.cycles,seconds:(config.inhale+config.exhale)*config.cycles})
+    : tf('Cycle {current} of {total}',{current:state.cycle,total:config.cycles});
+  const phase = translate(state.inhaling ? 'Breathe in' : 'Breathe out');
   if (mode === 'running' || mode === 'paused') {
-    const label = mode === 'paused' ? `${phase} · paused` : phase;
+    const label = mode === 'paused' ? tf('{phase} · paused',{phase}) : phase;
     if ($('pa-phase').textContent !== label) $('pa-phase').textContent = label;
-    $('pa-count').textContent = `${state.seconds} ${state.seconds === 1 ? 'second' : 'seconds'}${mode === 'paused' ? ' remaining · breathe normally while paused' : ' · gently'}`;
+    $('pa-count').textContent = tf(mode === 'paused' ? '{seconds} seconds remaining · breathe normally while paused' : state.seconds === 1 ? '{seconds} second · gently' : '{seconds} seconds · gently',{seconds:state.seconds});
     $('companion-message').textContent = mode === 'paused' ? 'Easy does it.' : state.inhaling ? 'No need to match the count perfectly.' : 'Let it out gently.';
   }
   return state;
@@ -97,7 +101,7 @@ function resetBreathing() {
   clock.reset(); cancelAnimationFrame(frame); mode = 'ready';
   $('pa-start').textContent = 'Start breathing';
   $('pa-phase').textContent = 'Take a moment for yourself.';
-  $('pa-count').textContent = `${config.inhale} seconds in · ${config.exhale} seconds out`;
+  $('pa-count').textContent = tf('{inhale} seconds in · {exhale} seconds out',config);
   $('companion-message').textContent = 'Breathe with me.';
   renderBreathing();
 }
@@ -149,6 +153,11 @@ $('help-open').addEventListener('click', () => { pauseBreathing(); support.pause
 $('clear-session').addEventListener('click', () => { pauseBreathing(); support.pause(); $('clear-dialog').showModal(); });
 $('cancel-clear').addEventListener('click', () => $('clear-dialog').close());
 resetBreathing();
+document.addEventListener('paasaa-language-change',()=>{
+  if(mode==='own')return;
+  renderBreathing();
+  if(mode==='ready')$('pa-count').textContent=tf('{inhale} seconds in · {exhale} seconds out',config);
+});
 
 const dashboard = createDashboard();
 const support = createSupport();

@@ -1,6 +1,7 @@
 import { CheckInStore, newDraft, localDate, toggleChoice, EMOTIONS, SYMPTOMS, CONTEXTS, BEHAVIORS, AREAS } from './checkin-model.js';
 import { mountVoice } from './voice.js';
 import {checkinQuestions,validateCheckinAnswer} from './chat-checkin.js';
+import {getLanguage,translate} from './i18n.js';
 const el = (tag, text, cls) => { const n = document.createElement(tag); if (text) n.textContent = text; if (cls) n.className = cls; return n; };
 const button = (text, action, cls) => { const b = el('button', text, cls); b.type = 'button'; b.addEventListener('click', action); return b; };
 const titles = ['How anxious do you feel right now?', 'What are you feeling right now?', 'Are you noticing anything in your body?', 'What was happening around the time you noticed the anxiety?', 'What was going through your mind?', 'What did you do when you felt anxious?', 'How much did anxiety get in the way today?'];
@@ -15,13 +16,21 @@ export function createCheckIn(showScreen) {
   function weekly(target) {
     const week = el('div', null, 'week'); week.setAttribute('aria-label', 'Check-ins this week');
     const monday = new Date(); monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7);
-    ['M','T','W','T','F','S','S'].forEach((day, i) => {
+    Array.from({length:7},(_,i)=>i).forEach(i => {
       const date = new Date(monday); date.setDate(monday.getDate() + i);
       const done = store.records.some(r => r.localDate === localDate(date));
-      const n = el('div', null, done ? 'day logged' : 'day'); n.append(el('span', day), el('strong', done ? '✓' : String(date.getDate())));
-      n.setAttribute('aria-label', `${date.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}: ${done ? 'check-in recorded' : 'no check-in'}`); week.append(n);
+      const n = el('div', null, done ? 'day logged' : 'day');
+      const day=el('span');n.append(day,el('strong',done?'✓':String(date.getDate())));
+      n.dataset.date=date.toISOString();n.dataset.done=String(done);week.append(n);
     }); target.append(week);
+    localizeWeek();
   }
+  function localizeWeek(){for(const n of home.querySelectorAll('.day[data-date]')){
+    const date=new Date(n.dataset.date);
+    n.querySelector('span').textContent=date.toLocaleDateString(getLanguage(),{weekday:'narrow'});
+    n.setAttribute('aria-label',`${date.toLocaleDateString(getLanguage(),{weekday:'long',month:'long',day:'numeric'})}: ${translate(n.dataset.done==='true'?'check-in recorded':'no check-in')}`);
+  }}
+  document.addEventListener('paasaa-language-change',localizeWeek);
   function renderHome(completed = false) {
     leave(); home.replaceChildren();
     if (completed) { home.append(el('h2','Thanks for checking in.'), el('p','Each check-in helps you and your clinician understand patterns over time. Nothing is shared with a clinician in this preview.')); }
@@ -39,8 +48,8 @@ export function createCheckIn(showScreen) {
   function chips(root, field, options, exclusive) {
     const group = el('div',null,'chips'); group.setAttribute('role','group'); group.setAttribute('aria-label',field === 'interferenceAreas' ? 'Areas of interference' : titles[store.draft.step]);
     for (const option of options) {
-      const b = button(option, () => { store.draft[field] = toggleChoice(store.draft[field],option,exclusive); for (const child of group.children) child.setAttribute('aria-pressed',String(store.draft[field].includes(child.textContent))); save(); });
-      b.setAttribute('aria-pressed',String(store.draft[field].includes(option))); group.append(b);
+      const b = button(option, () => { store.draft[field] = toggleChoice(store.draft[field],option,exclusive); for (const child of group.children) child.setAttribute('aria-pressed',String(store.draft[field].includes(child.dataset.value))); save(); });
+      b.dataset.value=option;b.setAttribute('aria-pressed',String(store.draft[field].includes(option))); group.append(b);
     } root.append(group);
     if (options.includes('Something else')) {
       const detail = el('details'); detail.append(el('summary','Add a detail (optional)'));
@@ -97,5 +106,4 @@ export function createCheckIn(showScreen) {
     chatComplete(){const record=store.complete();renderHome(true);return record;},
   };
 }
-
 

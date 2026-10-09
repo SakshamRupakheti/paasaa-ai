@@ -58,7 +58,7 @@ export function createChat(_checkin,openSafety){
     const history=session.transcript.at(-1)?.role==='assistant'?session.transcript.slice(0,-1):session.transcript;
     for(const turn of history){const message=el('div',undefined,turn.role==='user'?'conversation-message patient-message':'conversation-message paasaa-message');message.append(el('span',turn.role==='user'?'You':'Paasaa','message-author'),el('p',turn.text));thread.append(message);}
     const surface=el('div',undefined,'conversation-turn paasaa-message');surface.append(el('span','Paasaa','message-author'));if(session.notice)surface.append(el('p',session.notice,'conversation-acknowledgment'));
-    const prompt=el('p',session.aiMessage||view.message,'conversation-reply');surface.append(prompt);thread.append(surface);
+    const prompt=el('p',session.aiMessage||view.message,'conversation-reply');if(!session.aiMessage)prompt.dataset.uiCopy='true';surface.append(prompt);thread.append(surface);
     if(session.companion&&session.chatAction){const mount=el('div');surface.append(mount);exerciseCleanup=mountChatExercise(mount,session.chatAction,event=>send(event));}
     if(session.companion&&session.chatSafety==='urgent')surface.append(button('Get human support now',openSafety,'primary'));
     if(session.answers.prediction&&['WORK THROUGH','LEARN'].includes(view.phase)&&view.type!=='summary'){const card=el('div',undefined,'conversation-prediction');card.append(el('span','THE PREDICTION','eyebrow'),el('p',session.answers.prediction));surface.append(card);}
