@@ -110,6 +110,7 @@ function showScreen(id, fromHistory = false) {
   if (currentScreen === 'worry-screen' && id !== currentScreen) worry.leave();
   if (currentScreen === 'chat-screen' && id !== currentScreen) chat.leave();
   currentScreen = id;
+  document.body.classList.toggle('chat-layout', id === 'chat-screen');
   const hash = hashForScreen(id);
   if (!fromHistory && location.hash !== hash) history.pushState(null, '', hash);
   for (const link of document.querySelectorAll('.main-nav a')) {

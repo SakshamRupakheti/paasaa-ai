@@ -54,3 +54,8 @@ User-authorized interaction update: SVG mic/send buttons with accessible labels;
 Chat mic now uses createChatVoice: tap to record, stop to transcribe automatically, append to editable draft, then Send to submit. A visible notice explains Groq audio transmission before the mic action; no extra checkbox or transcript approval button. Cancellation stops tracks/aborts requests, navigation disposes the recorder, pending transcription prevents sending, and failures preserve the draft. The older standalone worksheet voice UI is unchanged.
 
 Checked: syntax checks and 186 automated tests, including six recorder lifecycle tests with simulated audio. Browser verified popup, preserved draft on AI toggle, icon Send, scripted reply with AI off, and narrow-screen composer bounds (390px viewport, no horizontal overflow). Physical microphone and live audio transcription were not tested; no ambient audio was recorded.
+
+
+### Chat viewport and typography — 2026-10-08
+Chat route now uses a viewport-height flex layout with a independently scrolling message region and stationary composer. Route exit restores normal page scrolling. Header labels use consistent sizing, non-wrapping text, and responsive rows; chat uses a system sans-serif font with explicit message/composer line heights.
+Verified in browser with the long synthetic follow-up conversation: message scrollTop changed from 2716 to 1996 while page scrollY stayed 0 and composer top stayed 461.6px. At 390x844, document width/height matched the viewport, message region remained 331px tall, and composer bottom was 718px. Breathe route restored body overflow to visible. JavaScript syntax checks passed. No conversation logic changed.
