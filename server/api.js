@@ -5,6 +5,7 @@ import {question,transcribe} from './ai.js';
 import {chatReply,validateChat} from './chat.js';
 import {conversationApi} from './conversation-api.js';
 import {prototypeData} from './admin-prototype.js';
+import {aiEnabled,publicServiceStatus,isClinicalPath} from './service-policy.js';
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 const fail=(message,status=400)=>{throw Object.assign(Error(message),{status});};
 // Only server adapters may supply this context. The Sites worker continues to use
@@ -12,8 +13,11 @@ const fail=(message,status=400)=>{throw Object.assign(Error(message),{status});}
 export async function handleApi(request,env,trustedContext){
   try{
     const url=new URL(request.url),path=url.pathname;
+    if(path==='/api/service-status')return request.method==='GET'?json(publicServiceStatus(env)):json({error:'Method not allowed'},405);
     const owner=trustedContext?trustedContext.owner:request.headers.get('oai-authenticated-user-id');if(!owner)return json({error:'Sign in to use saved records.'},401);
     if(!['GET','HEAD'].includes(request.method)&&request.headers.get('Origin')!==url.origin)return json({error:'This request must come from Paasaa.'},403);
+    if(isClinicalPath(path))return json({error:'Clinical services are not enabled.',code:'CLINICAL_SERVICE_NOT_IMPLEMENTED'},503);
+    if(!aiEnabled(env))env={...env,GROQ_API_KEY:''};
     if(path==='/api/admin/prototype'&&request.method==='GET'&&env.LOCAL_SYNTHETIC_PREVIEW===true&&owner==='local-synthetic-preview')return json(prototypeData());
     if(path==='/api/status')return json({ai:!!env.GROQ_API_KEY,persistence:!!(trustedContext?.store||env.DB),preview:true,clinicalReview:'pending'});
     if(!trustedContext?.store&&!env.DB)return json({error:'Saved records are unavailable. Your input remains on screen.'},503);

@@ -1,4 +1,5 @@
 import {structured} from './ai.js';
+import {assertNoHumanServiceClaim} from './response-policy.js';
 import {modelContext,conversationView} from '../src/conversation-model.js';
 const string={type:'string'};
 const schema={type:'object',additionalProperties:false,properties:{assistantMessage:string,conversationAction:{type:'string',enum:['ASK','OFFER_CHOICES','STABILIZE','SUMMARIZE','WAIT','ESCALATE']},suggestedState:string,extractedData:{type:'object',additionalProperties:false,properties:{prediction:string,evidenceFor:string,evidenceAgainst:string,coping:string,nextStep:string,actionWhen:string},required:['prediction','evidenceFor','evidenceAgainst','coping','nextStep','actionWhen']},ui:{type:'object',additionalProperties:false,properties:{type:{type:'string',enum:['text','choices','slider','grounding','breathing','summary','prediction','history','datetime','previous','safety']},options:{type:'array',items:string}},required:['type','options']},reason:string,requiresConfirmation:{type:'boolean'},readiness:{type:'string',enum:['reflective','overwhelmed','uncertain']},interventionFeedback:{type:'string',enum:['not-helping','neutral']}},required:['assistantMessage','conversationAction','suggestedState','extractedData','ui','reason','requiresConfirmation','readiness','interventionFeedback']};
@@ -12,5 +13,6 @@ Extraction is required when an event and feared outcome are already stated, even
   for(const key of ['prediction','evidenceFor','evidenceAgainst','coping','nextStep','actionWhen'])if(typeof output.extractedData?.[key]!=='string'||output.extractedData[key].length>1500)throw Error('Invalid extracted detail');
   if(output.conversationAction!=='ESCALATE'&&(output.suggestedState!==state||output.ui?.type!==view.type||JSON.stringify(output.ui?.options)!==JSON.stringify(view.choices.map(c=>c.id))))throw Error('Invalid proposed transition');
   if(/https?:|www\.|<[^>]+>|definitely safe|won.t happen|everything will be fine|irrational|you.re overthinking|you have (?:panic disorder|an anxiety disorder|ocd)/i.test(output.assistantMessage))throw Error('Unusable conversation wording');
+  assertNoHumanServiceClaim(output.assistantMessage);
   return output;
 }

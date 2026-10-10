@@ -1,5 +1,15 @@
 // Authored interface copy. Clinical and native-language review pending.
 export const translations = {
+  "Not continuously monitored · Clinician review and notifications are not connected.": {
+    "hi":"लगातार निगरानी नहीं होती · चिकित्सक की समीक्षा और सूचनाएँ अभी जुड़ी नहीं हैं।",
+    "ne":"निरन्तर निगरानी हुँदैन · चिकित्सकीय समीक्षा र सूचना पठाउने सेवा जोडिएको छैन।",
+    "es":"Sin supervisión continua · La revisión clínica y las notificaciones no están conectadas."
+  },
+  "AI availability does not mean a clinician is watching. There is no staffed review or on-call service connected to this prototype. Paasaa has not contacted anyone.": {
+    "hi":"AI उपलब्ध होने का मतलब यह नहीं कि कोई चिकित्सक देख रहा है। इस प्रोटोटाइप से कोई कार्यरत समीक्षा या ऑन-कॉल सेवा नहीं जुड़ी है। Paasaa ने किसी से संपर्क नहीं किया है।",
+    "ne":"AI उपलब्ध हुनुको अर्थ चिकित्सकले हेरिरहनुभएको छ भन्ने होइन। यो प्रोटोटाइपमा कार्यरत समीक्षा वा अन-कल सेवा जोडिएको छैन। Paasaa ले कसैलाई सम्पर्क गरेको छैन।",
+    "es":"Que la IA esté disponible no significa que un profesional esté observando. Este prototipo no tiene un servicio de revisión con personal ni de guardia conectado. Paasaa no ha contactado a nadie."
+  },
   "You": {
     "hi": "आप",
     "ne": "तपाईं",

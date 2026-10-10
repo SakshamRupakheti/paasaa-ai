@@ -8,8 +8,11 @@ import {INTERVENTIONS,interventionAction} from '../src/chat-interventions.js';
 import {validateLocalContext,greeting} from '../src/chat-context.js';
 import {retrieveKnowledge} from './knowledge.js';
 import {conversationMode,modeChoices} from './conversation-modes.js';
+import {assertNoHumanServiceClaim} from './response-policy.js';
+import {safetyRoute} from './safety-routing.js';
+import {SERVICE_POLICY_VERSION} from './service-policy.js';
 export function validateResponse(value,plan){
-  validate(responseSchema,value);const t=value.message.trim();
+  validate(responseSchema,value);const t=assertNoHumanServiceClaim(value.message.trim());
   if(!t||t.length>(plan.arousal==='high'?420:1100)||(t.match(/\?/g)||[]).length>(plan.shouldAskQuestion?1:0)||/(?:https?:|www\.|<[^>]+>|calm down|just relax|stop worrying|definitely (?:safe|just anxiety)|you (?:would|will) never hurt|100% safe|everything will be fine|you have (?:ocd|panic disorder)|you only need me|i'll never leave|as a human|when i had anxiety|increase your dose|stop taking)/i.test(t))throw Error('Invalid response wording');
   if(/\b(?:you are|you're|you’re|don't be|don’t be) (?:a |so )?(?:freak|idiot|stupid|crazy|dramatic)\b/i.test(t))throw Error('Judgmental response');
   if((t.match(/[.!?](?:\s|$)/g)||[]).length>plan.maxSentences)throw Error('Too many sentences');
@@ -23,7 +26,7 @@ export function validateResponse(value,plan){
 export async function runConversationEngine(env,session,message,{provider:injected,allowAI=true,localContext=null}={}){
   const start=performance.now();let provider=injected;
   if(!provider&&allowAI&&session.aiConsent&&env.GROQ_API_KEY){try{provider=createProvider(env);}catch{}}
-  if(!allowAI||!session.aiConsent)provider=null;
+  if(!allowAI||!session.aiConsent||env.PAASAA_AI_ENABLED==='false')provider=null;
   const memory=updateMemory(session.engineMemory,message,session.chatAction?.interventionId||session.lastInterventionId);
   const previousQuestion=session.transcript?.at(-1)?.text||'';
   if(/(?:what.{0,12}(?:first|opening).{0,25}(?:action|sentence|line|step))/i.test(previousQuestion)&&message.trim().split(/\s+/).length>=3&&!/still bad|same|worse|don.t know|cannot|can.t|what do you mean/i.test(message)&&!sensitiveThought(message)){memory.firstAction=message.slice(0,240);memory.firstActionJustAnswered=true;}else memory.firstActionJustAnswered=false;
@@ -33,6 +36,7 @@ export async function runConversationEngine(env,session,message,{provider:inject
   context.retrievedClinicalKnowledge=retrieveKnowledge(message);
   const safetyStart=performance.now();const assessment=await classifySafety(provider,message,context.recent,memory);const safetyLatency=Math.round(performance.now()-safetyStart);
   const safety=assessment.safety;
+  const operationalSafety=safetyRoute(assessment);
   if(safety.needsEmergencyPath)memory.unresolvedUrgent=safety;
   let plan=fallbackPlan(message,memory),plannerSuccess=false;
   const plannerStart=performance.now();
@@ -68,6 +72,9 @@ export async function runConversationEngine(env,session,message,{provider:inject
   const redacted=sensitiveThought(message)||plan.primaryState==='INTRUSIVE_THOUGHT'||plan.primaryState==='POSSIBLE_OCD_REASSURANCE_LOOP';
   const safeMessage=redacted?'[Private thought content omitted; unwanted thoughts or reassurance urges discussed.]':storedText(message);
   const telemetry={turnId:crypto.randomUUID(),timestamp:new Date().toISOString(),planner:{primaryState:plan.primaryState,arousal:plan.arousal,userNeed:plan.userNeed,responseMode:plan.responseMode,interventionId:plan.interventionId,confidence:plan.confidence},safety:{riskLevel:safety.riskLevel,category:safety.category},plannerSuccess,responseSource,promptVersions:PROMPT_VERSIONS,metrics:provider?.metrics||[],latency:{safetyLatency,plannerLatency,responseFirstTokenLatency:null,responseCompleteLatency:Math.round(performance.now()-responseStart),totalResponseLatency:Math.round(performance.now()-start)}};
+  telemetry.operationalSafety=operationalSafety;
+  telemetry.servicePolicyVersion=SERVICE_POLICY_VERSION;
+  // Classification does not create a review item or notify a clinician.
   // Classifications only. No chain of thought, raw prompts, or external analytics.
   return {message:response,action,memory,safety,mode,choices:action||assessment.failed?[]:modeChoices(mode,memory),hasGreetedThisSession:!!session.hasGreetedThisSession||greet,telemetry,storedUserText:safeMessage,redacted,notice:!session.aiConsent?'AI replies are off. This reply uses basic scripted support; no conversation text was sent to Groq.':responseSource==='fallback'&&provider?'Paasaa is using its simpler support mode for this reply.':''};
 }

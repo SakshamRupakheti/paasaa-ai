@@ -203,3 +203,5 @@ $('support-open').addEventListener('click',()=>{support.entry();showScreen('supp
 
 
 mountSafetyList(document.querySelector('#help-dialog ul'));
+
+const monitoringNotice=document.createElement('p');monitoringNotice.className='service-disclosure';monitoringNotice.textContent='AI availability does not mean a clinician is watching. There is no staffed review or on-call service connected to this prototype. Paasaa has not contacted anyone.';document.getElementById('help-title').after(monitoringNotice);

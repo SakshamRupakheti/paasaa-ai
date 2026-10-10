@@ -1,4 +1,6 @@
 import {aiConfig} from './ai-config.js';
+import {aiEnabled} from './service-policy.js';
+import {SERVICE_BOUNDARIES_PROMPT} from './response-policy.js';
 // Provider boundary: business policy only depends on these three methods.
 export class AIProvider {
   async classifySafety(){throw Error('Provider not implemented');}
@@ -6,7 +8,7 @@ export class AIProvider {
   async generateResponse(){throw Error('Provider not implemented');}
 }
 export class GroqProvider extends AIProvider {
-  constructor(env,fetcher=fetch){super();this.key=env.GROQ_API_KEY;this.config=aiConfig(env);this.fetcher=fetcher;this.metrics=[];}
+  constructor(env,fetcher=fetch){super();this.key=aiEnabled(env)?env.GROQ_API_KEY:null;this.config=aiConfig(env);this.fetcher=fetcher;this.metrics=[];}
   async complete(role,prompt,input,schema,model=this.config[role+'Model']) {
     if(!this.key)throw Object.assign(Error('AI is not connected'),{code:'unavailable',status:503});
     const started=performance.now();let status='ok';
@@ -14,7 +16,7 @@ export class GroqProvider extends AIProvider {
       const result=await this.fetcher('https://api.groq.com/openai/v1/chat/completions',{
         method:'POST',headers:{Authorization:`Bearer ${this.key}`,'Content-Type':'application/json'},
         signal:AbortSignal.timeout(this.config.timeoutMs),
-        body:JSON.stringify({model,messages:[{role:'system',content:prompt},{role:'user',content:JSON.stringify(input)}],
+        body:JSON.stringify({model,messages:[{role:'system',content:prompt+'\n'+SERVICE_BOUNDARIES_PROMPT},{role:'user',content:JSON.stringify(input)}],
           max_completion_tokens:this.config.maxOutputTokens,
           response_format:{type:'json_schema',json_schema:{name:'paasaa_'+role,strict:role!=='safety',schema}}})});
       if(!result.ok)throw Object.assign(Error('provider unavailable'),{code:result.status===429?'rate_limit':result.status>=500?'upstream':'request_rejected'});

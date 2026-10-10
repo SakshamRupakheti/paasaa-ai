@@ -1,6 +1,7 @@
 import {handleApi} from './api.js';
 import {SupabaseRecordStore} from './supabase-store.js';
 import {prototypeAllowed,prototypeData} from './admin-prototype.js';
+import {publicServiceStatus,isClinicalPath} from './service-policy.js';
 
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 const signIn=()=>json({error:'Sign in to use chat and saved records.'},401);
@@ -34,6 +35,7 @@ export async function handleVercelApi(incoming,env,fetcher=fetch){
   try{request=apiRequest(incoming);}catch{return json({error:'Invalid API path'},400);}
   const url=new URL(request.url);
   if(!['GET','HEAD'].includes(request.method)&&request.headers.get('Origin')!==url.origin)return json({error:'This request must come from Paasaa.'},403);
+  if(url.pathname==='/api/service-status')return request.method==='GET'?json(publicServiceStatus(env)):json({error:'Method not allowed'},405);
   const config=publicConfig(env);
   if(!config)return json({error:'Account storage is not configured yet. Breathing and on-device check-ins are available.',ai:false,persistence:false},503);
   if(url.pathname==='/api/config')return request.method==='GET'?json(config):json({error:'Method not allowed'},405);
@@ -47,6 +49,7 @@ export async function handleVercelApi(incoming,env,fetcher=fetch){
     user=await response.json();
   }catch{return json({error:'Sign-in could not be verified right now. Try again shortly.'},503);}
   if(!uuid.test(user?.id)||user.is_anonymous===true)return signIn();
+  if(isClinicalPath(url.pathname))return json({error:'Clinical services are not enabled. Use Help and support for immediate resources.',code:'CLINICAL_SERVICE_NOT_IMPLEMENTED'},503);
   if(url.pathname==='/api/admin/prototype'){
     if(!prototypeAllowed(user,env))return json({error:'This internal prototype is available only to the configured owner.'},403);
     return request.method==='GET'?json(prototypeData()):json({error:'Read-only prototype'},405);
