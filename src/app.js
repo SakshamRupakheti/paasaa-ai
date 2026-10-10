@@ -2,6 +2,7 @@ import {initLanguage,getLanguage,translate,formatTranslation as tf} from './i18n
 initLanguage();
 import {completeGoogleSignIn} from './auth.js';
 import {createDashboard} from './dashboard.js';
+import {createWellness} from './wellness.js';
 import {mountSafetyList} from './safety-resources.js';
 await completeGoogleSignIn();
 import { createWorry } from './worry.js';
@@ -109,7 +110,7 @@ function showScreen(id, fromHistory = false) {
   if (currentScreen === 'reflection-screen' && id !== currentScreen) checkin.leave();
   if (id === 'transition-screen' && currentScreen === 'breathing-screen') checkin.home();
   if (id !== 'breathing-screen') pauseBreathing();
-  for (const screen of ['breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen', 'support-screen', 'worry-screen', 'chat-screen', 'dashboard-screen']) $(screen).hidden = screen !== id;
+  for (const screen of ['home-screen','progress-screen','help-screen','account-screen','breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen', 'support-screen', 'worry-screen', 'chat-screen', 'dashboard-screen']) $(screen).hidden = screen !== id;
   if (currentScreen === 'support-screen' && id !== currentScreen) support.leave();
   if (currentScreen === 'worry-screen' && id !== currentScreen) worry.leave();
   if (currentScreen === 'chat-screen' && id !== currentScreen) chat.leave();
@@ -118,7 +119,8 @@ function showScreen(id, fromHistory = false) {
   const hash = hashForScreen(id);
   if (!fromHistory && location.hash !== hash) history.pushState(null, '', hash);
   for (const link of document.querySelectorAll('.main-nav a')) {
-    if (link.hash === hash) link.setAttribute('aria-current','page'); else link.removeAttribute('aria-current');
+    const destination=['#breathe','#check-in','#finish','#worry'].includes(hash)?'#home':hash==='#support'?'#help':hash;
+    if (link.hash === destination) link.setAttribute('aria-current','page'); else link.removeAttribute('aria-current');
   }
   $('open-checkin').textContent = checkin.hasDraft() ? 'Resume daily check-in' : 'Start daily check-in';
   $(id).querySelector('h1')?.focus();
@@ -160,6 +162,7 @@ document.addEventListener('paasaa-language-change',()=>{
 });
 
 const dashboard = createDashboard();
+const wellness = createWellness();
 const support = createSupport();
 const worry = createWorry(()=>{ support.safety(); showScreen('support-screen'); });
 const checkin = createCheckIn(showScreen);
@@ -176,15 +179,19 @@ function openCheckIn() { checkin.home(); showScreen('transition-screen'); }
 $('open-checkin').addEventListener('click', openCheckIn);
 for (const link of document.querySelectorAll('.main-nav a')) link.addEventListener('click', event => {
   event.preventDefault();
-  if (link.hash === '#chat') {showScreen('chat-screen');chat.home();} else if (link.hash === '#worry') { showScreen('worry-screen'); worry.home(); } else if (link.hash === '#check-in') openCheckIn(); else showScreen('breathing-screen');
+  if(location.hash===link.hash)followLocation();else location.hash=link.hash;
 });
 function followLocation() {
   if (location.hash === '#main') return;
   const screen = screenForHash(location.hash);
+  if(screen==='home-screen')wellness.home();
+  if(screen==='progress-screen')wellness.progress();
+  if(screen==='help-screen')wellness.help();
+  if(screen==='account-screen')wellness.account();
   if (screen === 'transition-screen') checkin.home();
   if (screen === 'support-screen') support.entry();
-  if (screen === 'worry-screen') worry.home();
-  if (screen === 'chat-screen') chat.home();
+  if (screen === 'worry-screen') worry.home(location.hash.split('/')[1]);
+  if (screen === 'chat-screen') chat.home(location.hash.split('/')[1]);
   if (screen === 'dashboard-screen') dashboard.home();
   showScreen(screen, true);
 }

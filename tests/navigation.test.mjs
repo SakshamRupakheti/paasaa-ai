@@ -5,7 +5,12 @@ test('deep links resolve without a draft and reflection shares the check-in URL'
  assert.equal(screenForHash('#check-in'),'transition-screen');
  assert.equal(hashForScreen('reflection-screen'),'#check-in');
  assert.equal(screenForHash(hashForScreen('breathing-screen')),'breathing-screen');
- assert.equal(screenForHash('#unknown'),'breathing-screen');
+ assert.equal(screenForHash('#unknown'),'home-screen');
+ assert.equal(screenForHash(''),'home-screen');
+ assert.equal(screenForHash('#progress'),'progress-screen');
+ assert.equal(screenForHash('#help'),'help-screen');
+ assert.equal(screenForHash('#worry/example'),'worry-screen');
+ assert.equal(screenForHash('#chat/example'),'chat-screen');
  assert.equal(screenForHash('#finish'),'finish-screen');
 });
 

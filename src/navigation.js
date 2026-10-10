@@ -1,2 +1,3 @@
-export const screenForHash = hash => hash === '#dashboard' ? 'dashboard-screen' : hash === '#chat' ? 'chat-screen' : hash === '#worry' ? 'worry-screen' : hash === '#support' ? 'support-screen' : hash === '#check-in' ? 'transition-screen' : hash === '#finish' ? 'finish-screen' : 'breathing-screen';
-export const hashForScreen = screen => screen === 'dashboard-screen' ? '#dashboard' : screen === 'chat-screen' ? '#chat' : screen === 'worry-screen' ? '#worry' : screen === 'support-screen' ? '#support' : ['transition-screen','reflection-screen'].includes(screen) ? '#check-in' : screen === 'finish-screen' ? '#finish' : '#breathe';
+const routes={'#home':'home-screen','#progress':'progress-screen','#help':'help-screen','#account':'account-screen','#dashboard':'dashboard-screen','#chat':'chat-screen','#worry':'worry-screen','#support':'support-screen','#check-in':'transition-screen','#finish':'finish-screen','#breathe':'breathing-screen'};
+export const screenForHash=hash=>routes[hash.split('/')[0]]||'home-screen';
+export const hashForScreen=screen=>screen==='reflection-screen'?'#check-in':Object.keys(routes).find(key=>routes[key]===screen)||'#home';

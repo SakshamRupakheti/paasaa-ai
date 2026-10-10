@@ -1,4 +1,6 @@
 import {translations} from './translations.js';
+import {wellnessTranslations} from './wellness-translations.js';
+Object.assign(translations,wellnessTranslations);
 export const LANGUAGES=Object.freeze({en:'English',hi:'हिन्दी',ne:'नेपाली',es:'Español'});
 export const LANGUAGE_KEY='paasaa.interface-language.v1';
 let language='en';
@@ -42,7 +44,7 @@ export function initLanguage(){
   const select=document.createElement('select');select.setAttribute('aria-label','Language / भाषा / Idioma');select.dataset.i18nSkip='true';
   for(const [code,name]of Object.entries(LANGUAGES)){const option=document.createElement('option');option.value=code;option.textContent=name;option.lang=code;select.append(option);}select.value=language;
   const note=document.createElement('small');note.className='language-note';note.textContent='Interface translation preview; some specialist guidance and sources remain in English.';
-  label.append(globe,select);document.querySelector('header').append(label);document.querySelector('footer').append(note);
+  label.append(globe,select);document.querySelector('#profile-settings').append(label);document.querySelector('footer').append(note);
   function apply(){observer.disconnect();document.documentElement.lang=language;note.hidden=language==='en';paint(document.body);observe();document.dispatchEvent(new CustomEvent('paasaa-language-change',{detail:{language}}));}
   select.onchange=()=>{language=normalizeLanguage(select.value);try{localStorage.setItem(LANGUAGE_KEY,language);}catch{}apply();};
   apply();return {disconnect:()=>observer.disconnect()};

@@ -25,7 +25,7 @@ export class SupabaseRecordStore {
   }
   query(filters){return new URLSearchParams({owner:`eq.${this.owner}`,...filters}).toString();}
   async list(kind){
-    if(!['worry','conversation'].includes(kind))throw Error('Invalid record kind');
+    if(!['worry','conversation','mood'].includes(kind))throw Error('Invalid record kind');
     const rows=await this.request(`paasaa_records?${this.query({kind:`eq.${kind}`,select:columns,order:'updated_at.desc',limit:'200'})}`);
     if(!Array.isArray(rows))throw unavailable();return rows.map(row=>this.row(row));
   }
@@ -35,7 +35,7 @@ export class SupabaseRecordStore {
     if(!Array.isArray(rows))throw unavailable();return rows.length?this.row(rows[0]):null;
   }
   async put(record,kind,expected){
-    if(!record||!identifier.test(record.id)||!['worry','conversation'].includes(kind)||!Number.isSafeInteger(expected)||expected<0)throw Error('Invalid record');
+    if(!record||!identifier.test(record.id)||!['worry','conversation','mood'].includes(kind)||!Number.isSafeInteger(expected)||expected<0)throw Error('Invalid record');
     const updatedAt=new Date().toISOString();
     const payload={...record,id:record.id,kind,updatedAt,revision:expected+1};
     const body={payload,revision:expected+1,updated_at:updatedAt};

@@ -8,17 +8,24 @@
   <title>Paasaa.ai — your best space</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="wellness.css">
   <script type="module" src="app.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
 <div id="paasaa-opening">
   <header>
-    <div><a class="brand" href="#breathe" aria-label="Paasaa.ai home">Paasaa.ai</a><div class="motto">your best space</div></div>
-    <nav class="main-nav" aria-label="Main navigation"><a href="#chat">Talk to Paasaa</a><a href="#breathe">Breathe</a><a href="#check-in">Daily check-in</a><a href="#worry">Work through a worry</a></nav><div class="header-actions"><button id="support-open" class="support-entry" type="button">Help me right now</button><div class="clock"><time id="pa-time"></time><div>Your local time</div></div><button id="help-open" type="button">Help & support</button></div>
+    <div><a class="brand" href="#home" aria-label="Paasaa.ai home">Paasaa.ai</a><div class="motto">your best space</div></div>
+    <nav class="main-nav" aria-label="Main navigation"><a href="#home"><span aria-hidden="true">⌂</span>Home</a><a href="#chat"><span aria-hidden="true">◌</span>Chat</a><a href="#progress"><span aria-hidden="true">▥</span>Progress</a><a href="#help"><span aria-hidden="true">♡</span>Help</a></nav>
+    <div class="header-actions"><button id="support-open" class="support-entry" type="button">Help me right now</button><button id="help-open" type="button">Emergency resources</button></div>
+    <details class="profile-menu"><summary>Profile & settings</summary><div id="profile-settings"><div class="clock"><time id="pa-time"></time><div>Your local time</div></div><a href="#account">Account</a><a href="#help">Privacy & support</a></div></details>
   </header>
   <p class="support-tagline">Quick support when anxiety feels like too much.</p>
   <main id="main">
+    <section id="home-screen" class="wellness-page" hidden aria-label="Home"></section>
+    <section id="progress-screen" class="wellness-page" hidden aria-label="Progress"></section>
+    <section id="help-screen" class="wellness-page" hidden aria-label="Help"></section>
+    <section id="account-screen" class="flow-panel" hidden aria-label="Account"></section>
     <section id="breathing-screen" class="breathing-layout" aria-label="Breathing practice">
       <div class="welcome"><span class="eyebrow">A MOMENT FOR YOU</span><h1 id="pa-greeting" tabindex="-1">Hello, there.</h1><p class="intro">You don’t have to figure everything out right now.<br>Let’s start with a little space to breathe.</p></div>
       <div class="home-actions"><a class="home-action" href="#chat"><strong>Talk to Paasaa</strong><span>Find your next step — settle, reflect, or work through a worry.</span></a><a class="home-action" href="#check-in"><strong>Daily check-in</strong><span>Take about 2 minutes to notice how you're doing.</span></a><a class="home-action" href="#worry"><strong>Work through a worry</strong><span>Look at one worry more closely — one step at a time.</span></a></div><div class="visual">
