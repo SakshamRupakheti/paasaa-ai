@@ -78,6 +78,14 @@ Evidence metadata and source links are kept in `src/support-content.js`; clinica
 ## Conversational intelligence engine V1
 The separate safety classifier, planner, policy router, and response layer are engineering controls, not clinical validation. Existing intervention scripts and evidence notes are reused; clinician review remains pending. Groq model documentation supports API compatibility only. Initial synthetic live evaluations found invented instructions and safety false positives; retained reports document those failures and subsequent guard changes. Intended teen use has not been established by adult PMR evidence. Do not use these evaluation pass counts as treatment efficacy or diagnostic accuracy claims.
 
+## Safety outage wording — October 9, 2026
+Source: [NIMH warning signs](https://www.nimh.nih.gov/health/publications/warning-signs-of-suicide).
+Public education, not a Paasaa trial or validated screening protocol. Warning signs
+inform conservative copy selection when assessment is unavailable; API failures
+alone do not establish danger. No population-specific accuracy or treatment benefit
+is claimed; clinical and adolescent review remain pending. See
+`docs/safety-outage-routing.md` for behavior, verification and limitations.
+
 ## Context-aware follow-ups — October 8, 2026
 - Source: Judith Beck, [Why CBT Therapists Don’t Challenge Cognitions](https://beckinstitute.org/blog/why-cbt-therapists-dont-challenge-clients-cognitions-and-why-it-matters/) (2024). Educational clinical guidance on collaborative inquiry and checking a person's meaning, not a trial or chatbot training dataset.
 - Product adaptation: interpret short answers in relation to the preceding question, clarify ambiguous “nothing” before storing an interpretation, accept corrections, and stop a confirmed chain of hypothetical consequences. Preserve original answers and ratings; do not manufacture positive conclusions.

@@ -1,5 +1,5 @@
 import {createProvider} from './ai-provider.js';
-import {classifySafety,crisisMessage} from './engine-safety.js';
+import {classifySafety,crisisMessage,hasSafetyContext} from './engine-safety.js';
 import {planSchema,responseSchema,validate} from './engine-schemas.js';
 import {PLANNER_PROMPT,CONVERSATION_PROMPT,EVERYDAY_STYLE,PROMPT_VERSIONS} from './engine-prompts.js';
 import {updateMemory,compactContext,storedText,sensitiveThought} from './engine-memory.js';
@@ -37,6 +37,7 @@ export async function runConversationEngine(env,session,message,{provider:inject
   const safetyStart=performance.now();const assessment=await classifySafety(provider,message,context.recent,memory);const safetyLatency=Math.round(performance.now()-safetyStart);
   const safety=assessment.safety;
   const operationalSafety=safetyRoute(assessment);
+  const safetyContext=safety.riskLevel!=='none'||session.safetyState==='needs-human-support'||hasSafetyContext(message,context.recent,memory);
   if(safety.needsEmergencyPath)memory.unresolvedUrgent=safety;
   let plan=fallbackPlan(message,memory),plannerSuccess=false;
   const plannerStart=performance.now();
@@ -46,15 +47,20 @@ export async function runConversationEngine(env,session,message,{provider:inject
   const clarifyConsequence=!assessment.failed&&!safety.needsEmergencyPath&&!safety.needsSafetyQuestion&&/what.{0,35}(?:happen|comes?).{0,15}(?:next|after)|what.{0,20}consequences/i.test(previousQuestion)&&/^(?:nothing(?: else| further| really)?|no|none|idk|i don[’']?t know|not sure)[.!?\s]*$/i.test(message.trim());
   if(clarifyConsequence){plan={...plan,interventionId:null,shouldInterveneNow:false,responseMode:memory.questionsAllowed?'CONNECT_AND_EXPLORE':'LISTEN_ONLY',shouldAskQuestion:memory.questionsAllowed};}
   const mode=conversationMode(session,plan,safety,message);
-  if(safety.needsSafetyQuestion)memory.safetyPending=true;else if(!safety.needsEmergencyPath)memory.safetyPending=false;
+  if(safety.needsSafetyQuestion)memory.safetyPending=true;else if(!safety.needsEmergencyPath&&!assessment.failed)memory.safetyPending=false;
   let response=fallbackResponse(plan,memory,message),responseSource='fallback';const responseStart=performance.now();
   if(safety.needsEmergencyPath){response=crisisMessage(safety.category);responseSource='safety';}
   else if(provider&&plannerSuccess&&!assessment.failed&&!plan.interventionId&&!['SAFETY_CHECK','OCD_NON_REASSURANCE'].includes(plan.responseMode)){
     try{response=validateResponse(await provider.generateResponse(CONVERSATION_PROMPT+EVERYDAY_STYLE+(plan.interventionId?' For THIS turn: write only ONE sentence acknowledging the specific situation. Do NOT tell the user to do ANYTHING. Do not mention exercise steps, body movements, sensations to notice, counts or durations. The app provides all instructions separately.':''),{...context,plan,intervention:plan.interventionId?{id:plan.interventionId,title:INTERVENTIONS[plan.interventionId].title}:null},responseSchema),plan);responseSource='model';}catch{}
   }
-  if(assessment.failed)response='I cannot reliably assess this message right now. If you feel unsafe or have severe or unusual physical symptoms, please use human support. You can also pause here.';
+  if(assessment.failed&&!safety.needsEmergencyPath&&!safety.needsSafetyQuestion){
+    response=safetyContext
+      ?'I cannot reliably assess this message right now. If you feel unsafe or have severe or unusual physical symptoms, please use human support. You can also pause here.'
+      :'I’m having trouble responding right now. Please try again in a moment.';
+    responseSource=safetyContext?'safety-fallback':'unavailable';
+  }
   const isGreeting=/^(?:hi|hey|hello|yo|wassup|what'?s up|good morning|good afternoon|good evening)[!.\s]*$/i.test(message.trim());
-  const greet=isGreeting&&mode==='NORMAL'&&!assessment.failed;
+  const greet=isGreeting&&mode==='NORMAL'&&(!assessment.failed||!safetyContext);
   if(greet){response=session.hasGreetedThisSession?'Hey again 🙂 What’s up?':greeting(context.localContext);responseSource='registry';}
   if(mode==='NORMAL'&&plan.responseMode==='GENERAL_CONVERSATION'&&responseSource==='fallback')response=!session.aiConsent
     ?'AI replies are off, so I can’t give a tailored chat reply yet. You can enable AI replies in the chat settings, or use “Work through a worry” without AI.'
@@ -74,6 +80,7 @@ export async function runConversationEngine(env,session,message,{provider:inject
   const telemetry={turnId:crypto.randomUUID(),timestamp:new Date().toISOString(),planner:{primaryState:plan.primaryState,arousal:plan.arousal,userNeed:plan.userNeed,responseMode:plan.responseMode,interventionId:plan.interventionId,confidence:plan.confidence},safety:{riskLevel:safety.riskLevel,category:safety.category},plannerSuccess,responseSource,promptVersions:PROMPT_VERSIONS,metrics:provider?.metrics||[],latency:{safetyLatency,plannerLatency,responseFirstTokenLatency:null,responseCompleteLatency:Math.round(performance.now()-responseStart),totalResponseLatency:Math.round(performance.now()-start)}};
   telemetry.operationalSafety=operationalSafety;
   telemetry.servicePolicyVersion=SERVICE_POLICY_VERSION;
+  telemetry.safetyAssessment={source:assessment.source,failed:!!assessment.failed,failureCode:assessment.failureCode||null};
   // Classification does not create a review item or notify a clinician.
   // Classifications only. No chain of thought, raw prompts, or external analytics.
   return {message:response,action,memory,safety,mode,choices:action||assessment.failed?[]:modeChoices(mode,memory),hasGreetedThisSession:!!session.hasGreetedThisSession||greet,telemetry,storedUserText:safeMessage,redacted,notice:!session.aiConsent?'AI replies are off. This reply uses basic scripted support; no conversation text was sent to Groq.':responseSource==='fallback'&&provider?'Paasaa is using its simpler support mode for this reply.':''};

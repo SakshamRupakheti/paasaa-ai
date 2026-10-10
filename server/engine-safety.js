@@ -1,6 +1,14 @@
 import {safetySchema,validate} from './engine-schemas.js';
 import {SAFETY_PROMPT} from './engine-prompts.js';
 export const emptySafety=()=>({riskLevel:'none',category:'none',intentDetected:false,planDetected:false,immediacyDetected:false,meansMentioned:false,cannotStaySafe:false,needsSafetyQuestion:false,needsEmergencyPath:false,confidence:0});
+// Outage copy selection only, never a declaration of safety or permission to
+// resume model advice. Inspect user context; our own help text is not a trigger.
+export function hasSafetyContext(message,recent=[],memory={}) {
+  if(memory.safetyPending||memory.unresolvedUrgent)return true;
+  return [message,...recent.filter(t=>t.role==='user').map(t=>t.text||'')].some(text=>
+    localSafety(text,memory).riskLevel!=='none'||
+    /\b(?:want to die|wish I (?:was|were) dead|better off dead|end it all|nothing to live for|can't go on|cannot go on|not safe|being abused|hearing voices|overdose)\b/i.test(text));
+}
 export function localSafety(message,memory={}) {
   const s=emptySafety(),t=message.toLowerCase().replace(/[’]/g,"'");
   const unwanted=memory.intrusiveThoughtPresent||/intrusive|unwanted|don't want (?:these|them|to)|do not want|terrified.*thought|hate.*thought|what if/i.test(t);
@@ -28,6 +36,6 @@ export async function classifySafety(provider,message,recent,memory={}) {
     // Local ambiguity cannot be silently dismissed by the model.
     if(baseline.riskLevel==='clarify'&&['none','monitor'].includes(result.riskLevel))return {safety:baseline,source:'local+model'};
     return {safety:result,source:'model'};
-  }catch{return {safety:baseline,source:'fallback',failed:true};}
+  }catch(error){return {safety:baseline,source:'fallback',failed:true,failureCode:['timeout','rate_limit','upstream','request_rejected','invalid_output'].includes(error?.code)?error.code:'invalid_output'};}
 }
 export const crisisMessage=category=>category==='medical'?'These symptoms need urgent medical attention; I cannot tell whether they are anxiety. Contact local emergency services or urgent medical help now. Paasaa has not contacted anyone.':'Please reach someone who can help you stay safe now: local emergency services, a crisis service, or a safe trusted person nearby. If you can do so safely, put distance between yourself and anything you could use to cause harm. Paasaa has not contacted anyone.';
