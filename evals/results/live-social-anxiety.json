@@ -1,0 +1,71 @@
+{
+  "mode": "live-social-anxiety",
+  "syntheticOnly": true,
+  "generatedAt": "2026-10-04T00:31:51.148Z",
+  "report": [
+    {
+      "scenario": "social anxiety",
+      "turns": [
+        {
+          "user": "I'm outside the party and feel like everyone will judge me",
+          "assistant": "We can focus on getting started, even with the nerves still here. What is your first small action?",
+          "action": null,
+          "decision": {
+            "turnId": "eb1007ac-6dd1-4c01-8cd4-57122398fb3d",
+            "timestamp": "2026-10-04T00:31:51.147Z",
+            "planner": {
+              "primaryState": "SOCIAL_ANXIETY",
+              "arousal": "moderate",
+              "userNeed": "SLOW_AROUSAL",
+              "responseMode": "PERFORMANCE_SUPPORT",
+              "interventionId": null,
+              "confidence": 0.85
+            },
+            "safety": {
+              "riskLevel": "none",
+              "category": "none"
+            },
+            "plannerSuccess": true,
+            "responseSource": "fallback",
+            "promptVersions": {
+              "conversation": "1.0.0",
+              "planner": "1.0.0",
+              "safety": "1.0.0"
+            },
+            "metrics": [
+              {
+                "role": "safety",
+                "model": "openai/gpt-oss-safeguard-20b",
+                "latencyMs": 825,
+                "status": "ok",
+                "tokens": 991
+              },
+              {
+                "role": "planner",
+                "model": "openai/gpt-oss-20b",
+                "latencyMs": 1301,
+                "status": "ok",
+                "tokens": 2307
+              },
+              {
+                "role": "conversation",
+                "model": "openai/gpt-oss-120b",
+                "latencyMs": 1323,
+                "status": "ok",
+                "tokens": 1157
+              }
+            ],
+            "latency": {
+              "safetyLatency": 827,
+              "plannerLatency": 1301,
+              "responseFirstTokenLatency": null,
+              "responseCompleteLatency": 1325,
+              "totalResponseLatency": 3456
+            }
+          },
+          "reviewScores": null
+        }
+      ]
+    }
+  ]
+}

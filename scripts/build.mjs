@@ -1,0 +1,10 @@
+import {mkdir,readFile,readdir,writeFile,cp} from 'node:fs/promises';
+import {build} from 'esbuild';
+const assets={};
+for(const name of await readdir(new URL('../src/',import.meta.url))) assets['/'+(name==='index.html'?'':name)]={body:await readFile(new URL('../src/'+name,import.meta.url),'utf8'),type:name.endsWith('.html')?'text/html':name.endsWith('.css')?'text/css':name.endsWith('.svg')?'image/svg+xml':'text/javascript'};
+await mkdir(new URL('../dist/server/',import.meta.url),{recursive:true});
+await build({stdin:{contents:`import {handleApi} from './server/api.js'; const assets=${JSON.stringify(assets)}; export default {async fetch(request,env){const path=new URL(request.url).pathname;if(path.startsWith('/api/'))return handleApi(request,env);const asset=assets[path==='/'?'/':path];if(!asset)return new Response('Not found',{status:404});return new Response(asset.body,{headers:{'Content-Type':asset.type+'; charset=utf-8','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Cache-Control':'no-store'}});}};`,resolveDir:process.cwd(),sourcefile:'worker-entry.js'},bundle:true,format:'esm',platform:'browser',target:'es2022',outfile:'dist/server/index.js'});
+await mkdir('dist/.openai',{recursive:true});
+await cp('.openai/hosting.json','dist/.openai/hosting.json');
+await cp('drizzle','dist/.openai/drizzle',{recursive:true});
+console.log('Built Worker with existing UI, authenticated API, and migrations.');

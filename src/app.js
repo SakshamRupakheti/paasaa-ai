@@ -1,23 +1,214 @@
+import {initLanguage,getLanguage,translate,formatTranslation as tf} from './i18n.js';
+initLanguage();
+import {completeGoogleSignIn} from './auth.js';
+import {createDashboard} from './dashboard.js';
+import {createWellness} from './wellness.js';
+import {mountSafetyList} from './safety-resources.js';
+await completeGoogleSignIn();
+import { createWorry } from './worry.js';
+import { createChat } from './chat.js';
+import { createSupport } from './support.js';
+import { screenForHash, hashForScreen } from './navigation.js';
+import { createCheckIn } from './checkin.js';
+import { BreathClock, breathState, DEFAULT_PROTOCOL } from './breathing.js';
+const $ = id => document.getElementById(id);
+const clock = new BreathClock();
+let config = { ...DEFAULT_PROTOCOL };
+let frame = null;
+let mode = 'ready';
+let currentScreen = 'breathing-screen';
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+$('pa-motion').checked = reduced.matches;
 
-  (()=>{
-    const root=document.getElementById('paasaa-opening');
-    const get=id=>root.querySelector('#'+id);
-    const start=get('pa-start'),own=get('pa-own'),phase=get('pa-phase'),count=get('pa-count'),motion=get('pa-motion'),lungs=root.querySelector('.lung-volume');
-    let running=false,elapsed=0,last=0,mode='guided',lastPhase='';
-    const preferred=window.matchMedia('(prefers-reduced-motion: reduce)');
-    motion.checked=preferred.matches;
-    function clock(){const now=new Date();const h=now.getHours();get('pa-greeting').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', there.';get('pa-time').textContent=now.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});get('pa-time').dateTime=now.toISOString();}
-    clock();setInterval(clock,30000);
+const airPaths = ['flow-left','flow-right'].map(id => $(id));
+const wavelets = airPaths.flatMap((path, side) => Array.from({length:6}, (_, index) => {
+  const wave = document.createElementNS('http://www.w3.org/2000/svg','path');
+  wave.setAttribute('d','M-5 -3 Q0 -7 5 -3 M-4 2 Q0 -1 4 2');
+  $('airflow').append(wave);
+  return {wave,path,index,side,length:path.getTotalLength()};
+}));
 
-    function stop(){running=false;last=0;lungs.style.transform='scale(1)';}
-    start.addEventListener('click',()=>{if(running){stop();phase.textContent='Take your time.';count.textContent='Paused · Breathe normally';start.textContent='Resume';}else{if(mode!=='guided'){elapsed=0;mode='guided';}running=true;last=0;lastPhase='';start.textContent='Pause';}});
-    own.addEventListener('click',()=>{stop();elapsed=0;mode='own';phase.textContent='Breathe at your own pace.';count.textContent='No timer. No need to change your breath.';start.textContent='Try guided breathing';});
-    get('pa-skip').addEventListener('click',()=>{stop();elapsed=0;mode='guided';phase.textContent='That’s okay. You choose the pace.';count.textContent='The next screen will be designed separately.';start.textContent='Let’s breathe';});
+function updateClock() {
+  const now = new Date();
+  const hour = now.getHours();
+  $('pa-greeting').textContent = `${hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'}, there.`;
+  $('pa-time').textContent = now.toLocaleTimeString(getLanguage(), { hour: 'numeric', minute: '2-digit' });
+  $('pa-time').dateTime = now.toISOString();
+}
+updateClock();
+document.addEventListener('paasaa-language-change',updateClock);
+setInterval(updateClock, 30000); // Wall clock only; never drives breathing.
 
-    preferred.addEventListener('change',event=>{motion.checked=event.matches;});
-    document.addEventListener('visibilitychange',()=>{if(document.hidden&&running){stop();phase.textContent='Paused';count.textContent='Continue when you’re ready.';start.textContent='Resume';}});
-    function tick(t){if(running){if(last)elapsed+=Math.min(t-last,100);last=t;const cycle=elapsed%9000;const inhale=cycle<3000;const label=inhale?'Breathe in gently.':'Let your breath out gently.';if(lastPhase!==label){phase.textContent=label;lastPhase=label;}const remaining=inhale?Math.ceil((3000-cycle)/1000):Math.ceil((9000-cycle)/1000);count.textContent=remaining+' seconds · '+(inhale?'in':'out');const progress=inhale?cycle/3000:1-(cycle-3000)/6000;const eased=(1-Math.cos(progress*Math.PI))/2;lungs.style.transform=motion.checked?'scale(1)':'scale('+(0.94+eased*.12)+')';}requestAnimationFrame(tick);}
-    requestAnimationFrame(tick);
-  })();
-  
+function renderBreathing() {
+  const state = breathState(clock.read(), config);
+  const moving = !$('pa-motion').checked && mode !== 'own';
+  const expansion = moving ? state.expansion : 0;
+  $('airflow').style.visibility = moving && mode !== 'ready' ? 'visible' : 'hidden';
+  for (const {wave,path,index,length} of wavelets) {
+    const position = (expansion * .82 + index / 6) % 1;
+    const point = path.getPointAtLength(length * position);
+    const next = path.getPointAtLength(Math.min(length, length * position + 1));
+    const angle = Math.atan2(next.y - point.y,next.x - point.x) * 180 / Math.PI - 90;
+    wave.setAttribute('transform',`translate(${point.x} ${point.y}) rotate(${angle})`);
+    wave.style.opacity = String(Math.sin(position * Math.PI) * .65);
+  }
+  $('chest-glow').setAttribute('opacity',.12 + expansion * .16);
+  $('lungs').setAttribute('transform', `translate(210 250) scale(${1 + expansion * .045} ${1 + expansion * .055}) translate(-210 -250)`);
+  const meter = $('cycle-progress');
+  // Fill on inhale and release on exhale; text and color both identify phase.
+  const active = mode === 'running' || mode === 'paused';
+  const level = active ? (state.inhaling ? state.phaseProgress : 1 - state.phaseProgress) : 0;
+  // Explicit fill avoids browser-dependent native progress rendering.
+  const shownLevel = $('pa-motion').checked ? Math.round(level * 10) / 10 : level;
+  $('breath-fill').style.transform = `scaleX(${shownLevel})`;
+  meter.setAttribute('aria-valuenow', String(Math.round(level * 100)));
+  $('motion-note').hidden = !$('pa-motion').checked;
+  $('torso').setAttribute('transform', `translate(210 174) scale(${1 + expansion * .035} ${1 + expansion * .014}) translate(-210 -174)`);
+  $('belly-line').setAttribute('d', `M168 313 Q210 ${326 + expansion * 6} 252 313`);
+  $('diaphragm').setAttribute('d', `M162 303 Q210 ${274 + expansion * 23} 258 303`);
+  meter.dataset.phase = state.inhaling ? 'inhale' : 'exhale';
+  const phaseName = translate(state.inhaling ? 'Inhale' : 'Exhale');
+  meter.setAttribute('aria-label', active ? (mode === 'paused' ? tf('{phase} · paused',{phase:phaseName}) : phaseName) : translate('Breathing pace'));
+  $('count-number').hidden = mode === 'own';
+  $('count-number').textContent = mode === 'own' ? '—' : state.seconds;
+  $('cycle-label').textContent = mode === 'ready'
+    ? tf('{cycles} cycles · {seconds} seconds · optional',{cycles:config.cycles,seconds:(config.inhale+config.exhale)*config.cycles})
+    : tf('Cycle {current} of {total}',{current:state.cycle,total:config.cycles});
+  const phase = translate(state.inhaling ? 'Breathe in' : 'Breathe out');
+  if (mode === 'running' || mode === 'paused') {
+    const label = mode === 'paused' ? tf('{phase} · paused',{phase}) : phase;
+    if ($('pa-phase').textContent !== label) $('pa-phase').textContent = label;
+    $('pa-count').textContent = tf(mode === 'paused' ? '{seconds} seconds remaining · breathe normally while paused' : state.seconds === 1 ? '{seconds} second · gently' : '{seconds} seconds · gently',{seconds:state.seconds});
+    $('companion-message').textContent = mode === 'paused' ? 'Easy does it.' : state.inhaling ? 'No need to match the count perfectly.' : 'Let it out gently.';
+  }
+  return state;
+}
+function loop() {
+  const state = renderBreathing();
+  if (state.done) {
+    clock.pause(); mode = 'complete';
+    showScreen('transition-screen');
+    return;
+  }
+  if (clock.running) frame = requestAnimationFrame(loop);
+}
+function pauseBreathing() {
+  if (!clock.running) return;
+  clock.pause(); cancelAnimationFrame(frame);
+  mode = 'paused'; $('pa-start').textContent = 'Resume';
+  renderBreathing();
+}
+function resetBreathing() {
+  clock.reset(); cancelAnimationFrame(frame); mode = 'ready';
+  $('pa-start').textContent = 'Start breathing';
+  $('pa-phase').textContent = 'Take a moment for yourself.';
+  $('pa-count').textContent = tf('{inhale} seconds in · {exhale} seconds out',config);
+  $('companion-message').textContent = 'Breathe with me.';
+  renderBreathing();
+}
+function showScreen(id, fromHistory = false) {
+  if (currentScreen === 'reflection-screen' && id !== currentScreen) checkin.leave();
+  if (id === 'transition-screen' && currentScreen === 'breathing-screen') checkin.home();
+  if (id !== 'breathing-screen') pauseBreathing();
+  for (const screen of ['home-screen','progress-screen','help-screen','account-screen','breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen', 'support-screen', 'worry-screen', 'chat-screen', 'dashboard-screen']) $(screen).hidden = screen !== id;
+  if (currentScreen === 'support-screen' && id !== currentScreen) support.leave();
+  if (currentScreen === 'worry-screen' && id !== currentScreen) worry.leave();
+  if (currentScreen === 'chat-screen' && id !== currentScreen) chat.leave();
+  currentScreen = id;
+  document.body.classList.toggle('chat-layout', id === 'chat-screen');
+  const hash = hashForScreen(id);
+  if (!fromHistory && location.hash !== hash) history.pushState(null, '', hash);
+  for (const link of document.querySelectorAll('.main-nav a')) {
+    const destination=['#breathe','#check-in','#finish','#worry'].includes(hash)?'#home':hash==='#support'?'#help':hash;
+    if (link.hash === destination) link.setAttribute('aria-current','page'); else link.removeAttribute('aria-current');
+  }
+  $('open-checkin').textContent = checkin.hasDraft() ? 'Resume daily check-in' : 'Start daily check-in';
+  $(id).querySelector('h1')?.focus();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+$('pa-start').addEventListener('click', () => {
+  if (clock.running) { pauseBreathing(); return; }
+  if (mode === 'own' || mode === 'complete') resetBreathing();
+  clock.start(); mode = 'running'; $('pa-start').textContent = 'Pause'; loop();
+});
+$('pa-restart').addEventListener('click', resetBreathing);
+$('pa-own').addEventListener('click', () => {
+  resetBreathing(); mode = 'own'; renderBreathing();
+  $('pa-phase').textContent = 'Breathe at your own pace.';
+  $('pa-count').textContent = 'No timer. No need to change your breath.';
+  $('cycle-label').textContent = 'Continue whenever you’re ready.';
+  $('pa-start').textContent = 'Try guided breathing';
+});
+$('pa-skip').addEventListener('click', () => showScreen('transition-screen'));
+$('return-breathing').addEventListener('click', () => { if (mode === 'complete') resetBreathing(); showScreen('breathing-screen'); });
+$('finish-breathe').addEventListener('click', () => { resetBreathing(); showScreen('breathing-screen'); });
+$('finish-transition').addEventListener('click', () => showScreen('finish-screen'));
+for (const name of ['inhale', 'exhale']) $(name).addEventListener('change', () => {
+  config[name] = Number($(name).value); resetBreathing();
+});
+$('pa-motion').addEventListener('change', renderBreathing);
+reduced.addEventListener('change', event => { $('pa-motion').checked = event.matches; renderBreathing(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) pauseBreathing(); else updateClock();
+});
+$('help-open').addEventListener('click', () => { pauseBreathing(); support.pause(); $('help-dialog').showModal(); });
+$('clear-session').addEventListener('click', () => { pauseBreathing(); support.pause(); $('clear-dialog').showModal(); });
+$('cancel-clear').addEventListener('click', () => $('clear-dialog').close());
+resetBreathing();
+document.addEventListener('paasaa-language-change',()=>{
+  if(mode==='own')return;
+  renderBreathing();
+  if(mode==='ready')$('pa-count').textContent=tf('{inhale} seconds in · {exhale} seconds out',config);
+});
 
+const dashboard = createDashboard();
+const wellness = createWellness();
+const support = createSupport();
+const worry = createWorry(()=>{ support.safety(); showScreen('support-screen'); });
+const checkin = createCheckIn(showScreen);
+const chat = createChat(checkin,()=>{support.safety();showScreen('support-screen');});
+checkin.home();
+document.getElementById('review-again').addEventListener('click', () => { checkin.home(); showScreen('transition-screen'); });
+
+document.getElementById('confirm-clear').addEventListener('click', () => {
+  const supportError = support.clear(); checkin.clear(); chat.clear(); document.getElementById('clear-dialog').close(); showScreen('transition-screen');
+  if (supportError) { const note = document.createElement('p'); note.textContent = supportError; document.getElementById('checkin-home').append(note); }
+});
+
+function openCheckIn() { checkin.home(); showScreen('transition-screen'); }
+$('open-checkin').addEventListener('click', openCheckIn);
+for (const link of document.querySelectorAll('.main-nav a')) link.addEventListener('click', event => {
+  event.preventDefault();
+  if(location.hash===link.hash)followLocation();else location.hash=link.hash;
+});
+function followLocation() {
+  if (location.hash === '#main') return;
+  const screen = screenForHash(location.hash);
+  if(screen==='home-screen')wellness.home();
+  if(screen==='progress-screen')wellness.progress();
+  if(screen==='help-screen')wellness.help();
+  if(screen==='account-screen')wellness.account();
+  if (screen === 'transition-screen') checkin.home();
+  if (screen === 'support-screen') support.entry();
+  if (screen === 'worry-screen') worry.home(location.hash.split('/')[1]);
+  if (screen === 'chat-screen') chat.home(location.hash.split('/')[1]);
+  if (screen === 'dashboard-screen') dashboard.home();
+  showScreen(screen, true);
+}
+window.addEventListener('popstate', followLocation);
+window.addEventListener('hashchange', followLocation);
+followLocation();
+
+
+
+
+
+
+$('support-open').addEventListener('click',()=>{support.entry();showScreen('support-screen');});
+
+
+
+
+mountSafetyList(document.querySelector('#help-dialog ul'));
+
+const monitoringNotice=document.createElement('p');monitoringNotice.className='service-disclosure';monitoringNotice.textContent='AI availability does not mean a clinician is watching. There is no staffed review or on-call service connected to this prototype. Paasaa has not contacted anyone.';document.getElementById('help-title').after(monitoringNotice);

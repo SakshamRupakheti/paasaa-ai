@@ -1,12 +1,13 @@
 # Paasaa development instructions
 
-- Build one agreed feature at a time. The active milestone is the breathing opening screen; do not expand into a full chatbot or CBT service without user direction.
+- Build one agreed feature at a time. The active milestone includes breathing, local daily self-monitoring and the authorized immediate-support flow. Worry exploration and server-side transcription/AI are now authorized. Clinician sharing remains preview-only until separately configured.
 - Keep the brand `Paasaa.ai` and motto `your best space`.
 - The intended audience includes ages 13+. Do not assume adult study results apply to teens.
 - Use a calm white/blue design, readable contrast, natural illustration, and optional motion. Clearly disclose AI when conversational AI is added.
 - Track health claims in `docs/evidence-register.md`, including population, protocol, results, limitations, and clinical-review status.
 - The 3-in/6-out rhythm is provisional. Never label it or Paasaa clinically validated without direct evidence.
 - Preserve start, pause, skip, self-paced, and reduced-motion options.
-- No real health data, secrets, analytics, or external AI calls in the prototype.
+- Use synthetic data for testing. No secrets in source or browser code, no analytics; keep AI credentials server-side. Per the user’s October 8 UI decision, new chats default to AI with a visible Groq/prototype notice before Send and an AI-off setting in the popup. Preserve existing opt-outs. The mic action must disclose automatic Groq transcription; stopping fills an editable draft and Send confirms submission. No additional consent checkboxes in chat.
 - Keep source and docs in this repository. Use feature branches and reviewable pull requests for subsequent development.
+- The conversational guide is authorized: reuse existing worksheet records, require explicit answer confirmation, and use server-allowlisted exercise/source links. Do not let model output mutate records.
 - Run `npm run check` for code changes. Test meaningful interactions in a browser when changing their behavior. Record what was actually checked.

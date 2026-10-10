@@ -1,0 +1,18 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {muscleGroups,discreetGroups,targetedGroups} from '../src/support-content.js';
+import {GuidedTimer,pmrPlan,breathingPlan,thoughtDestination,newSupportSession,summaryRecord,saveSupportSummary,SUPPORT_KEY} from '../src/support-model.js';
+test('16 groups follow dominance with gentle timing and explicit neck/jaw cautions',()=>{for(const side of ['right','left']){const gs=muscleGroups(side);assert.equal(gs.length,16);assert.equal(gs[0].side,side);assert.notEqual(gs[2].side,side);assert.equal(new Set(gs.map(g=>g.id)).size,16);assert.ok(gs.every(g=>g.tenseSeconds===5&&g.releaseSeconds===20));assert.match(gs[7].contraindicationNote,/Skip/);assert.match(gs[6].contraindicationNote,/TMJ/);}});
+test('full 16-group session can complete and skip neck instantly',()=>{let t=0;const timer=new GuidedTimer(pmrPlan(muscleGroups()),()=>t);timer.start();let transitions=0;while(!timer.done){t+=timer.step.seconds*1000;timer.read();transitions++;}assert.equal(transitions,32);assert.equal(timer.durationSeconds,400);const neck=new GuidedTimer(pmrPlan(muscleGroups().slice(7)),()=>0);neck.start();neck.skipGroup();assert.equal(neck.step.group.id,'shoulders');});
+test('timer pauses, repeats, and never catches up through unobserved tension phases',()=>{let t=0;const timer=new GuidedTimer(pmrPlan(targetedGroups('jaw')),()=>t);timer.start();t=2000;timer.pause();t=20000;assert.equal(timer.read().remaining,3);timer.start();t=23000;assert.equal(timer.read().step.kind,'release');timer.repeatGroup();assert.equal(timer.step.kind,'tense');t+=90000;assert.equal(timer.read().step.kind,'release');assert.equal(timer.read().remaining,20);});
+test('discreet plan excludes neck/face and stays bounded; awareness never instructs tensing',()=>{const gs=discreetGroups(['Thighs','Feet']);assert.ok(gs.every(g=>g.publicFriendly));const plan=pmrPlan(gs);assert.equal(plan.reduce((n,s)=>n+s.seconds,0),50);assert.ok(pmrPlan(gs,{awareness:true}).every(s=>s.kind!=='tense'));});
+test('acute breathing is 60 seconds with no hold; performance breathing fits 30 seconds',()=>{assert.equal(breathingPlan().reduce((n,s)=>n+s.seconds,0),60);assert.equal(breathingPlan(3).reduce((n,s)=>n+s.seconds,0),30);assert.ok(breathingPlan().every(s=>['inhale','exhale'].includes(s.kind)));});
+test('uncertainty and possible intent exit to safety, not reassurance',()=>{assert.equal(thoughtDestination('unwanted'),'thought-support');for(const c of ['might-act','unsure',''])assert.equal(thoughtDestination(c),'safety');});
+test('summary allowlist omits thought narratives and keeps sharing off',()=>{const s=newSupportSession();s.thought='private';s.narrative='private';const record=summaryRecord(s);assert.ok(!('thought'in record));assert.ok(!('narrative'in record));assert.equal(record.distressBefore,null);assert.equal(record.userRequestedClinicianSharing,false);});
+
+test('13-minute full plan covers all 16 groups twice',()=>{
+ const gs=muscleGroups('left'),plan=pmrPlan(gs,{rounds:2});assert.equal(plan.length,64);assert.equal(plan.reduce((n,s)=>n+s.seconds,0),800);assert.equal(new Set(plan.map(s=>s.groupId)).size,16);
+});
+
+
+test('explicit summary save deduplicates, excludes narrative, and preserves corrupt storage',()=>{const m=new Map();const storage={getItem:k=>m.get(k),setItem:(k,v)=>m.set(k,v)};const session=newSupportSession();session.thought='must not save';saveSupportSummary(storage,session);saveSupportSummary(storage,session);const records=JSON.parse(m.get(SUPPORT_KEY));assert.equal(records.length,1);assert.equal(records[0].thought,undefined);storage.setItem(SUPPORT_KEY,'broken');assert.throws(()=>saveSupportSummary(storage,session));assert.equal(m.get(SUPPORT_KEY),'broken');});

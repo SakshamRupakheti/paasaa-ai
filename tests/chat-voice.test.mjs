@@ -1,0 +1,15 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createChatVoice} from '../src/chat-voice.js';
+function setup({request,media}={}){
+  const states=[],drafts=[];let stopped=0,requests=0,instance;
+  class Recorder{constructor(){instance=this;this.mimeType='audio/webm';this.state='inactive';}start(){this.state='recording';}stop(){this.state='inactive';this.ondataavailable?.({data:new Blob(['synthetic audio'])});this.done=this.onstop?.();}}
+  const voice=createChatVoice({onState:(s,m)=>states.push([s,m]),onTranscript:t=>drafts.push(t),Recorder,media:media||{getUserMedia:async()=>({getTracks:()=>[{stop(){stopped++;}}]})},request:async(path,options)=>{requests++;assert.equal(path,'/api/transcribe');assert.equal(options.body.get('consent'),'true');return request?request(path,options):Response.json({rawTranscript:'Synthetic voice draft'});}});
+  return {voice,states,drafts,get recorder(){return instance;},get stopped(){return stopped;},get requests(){return requests;}};
+}
+test('one tap records, stop automatically transcribes into a draft without submitting chat',async()=>{const s=setup();await s.voice.toggle();assert.equal(s.voice.state,'recording');assert.equal(s.requests,0);await s.voice.toggle();await s.recorder.done;assert.deepEqual(s.drafts,['Synthetic voice draft']);assert.equal(s.requests,1);assert.equal(s.voice.state,'idle');assert.ok(s.stopped>0);s.voice.dispose();});
+test('mic permission denial leaves draft untouched and allows typing',async()=>{const s=setup({media:{getUserMedia:async()=>{throw Error('denied');}}});await s.voice.toggle();assert.equal(s.voice.state,'idle');assert.equal(s.requests,0);assert.deepEqual(s.drafts,[]);assert.match(s.states.at(-1)[1],/still type/);});
+test('cancel recording releases microphone and never uploads audio',async()=>{const s=setup();await s.voice.toggle();s.voice.dispose();await s.recorder.done;assert.equal(s.requests,0);assert.deepEqual(s.drafts,[]);assert.ok(s.stopped>0);});
+test('cancel while permission is pending releases late microphone access',async()=>{let resolve;const s=setup({media:{getUserMedia:()=>new Promise(r=>resolve=r)}});const pending=s.voice.toggle();s.voice.dispose();let stopped=false;resolve({getTracks:()=>[{stop(){stopped=true;}}]});await pending;assert.equal(stopped,true);assert.equal(s.requests,0);});
+test('transcription errors do not replace an existing draft',async()=>{const s=setup({request:async()=>Response.json({error:'Limit reached'},{status:429})});await s.voice.toggle();await s.voice.toggle();await s.recorder.done;assert.deepEqual(s.drafts,[]);assert.equal(s.voice.state,'idle');assert.match(s.states.at(-1)[1],/Limit reached/);});
+test('pending transcription blocks duplicate recording and cancellation suppresses late results',async()=>{let resolve;const s=setup({request:()=>new Promise(r=>resolve=r)});await s.voice.toggle();await s.voice.toggle();await s.voice.toggle();assert.equal(s.requests,1);s.voice.dispose();resolve(Response.json({rawTranscript:'Late result'}));await s.recorder.done;assert.deepEqual(s.drafts,[]);});
