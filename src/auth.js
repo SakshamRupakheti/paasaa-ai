@@ -1,4 +1,4 @@
-import {beginGoogleOAuth,oauthCallback} from './oauth.js';
+import {oauthCallback} from './oauth.js';
 const storageKey='paasaa-auth-session';
 let configPromise,refreshPromise;
 const rawFetch=(...args)=>globalThis.fetch(...args);
@@ -27,7 +27,8 @@ export async function requireAccount(root,retry){
   root.classList.add('account-required');
   let c;try{c=await authConfig();if(!c){root.classList.remove('account-required');return true;}if(await accessToken()){if(!document.getElementById('account-signout')){const out=node('button','Sign out');out.id='account-signout';out.className='text-button';out.onclick=signOut;document.querySelector('#profile-settings')?.append(out);}root.classList.remove('account-required');return true;}}catch(e){root.replaceChildren(node('h1','Connect to Paasaa'),node('p',e.message));const b=node('button','Try again');b.onclick=retry;root.append(b);return false;}
   root.replaceChildren(node('h1','Your space, saved for you'),node('p','Sign in to chat and return to your worry reflections. Breathing and daily check-ins are available without an account.'));
-  const google=node('button','Continue with Google');google.className='google-signin';google.type='button';const googleStatus=node('p');googleStatus.setAttribute('role','status');googleStatus.textContent=sessionStorage.getItem('paasaa-auth-notice')||'';sessionStorage.removeItem('paasaa-auth-notice');google.onclick=async()=>{google.disabled=true;try{const settings=await rawFetch(c.supabaseUrl+'/auth/v1/settings',{headers:{apikey:c.supabasePublishableKey},signal:AbortSignal.timeout(10000)});if(!settings.ok||(await settings.json()).external?.google!==true)throw Error('Google sign-in is still being configured. Please use email for now.');location.assign(await beginGoogleOAuth(c));}catch(e){googleStatus.textContent=e.message;google.disabled=false;}};root.append(google,googleStatus,node('p','Or continue with email'));
+  // Google sign-in is temporarily hidden; finish existing callbacks without disrupting sessions.
+  const authNotice=node('p');authNotice.setAttribute('role','status');authNotice.textContent=sessionStorage.getItem('paasaa-auth-notice')||'';sessionStorage.removeItem('paasaa-auth-notice');root.append(authNotice);
   const form=node('form');form.className='account-form';const email=node('input'),password=node('input');email.type='email';email.autocomplete='email';email.required=true;password.type='password';password.autocomplete='current-password';password.required=true;password.minLength=8;
   for(const [label,input] of [['Email',email],['Password',password]]){const l=node('label',label);l.append(input);form.append(l);}
   const submit=node('button','Sign in');submit.type='submit';submit.className='primary';const signup=node('button','Create account');signup.type='button';const status=node('p');status.setAttribute('role','status');form.append(submit,signup,status);root.append(form,node('p','Your sign-in stays in this tab. Chat uses Groq AI; you can turn AI replies off in chat settings.'));
