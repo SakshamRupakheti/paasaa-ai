@@ -1,5 +1,17 @@
 // Authored interface translations; not clinically reviewed guidance.
 const rows=[
+['Welcome to Paasaa','Paasaa में आपका स्वागत है','Paasaa मा स्वागत छ','Te damos la bienvenida a Paasaa'],
+['Just your name and country. No email or password needed.','बस आपका नाम और देश। ईमेल या पासवर्ड की ज़रूरत नहीं।','तपाईंको नाम र देश मात्र। इमेल वा पासवर्ड चाहिँदैन।','Solo tu nombre y país. No necesitas correo ni contraseña.'],
+['Name or nickname','नाम या उपनाम','नाम वा बोलाउने नाम','Nombre o apodo'],
+['Country','देश','देश','País'],
+['Enter Paasaa','Paasaa में प्रवेश करें','Paasaa मा प्रवेश गर्नुहोस्','Entrar a Paasaa'],
+['End guest session','अतिथि सत्र समाप्त करें','अतिथि सत्र अन्त्य गर्नुहोस्','Finalizar sesión de invitado'],
+['Opening your space…','आपकी जगह खुल रही है…','तपाईंको ठाउँ खुल्दैछ…','Abriendo tu espacio…'],
+['Please enter your name and country.','कृपया अपना नाम और देश दर्ज करें।','कृपया आफ्नो नाम र देश लेख्नुहोस्।','Introduce tu nombre y país.'],
+['Your guest session could not start. Please try again shortly.','अतिथि सत्र शुरू नहीं हुआ। थोड़ी देर में फिर कोशिश करें।','अतिथि सत्र सुरु भएन। केही बेरपछि फेरि प्रयास गर्नुहोस्।','No se pudo iniciar la sesión. Inténtalo de nuevo en unos momentos.'],
+['Your name and country are saved with your private guest session. Closing this tab, clearing browser data, or ending the session can lose access to saved chats and check-ins. Use a nickname if you prefer.','आपका नाम और देश निजी अतिथि सत्र में सहेजे जाते हैं। टैब बंद करने, ब्राउज़र डेटा मिटाने या सत्र समाप्त करने पर सहेजी गई चैट और चेक-इन तक पहुँच खो सकती है। चाहें तो उपनाम इस्तेमाल करें।','तपाईंको नाम र देश निजी अतिथि सत्रसँग सुरक्षित गरिन्छ। यो ट्याब बन्द गर्दा, ब्राउजर डेटा मेटाउँदा वा सत्र अन्त्य गर्दा सुरक्षित कुराकानी र चेक-इनमा पहुँच गुम्न सक्छ। चाहेमा बोलाउने नाम प्रयोग गर्नुहोस्।','Tu nombre y país se guardan con tu sesión privada de invitado. Cerrar esta pestaña, borrar los datos del navegador o terminar la sesión puede hacerte perder el acceso a los chats y registros guardados. Puedes usar un apodo.'],
+['For ages 13+. AI support, not a therapist. Chat uses Groq when AI replies are on.','13+ उम्र के लिए। AI सहायता, चिकित्सक नहीं। AI जवाब चालू होने पर चैट Groq उपयोग करता है।','१३ वर्षमाथिका लागि। AI सहयोग, चिकित्सक होइन। AI जवाफ चालू हुँदा कुराकानीले Groq प्रयोग गर्छ।','Para mayores de 13 años. Apoyo con IA, no un terapeuta. El chat usa Groq cuando las respuestas de IA están activadas.'],
+
 ['AI support companion','AI सहायक साथी','AI सहयोगी साथी','Compañero de apoyo con IA'],
 ['Good morning','सुप्रभात','शुभ प्रभात','Buenos días'],['Good afternoon','शुभ दोपहर','शुभ दिउँसो','Buenas tardes'],['Good evening','शुभ संध्या','शुभ साँझ','Buenas noches'],
 ['This check-in changed in another tab. Reload before saving.','यह चेक-इन दूसरे टैब में बदला है। सहेजने से पहले रीलोड करें।','यो चेक-इन अर्को ट्याबमा बदलिएको छ। सुरक्षित गर्नुअघि पुनः लोड गर्नुहोस्।','Este registro cambió en otra pestaña. Recarga antes de guardar.'],

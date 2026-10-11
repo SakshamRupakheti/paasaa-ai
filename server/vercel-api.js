@@ -4,7 +4,7 @@ import {prototypeAllowed,prototypeData} from './admin-prototype.js';
 import {publicServiceStatus,isClinicalPath} from './service-policy.js';
 
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
-const signIn=()=>json({error:'Sign in to use chat and saved records.'},401);
+const signIn=()=>json({error:'Enter your name and country to start a private guest session.'},401);
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function publicConfig(env){
@@ -48,7 +48,7 @@ export async function handleVercelApi(incoming,env,fetcher=fetch){
     if(!response.ok)return json({error:'Sign-in could not be verified right now. Try again shortly.'},503);
     user=await response.json();
   }catch{return json({error:'Sign-in could not be verified right now. Try again shortly.'},503);}
-  if(!uuid.test(user?.id)||user.is_anonymous===true)return signIn();
+  if(!uuid.test(user?.id))return signIn();
   if(isClinicalPath(url.pathname))return json({error:'Clinical services are not enabled. Use Help and support for immediate resources.',code:'CLINICAL_SERVICE_NOT_IMPLEMENTED'},503);
   if(url.pathname==='/api/admin/prototype'){
     if(!prototypeAllowed(user,env))return json({error:'This internal prototype is available only to the configured owner.'},403);
