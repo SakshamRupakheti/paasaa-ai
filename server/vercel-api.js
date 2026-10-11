@@ -1,7 +1,8 @@
+import {guestRequest} from './guest-session.js';
 import {handleApi} from './api.js';
 import {SupabaseRecordStore} from './supabase-store.js';
 import {prototypeAllowed,prototypeData} from './admin-prototype.js';
-import {publicServiceStatus,isClinicalPath} from './service-policy.js';
+import {publicServiceStatus,isClinicalPath,aiEnabled} from './service-policy.js';
 
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 const signIn=()=>json({error:'Enter your name and country to start a private guest session.'},401);
@@ -55,5 +56,10 @@ export async function handleVercelApi(incoming,env,fetcher=fetch){
     return request.method==='GET'?json(prototypeData()):json({error:'Read-only prototype'},405);
   }
   const store=new SupabaseRecordStore({url:config.supabaseUrl,publishableKey:config.supabasePublishableKey,token,owner:user.id,fetcher});
+  if(user.is_anonymous===true){
+    if(url.pathname==='/api/guest')return guestRequest(request,env,user.id,()=>store.limit());
+    if(!['/api/status','/api/transcribe','/api/chat'].includes(url.pathname))return json({error:'Guest records are temporary. Use the guest session endpoint.'},403);
+    if(url.pathname==='/api/status')return json({ai:aiEnabled(env)&&!!env.GROQ_API_KEY,persistence:false,guest:true,preview:true,clinicalReview:'pending'});
+  }
   return handleApi(request,env,{owner:user.id,store});
 }

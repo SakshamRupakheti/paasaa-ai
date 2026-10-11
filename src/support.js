@@ -1,3 +1,4 @@
+import {isGuest} from './auth.js';
 import {resourcesFor} from './safety-resources.js';
 import {REASONS,REGIONS,DISCREET,URGES,SOCIAL_ACTIONS,muscleGroups,targetedGroups,discreetGroups} from './support-content.js';
 import {GuidedTimer,pmrPlan,breathingPlan,groundingPlan,thoughtDestination,newSupportSession,saveSupportSummary,SUPPORT_KEY} from './support-model.js';
@@ -112,7 +113,7 @@ export function createSupport() {
  function finish(completed){collectTime();session.completed=completed;session.endedEarly=!completed;page(completed?'Take a moment to notice.':'You can stop here.','Thanks for noticing. You can stop, switch approaches, or return to your normal activity.');rating(root,'How does it feel now?',v=>session.distressAfter=v);
   if(currentType==='breathing'&&completed)root.append(action('Continue for another minute?',()=>run(breathingPlan(),'breathing'),'primary'));
   root.append(action('Try another approach',()=>entry(true)),node('p','Nothing is shared with a clinician. Saving is optional and stores only the session type, timing, selected areas and optional ratings on this browser. Anyone using this browser profile may read it.','privacy-note'));
-  const status=node('p',null,'subtle');status.setAttribute('role','status');root.append(action('Save this minimal summary on this device',()=>{try{saveSupportSummary(localStorage,session);status.textContent='Summary saved on this browser only. No thought content or narrative was collected.';}catch{status.textContent='This browser could not save the summary. You can finish without saving.';}}),status);footer(currentType==='pmr'?'pmr':currentType==='thought'?'thought':'grounding');
+  const status=node('p',null,'subtle');status.setAttribute('role','status');root.append(action('Save this minimal summary on this device',()=>{if(isGuest()){status.textContent='Guest mode: this summary is temporary and is not saved.';return;}try{saveSupportSummary(localStorage,session);status.textContent='Summary saved on this browser only. No thought content or narrative was collected.';}catch{status.textContent='This browser could not save the summary. You can finish without saving.';}}),status);footer(currentType==='pmr'?'pmr':currentType==='thought'?'thought':'grounding');
  }
  function safety(medical=false){
   collectTime();session.crisisEscalationShown=true;session.endedEarly=true;page("Let's get you connected to immediate support.",medical?'New or severe symptoms may need urgent medical care. Do not assume they are anxiety.':'If you might act on thoughts of harming yourself or someone else, or cannot stay safe, reach a person who can help now.');

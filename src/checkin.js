@@ -1,3 +1,4 @@
+import {isGuest} from './auth.js';
 import { CheckInStore, newDraft, localDate, toggleChoice, EMOTIONS, SYMPTOMS, CONTEXTS, BEHAVIORS, AREAS } from './checkin-model.js';
 import { mountVoice } from './voice.js';
 import {checkinQuestions,validateCheckinAnswer} from './chat-checkin.js';
@@ -7,7 +8,8 @@ const button = (text, action, cls) => { const b = el('button', text, cls); b.typ
 const titles = ['How anxious do you feel right now?', 'What are you feeling right now?', 'Are you noticing anything in your body?', 'What was happening around the time you noticed the anxiety?', 'What was going through your mind?', 'What did you do when you felt anxious?', 'How much did anxiety get in the way today?'];
 export function createCheckIn(showScreen) {
   let storage; try { storage = localStorage; } catch { /* Session mode remains available. */ }
-  const store = new CheckInStore(storage);
+  let store = new CheckInStore(storage);
+  document.addEventListener('paasaa-guest-start',()=>{store=new CheckInStore();});
   const panel = document.getElementById('reflection-screen');
   const home = document.getElementById('checkin-home');
   let cleanupVoice = () => {}, started = null;
@@ -40,9 +42,9 @@ export function createCheckIn(showScreen) {
     if (store.error) home.append(el('p',store.error,'privacy-note'));
     home.append(el('p',store.mode === 'device' ? 'Progress saves on this browser. Anyone using this browser profile may be able to read it.' : 'Choose where your progress stays. Session-only entries disappear when this page reloads or closes.', 'subtle'));
     const actions = el('div',null,'actions');
-    const begin = mode => { store.mode = mode; store.draft ||= newDraft(); save(); renderStep(); showScreen('reflection-screen'); };
+    const begin = mode => { store.mode = isGuest()?'session':mode; store.draft ||= newDraft(); save(); renderStep(); showScreen('reflection-screen'); };
     if (store.draft || store.mode === 'device') actions.append(button(store.draft ? 'Resume check-in' : 'Start daily check-in', () => begin(store.mode), 'primary'));
-    else { if (!store.blocked) actions.append(button('Save on this device', () => begin('device'), 'primary')); actions.append(button('Session only', () => begin('session'))); }
+    else { if (!isGuest()&&!store.blocked) actions.append(button('Save on this device', () => begin('device'), 'primary')); actions.append(button('Session only', () => begin('session'))); }
     home.append(actions);
   }
   function chips(root, field, options, exclusive) {
@@ -101,7 +103,7 @@ export function createCheckIn(showScreen) {
   return {hasDraft:()=>Boolean(store.draft),home:renderHome,clear(){leave();store.clear();renderHome();},leave,
     chatRead:()=>({draft:store.draft,mode:store.mode,error:store.error,blocked:store.blocked}),
     chatSaveDraft(field,value,cursor){if(store.draft){store.draft.chatDraft={field,value};store.draft.chatCursor=cursor;save();}},
-    chatStart(mode){leave();if(mode==='device'&&store.blocked)throw Error(store.error);store.mode=mode;store.draft ||= newDraft();save();return store.draft;},
+    chatStart(mode){leave();if(mode==='device'&&store.blocked)throw Error(store.error);store.mode=isGuest()?'session':mode;store.draft ||= newDraft();save();return store.draft;},
     chatAnswer(field,value){const q=checkinQuestions.find(q=>q.field===field);if(!store.draft||!q||!validateCheckinAnswer(q,value))throw Error('Check this answer before saving.');store.draft[field]=value;store.draft.chatDraft=null;store.draft.chatCursor=checkinQuestions.indexOf(q)+1;save();},
     chatComplete(){const record=store.complete();renderHome(true);return record;},
   };
