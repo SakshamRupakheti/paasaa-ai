@@ -1,4 +1,5 @@
 import {INTERVENTIONS} from '../src/chat-interventions.js';
+import {exerciseRequest} from './conversation-intent.js';
 export function fallbackPlan(message,memory){
   const t=message.toLowerCase();let primaryState='GENERAL_CONVERSATION',responseMode='GENERAL_CONVERSATION',userNeed='BE_HEARD',interventionId=null,arousal='moderate';
   if(/panick|panic|freaking|help|can't|tight|stuck/.test(t)){primaryState='ACUTE_ANXIETY';responseMode='CONNECT_AND_EXPLORE';arousal='high';}
@@ -43,11 +44,22 @@ export function routePlan(candidate,safety,memory,message,{safetyFailed=false}={
   }
   if(p.interventionId){p.responseMode=INTERVENTIONS[p.interventionId].family==='pmr'?'GUIDE_PMR':INTERVENTIONS[p.interventionId].family==='breathing'?'GUIDE_BREATHING':'GUIDE_GROUNDING';}
   if(!p.interventionId&&/^GUIDE_/.test(p.responseMode))p.responseMode=memory.event?'PERFORMANCE_SUPPORT':'CONNECT_AND_EXPLORE';
+  const permission=memory.exercisePermission||exerciseRequest(message);
+  if(p.interventionId&&permission!=='any'&&permission!==INTERVENTIONS[p.interventionId].family){
+    clear();p.responseMode='CONNECT_AND_EXPLORE';p.userNeed='BE_HEARD';
+    p.conversationIntent='understand_before_exercise';p.shouldAskQuestion=memory.questionsAllowed;
+  }
+  if(!safetyFailed&&!p.interventionId&&!['SAFETY_CHECK','CRISIS_ESCALATION','MEDICAL_ESCALATION','OCD_NON_REASSURANCE','INTRUSIVE_THOUGHT_SUPPORT'].includes(p.responseMode)){
+    if(memory.questionStreak){p.shouldAskQuestion=false;p.questionPurpose=null;}
+    if(memory.approachRejected&&memory.wantsAdvice){p.responseMode='REFLECTION';p.conversationIntent='repair_unhelpful_approach';p.shouldAskQuestion=false;}
+  }
   if(p.arousal==='high')p.maxSentences=Math.min(p.maxSentences,3);
   p.maxSentences=Math.max(1,Math.min(p.maxSentences,5));
   return p;
 }
 export function fallbackResponse(plan,memory,message){
+  if(plan.conversationIntent==='repair_unhelpful_approach')return 'That approach hasn’t helped, so repeating it isn’t useful. We can set it aside and focus on a different part of the situation that you can influence.';
+  if(plan.conversationIntent==='understand_before_exercise')return plan.shouldAskQuestion?'Is something specific on your mind, or is it more of an uneasy feeling?':'We don’t have to jump into an exercise. There can be a specific worry, an uneasy feeling, or a mix of both.';
   if(plan.conversationIntent==='provide_practical_clarity'&&plan.responseMode==='REFLECTION')return 'For a starting point, separate what you know happened from what remains uncertain. Choose one small, reversible action that addresses the part you can influence today; you don’t have to resolve the uncertainty first.';
   if(plan.responseMode==='SAFETY_CHECK')return plan.shouldAskQuestion?'Are these unwanted thoughts that frighten you, or do you feel you might act on them now?':'I cannot establish your safety here. Please reach a trusted person or health professional now; use urgent help if you might act on these thoughts.';
   if(plan.responseMode==='REFLECTION'&&memory.firstActionJustAnswered)return 'That can be your starting point. You do not have to solve the whole situation before taking that step.';

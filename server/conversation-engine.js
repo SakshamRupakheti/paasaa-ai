@@ -11,6 +11,7 @@ import {conversationMode,modeChoices} from './conversation-modes.js';
 import {assertNoHumanServiceClaim} from './response-policy.js';
 import {safetyRoute} from './safety-routing.js';
 import {SERVICE_POLICY_VERSION} from './service-policy.js';
+import {exerciseRequest,dialogueContext} from './conversation-intent.js';
 export function validateResponse(value,plan){
   validate(responseSchema,value);const t=assertNoHumanServiceClaim(value.message.trim());
   if(!t||t.length>(plan.arousal==='high'?420:1100)||(t.match(/\?/g)||[]).length>(plan.shouldAskQuestion?1:0)||/(?:https?:|www\.|<[^>]+>|calm down|just relax|stop worrying|definitely (?:safe|just anxiety)|you (?:would|will) never hurt|100% safe|everything will be fine|you have (?:ocd|panic disorder)|you only need me|i'll never leave|as a human|when i had anxiety|increase your dose|stop taking)/i.test(t))throw Error('Invalid response wording');
@@ -29,6 +30,12 @@ export async function runConversationEngine(env,session,message,{provider:inject
   if(!provider&&allowAI&&session.aiConsent&&env.GROQ_API_KEY){try{provider=createProvider(env);}catch{}}
   if(!allowAI||!session.aiConsent||env.PAASAA_AI_ENABLED==='false')provider=null;
   const memory=updateMemory(session.engineMemory,message,session.chatAction?.interventionId||session.lastInterventionId);
+  const dialogue=dialogueContext(session,message);
+  memory.exercisePermission=exerciseRequest(message,dialogue.previousReply);
+  memory.questionStreak=dialogue.questionStreak;
+  memory.approachRejected=dialogue.approachRejected;
+  memory.correction=dialogue.correction;
+  if(memory.exercisePermission)memory.wantsAdvice=true;
   const previousQuestion=session.transcript?.at(-1)?.text||'';
   if(/(?:what.{0,12}(?:first|opening).{0,25}(?:action|sentence|line|step))/i.test(previousQuestion)&&message.trim().split(/\s+/).length>=3&&!/still bad|same|worse|don.t know|cannot|can.t|what do you mean/i.test(message)&&!sensitiveThought(message)){memory.firstAction=message.slice(0,240);memory.firstActionJustAnswered=true;}else memory.firstActionJustAnswered=false;
   const context=compactContext(session,message,memory);
@@ -49,7 +56,7 @@ export async function runConversationEngine(env,session,message,{provider:inject
   if(clarifyConsequence){plan={...plan,interventionId:null,shouldInterveneNow:false,responseMode:memory.questionsAllowed?'CONNECT_AND_EXPLORE':'LISTEN_ONLY',shouldAskQuestion:memory.questionsAllowed};}
   const mode=conversationMode(session,plan,safety,message);
   if(safety.needsSafetyQuestion)memory.safetyPending=true;else if(!safety.needsEmergencyPath&&!assessment.failed)memory.safetyPending=false;
-  let response=fallbackResponse(plan,memory,message),responseSource='fallback';const responseStart=performance.now();
+  let response=fallbackResponse(plan,{...memory,questionsAllowed:memory.questionsAllowed&&plan.shouldAskQuestion},message),responseSource='fallback';const responseStart=performance.now();
   if(safety.needsEmergencyPath){response=crisisMessage(safety.category);responseSource='safety';}
   else if(provider&&plannerSuccess&&!assessment.failed&&!plan.interventionId&&!['SAFETY_CHECK','OCD_NON_REASSURANCE'].includes(plan.responseMode)){
     try{response=validateResponse(await provider.generateResponse(CONVERSATION_PROMPT+EVERYDAY_STYLE+(plan.interventionId?' For THIS turn: write only ONE sentence acknowledging the specific situation. Do NOT tell the user to do ANYTHING. Do not mention exercise steps, body movements, sensations to notice, counts or durations. The app provides all instructions separately.':''),{...context,plan,intervention:plan.interventionId?{id:plan.interventionId,title:INTERVENTIONS[plan.interventionId].title}:null},responseSchema),plan);responseSource='model';}catch{}
