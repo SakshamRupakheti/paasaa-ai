@@ -1,0 +1,345 @@
+{
+  "version": "0.1.0",
+  "live": false,
+  "createdAt": "2026-10-12T22:53:40.029Z",
+  "syntheticOnly": true,
+  "clinicianReviewed": false,
+  "conclusion": "Descriptive comparison only; no winner or clinical effectiveness established.",
+  "cases": [
+    {
+      "id": "ordinary-anxiety",
+      "optedIn": false,
+      "history": [],
+      "message": "I am feeling anxious."
+    },
+    {
+      "id": "selected-reflection",
+      "optedIn": true,
+      "history": [
+        [
+          "user",
+          "I would like to reflect on a worry using CBT."
+        ],
+        [
+          "assistant",
+          "What happened, and what went through your mind?"
+        ]
+      ],
+      "message": "My friend has not replied since yesterday. I keep thinking she is angry at me."
+    },
+    {
+      "id": "not-ready",
+      "optedIn": true,
+      "history": [
+        [
+          "user",
+          "I want to understand my worry about school."
+        ],
+        [
+          "assistant",
+          "What feels most difficult about it?"
+        ]
+      ],
+      "message": "I am not ready to talk about it. Just listen, no questions."
+    },
+    {
+      "id": "practical-switch",
+      "optedIn": true,
+      "history": [
+        [
+          "user",
+          "My assignment is unfinished and I feel stuck."
+        ],
+        [
+          "assistant",
+          "What goes through your mind when you open it?"
+        ]
+      ],
+      "message": "Just give me a solution."
+    },
+    {
+      "id": "already-tried",
+      "optedIn": true,
+      "history": [
+        [
+          "user",
+          "My friend has not replied."
+        ],
+        [
+          "assistant",
+          "If you have not followed up, one brief message is an option."
+        ]
+      ],
+      "message": "I already sent a message. That did not help."
+    },
+    {
+      "id": "corrected-meaning",
+      "optedIn": true,
+      "history": [
+        [
+          "user",
+          "I am worried about an exam."
+        ],
+        [
+          "assistant",
+          "It sounds as though you are worried about failing."
+        ]
+      ],
+      "message": "No, I meant getting there on time. I know the subject."
+    }
+  ],
+  "results": [
+    {
+      "case": "ordinary-anxiety",
+      "variant": "baseline",
+      "optedIn": false,
+      "message": "I couldn’t generate a reply this time. Your message is saved; you can try again or use “Work through a worry”.",
+      "action": null,
+      "source": "fallback",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "BE_HEARD",
+        "responseMode": "GENERAL_CONVERSATION",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": []
+    },
+    {
+      "case": "ordinary-anxiety",
+      "variant": "experimental",
+      "optedIn": false,
+      "message": "I couldn’t generate a reply this time. Your message is saved; you can try again or use “Work through a worry”.",
+      "action": null,
+      "source": "fallback",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "BE_HEARD",
+        "responseMode": "GENERAL_CONVERSATION",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": []
+    },
+    {
+      "case": "selected-reflection",
+      "variant": "baseline",
+      "optedIn": true,
+      "message": "I couldn’t generate a reply this time. Your message is saved; you can try again or use “Work through a worry”.",
+      "action": null,
+      "source": "fallback",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "BE_HEARD",
+        "responseMode": "GENERAL_CONVERSATION",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": []
+    },
+    {
+      "case": "selected-reflection",
+      "variant": "experimental",
+      "optedIn": true,
+      "message": "I couldn’t generate a reply this time. Your message is saved; you can try again or use “Work through a worry”.",
+      "action": null,
+      "source": "fallback",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "BE_HEARD",
+        "responseMode": "GENERAL_CONVERSATION",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": []
+    },
+    {
+      "case": "not-ready",
+      "variant": "baseline",
+      "optedIn": true,
+      "message": "Okay, no exercises or advice. You can say as much or as little as you want.",
+      "action": null,
+      "source": "fallback",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "TALK_WITHOUT_ADVICE",
+        "responseMode": "LISTEN_ONLY",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": []
+    },
+    {
+      "case": "not-ready",
+      "variant": "experimental",
+      "optedIn": true,
+      "message": "Okay, no exercises or advice. You can say as much or as little as you want.",
+      "action": null,
+      "source": "fallback",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "TALK_WITHOUT_ADVICE",
+        "responseMode": "LISTEN_ONLY",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": []
+    },
+    {
+      "case": "practical-switch",
+      "variant": "baseline",
+      "optedIn": true,
+      "message": "For a starting point, separate what you know happened from what remains uncertain. Choose one small, reversible action that addresses the part you can influence today; you don’t have to resolve the uncertainty first.",
+      "action": null,
+      "source": "fallback",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "DECIDE_WHAT_TO_DO",
+        "responseMode": "REFLECTION",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": []
+    },
+    {
+      "case": "practical-switch",
+      "variant": "experimental",
+      "optedIn": true,
+      "message": "For a starting point, separate what you know happened from what remains uncertain. Choose one small, reversible action that addresses the part you can influence today; you don’t have to resolve the uncertainty first.",
+      "action": null,
+      "source": "fallback",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "DECIDE_WHAT_TO_DO",
+        "responseMode": "REFLECTION",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": []
+    },
+    {
+      "case": "already-tried",
+      "variant": "baseline",
+      "optedIn": true,
+      "message": "That approach hasn’t helped, so repeating it isn’t useful. We can set it aside and focus on a different part of the situation that you can influence.",
+      "action": null,
+      "source": "fallback",
+      "planner": {
+        "primaryState": "ACUTE_ANXIETY",
+        "arousal": "high",
+        "userNeed": "BE_HEARD",
+        "responseMode": "REFLECTION",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": []
+    },
+    {
+      "case": "already-tried",
+      "variant": "experimental",
+      "optedIn": true,
+      "message": "That approach hasn’t helped, so repeating it isn’t useful. We can set it aside and focus on a different part of the situation that you can influence.",
+      "action": null,
+      "source": "fallback",
+      "planner": {
+        "primaryState": "ACUTE_ANXIETY",
+        "arousal": "high",
+        "userNeed": "BE_HEARD",
+        "responseMode": "REFLECTION",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": []
+    },
+    {
+      "case": "corrected-meaning",
+      "variant": "baseline",
+      "optedIn": true,
+      "message": "I couldn’t generate a reply this time. Your message is saved; you can try again or use “Work through a worry”.",
+      "action": null,
+      "source": "fallback",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "BE_HEARD",
+        "responseMode": "GENERAL_CONVERSATION",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": []
+    },
+    {
+      "case": "corrected-meaning",
+      "variant": "experimental",
+      "optedIn": true,
+      "message": "I couldn’t generate a reply this time. Your message is saved; you can try again or use “Work through a worry”.",
+      "action": null,
+      "source": "fallback",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "BE_HEARD",
+        "responseMode": "GENERAL_CONVERSATION",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": []
+    }
+  ]
+}

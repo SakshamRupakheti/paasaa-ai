@@ -1,0 +1,474 @@
+{
+  "version": "0.1.0",
+  "live": true,
+  "createdAt": "2026-10-12T22:54:00.538Z",
+  "syntheticOnly": true,
+  "clinicianReviewed": false,
+  "conclusion": "Descriptive comparison only; no winner or clinical effectiveness established.",
+  "cases": [
+    {
+      "id": "ordinary-anxiety",
+      "optedIn": false,
+      "history": [],
+      "message": "I am feeling anxious."
+    },
+    {
+      "id": "selected-reflection",
+      "optedIn": true,
+      "history": [
+        [
+          "user",
+          "I would like to reflect on a worry using CBT."
+        ],
+        [
+          "assistant",
+          "What happened, and what went through your mind?"
+        ]
+      ],
+      "message": "My friend has not replied since yesterday. I keep thinking she is angry at me."
+    },
+    {
+      "id": "not-ready",
+      "optedIn": true,
+      "history": [
+        [
+          "user",
+          "I want to understand my worry about school."
+        ],
+        [
+          "assistant",
+          "What feels most difficult about it?"
+        ]
+      ],
+      "message": "I am not ready to talk about it. Just listen, no questions."
+    },
+    {
+      "id": "practical-switch",
+      "optedIn": true,
+      "history": [
+        [
+          "user",
+          "My assignment is unfinished and I feel stuck."
+        ],
+        [
+          "assistant",
+          "What goes through your mind when you open it?"
+        ]
+      ],
+      "message": "Just give me a solution."
+    },
+    {
+      "id": "already-tried",
+      "optedIn": true,
+      "history": [
+        [
+          "user",
+          "My friend has not replied."
+        ],
+        [
+          "assistant",
+          "If you have not followed up, one brief message is an option."
+        ]
+      ],
+      "message": "I already sent a message. That did not help."
+    },
+    {
+      "id": "corrected-meaning",
+      "optedIn": true,
+      "history": [
+        [
+          "user",
+          "I am worried about an exam."
+        ],
+        [
+          "assistant",
+          "It sounds as though you are worried about failing."
+        ]
+      ],
+      "message": "No, I meant getting there on time. I know the subject."
+    }
+  ],
+  "results": [
+    {
+      "case": "ordinary-anxiety",
+      "variant": "baseline",
+      "optedIn": false,
+      "message": "I hear you—thanks for sharing how you’re feeling right now.",
+      "action": null,
+      "source": "model",
+      "planner": {
+        "primaryState": "WORRY",
+        "arousal": "moderate",
+        "userNeed": "DECIDE_WHAT_TO_DO",
+        "responseMode": "LISTEN_ONLY",
+        "interventionId": null,
+        "confidence": 0.9
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": [
+        {
+          "role": "safety",
+          "model": "openai/gpt-oss-safeguard-20b",
+          "latencyMs": 757,
+          "status": "ok",
+          "tokens": 921
+        },
+        {
+          "role": "planner",
+          "model": "openai/gpt-oss-20b",
+          "latencyMs": 1750,
+          "status": "ok",
+          "tokens": 3161
+        },
+        {
+          "role": "conversation",
+          "model": "openai/gpt-oss-120b",
+          "latencyMs": 509,
+          "status": "ok",
+          "tokens": 2209
+        }
+      ]
+    },
+    {
+      "case": "ordinary-anxiety",
+      "variant": "experimental",
+      "optedIn": false,
+      "message": "I couldn’t generate a reply this time. Your message is saved; you can try again or use “Work through a worry”.",
+      "action": null,
+      "source": "fallback",
+      "planner": {
+        "primaryState": "GENERAL_DISTRESS",
+        "arousal": "unknown",
+        "userNeed": "REQUEST_INFORMATION",
+        "responseMode": "GENERAL_CONVERSATION",
+        "interventionId": null,
+        "confidence": 0.8
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": [
+        {
+          "role": "safety",
+          "model": "openai/gpt-oss-safeguard-20b",
+          "latencyMs": 619,
+          "status": "ok",
+          "tokens": 1147
+        },
+        {
+          "role": "planner",
+          "model": "openai/gpt-oss-20b",
+          "latencyMs": 1413,
+          "status": "ok",
+          "tokens": 2795
+        },
+        {
+          "role": "conversation",
+          "model": "openai/gpt-oss-120b",
+          "latencyMs": 832,
+          "status": "ok",
+          "tokens": 2352
+        }
+      ]
+    },
+    {
+      "case": "selected-reflection",
+      "variant": "baseline",
+      "optedIn": true,
+      "message": "I’m having trouble responding right now. Please try again in a moment.",
+      "action": null,
+      "source": "unavailable",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "BE_HEARD",
+        "responseMode": "CONNECT",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": [
+        {
+          "role": "safety",
+          "model": "openai/gpt-oss-safeguard-20b",
+          "latencyMs": 59,
+          "status": "rate_limit"
+        }
+      ]
+    },
+    {
+      "case": "selected-reflection",
+      "variant": "experimental",
+      "optedIn": true,
+      "message": "It sounds like the lack of reply is making you worry she’s upset with you. What thoughts are coming up when you consider she might be angry?",
+      "action": null,
+      "source": "model",
+      "planner": {
+        "primaryState": "WORRY",
+        "arousal": "moderate",
+        "userNeed": "UNDERSTAND_THOUGHT",
+        "responseMode": "CONNECT_AND_EXPLORE",
+        "interventionId": null,
+        "confidence": 0.95
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": [
+        {
+          "role": "safety",
+          "model": "openai/gpt-oss-safeguard-20b",
+          "latencyMs": 592,
+          "status": "ok",
+          "tokens": 994
+        },
+        {
+          "role": "planner",
+          "model": "openai/gpt-oss-20b",
+          "latencyMs": 1954,
+          "status": "ok",
+          "tokens": 3174
+        },
+        {
+          "role": "conversation",
+          "model": "openai/gpt-oss-120b",
+          "latencyMs": 1121,
+          "status": "ok",
+          "tokens": 2712
+        }
+      ]
+    },
+    {
+      "case": "not-ready",
+      "variant": "baseline",
+      "optedIn": true,
+      "message": "I’m having trouble responding right now. Please try again in a moment.",
+      "action": null,
+      "source": "unavailable",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "TALK_WITHOUT_ADVICE",
+        "responseMode": "CONNECT",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": [
+        {
+          "role": "safety",
+          "model": "openai/gpt-oss-safeguard-20b",
+          "latencyMs": 95,
+          "status": "rate_limit"
+        }
+      ]
+    },
+    {
+      "case": "not-ready",
+      "variant": "experimental",
+      "optedIn": true,
+      "message": "I’m having trouble responding right now. Please try again in a moment.",
+      "action": null,
+      "source": "unavailable",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "TALK_WITHOUT_ADVICE",
+        "responseMode": "CONNECT",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": [
+        {
+          "role": "safety",
+          "model": "openai/gpt-oss-safeguard-20b",
+          "latencyMs": 87,
+          "status": "rate_limit"
+        }
+      ]
+    },
+    {
+      "case": "practical-switch",
+      "variant": "baseline",
+      "optedIn": true,
+      "message": "I’m having trouble responding right now. Please try again in a moment.",
+      "action": null,
+      "source": "unavailable",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "BE_HEARD",
+        "responseMode": "CONNECT",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": [
+        {
+          "role": "safety",
+          "model": "openai/gpt-oss-safeguard-20b",
+          "latencyMs": 95,
+          "status": "rate_limit"
+        }
+      ]
+    },
+    {
+      "case": "practical-switch",
+      "variant": "experimental",
+      "optedIn": true,
+      "message": "I’m having trouble responding right now. Please try again in a moment.",
+      "action": null,
+      "source": "unavailable",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "BE_HEARD",
+        "responseMode": "CONNECT",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": [
+        {
+          "role": "safety",
+          "model": "openai/gpt-oss-safeguard-20b",
+          "latencyMs": 103,
+          "status": "rate_limit"
+        }
+      ]
+    },
+    {
+      "case": "already-tried",
+      "variant": "baseline",
+      "optedIn": true,
+      "message": "I’m having trouble responding right now. Please try again in a moment.",
+      "action": null,
+      "source": "unavailable",
+      "planner": {
+        "primaryState": "ACUTE_ANXIETY",
+        "arousal": "high",
+        "userNeed": "BE_HEARD",
+        "responseMode": "CONNECT",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": [
+        {
+          "role": "safety",
+          "model": "openai/gpt-oss-safeguard-20b",
+          "latencyMs": 81,
+          "status": "rate_limit"
+        }
+      ]
+    },
+    {
+      "case": "already-tried",
+      "variant": "experimental",
+      "optedIn": true,
+      "message": "I’m having trouble responding right now. Please try again in a moment.",
+      "action": null,
+      "source": "unavailable",
+      "planner": {
+        "primaryState": "ACUTE_ANXIETY",
+        "arousal": "high",
+        "userNeed": "BE_HEARD",
+        "responseMode": "CONNECT",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": [
+        {
+          "role": "safety",
+          "model": "openai/gpt-oss-safeguard-20b",
+          "latencyMs": 81,
+          "status": "rate_limit"
+        }
+      ]
+    },
+    {
+      "case": "corrected-meaning",
+      "variant": "baseline",
+      "optedIn": true,
+      "message": "I’m having trouble responding right now. Please try again in a moment.",
+      "action": null,
+      "source": "unavailable",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "BE_HEARD",
+        "responseMode": "CONNECT",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": [
+        {
+          "role": "safety",
+          "model": "openai/gpt-oss-safeguard-20b",
+          "latencyMs": 86,
+          "status": "rate_limit"
+        }
+      ]
+    },
+    {
+      "case": "corrected-meaning",
+      "variant": "experimental",
+      "optedIn": true,
+      "message": "I’m having trouble responding right now. Please try again in a moment.",
+      "action": null,
+      "source": "unavailable",
+      "planner": {
+        "primaryState": "GENERAL_CONVERSATION",
+        "arousal": "moderate",
+        "userNeed": "BE_HEARD",
+        "responseMode": "CONNECT",
+        "interventionId": null,
+        "confidence": 0.4
+      },
+      "safety": {
+        "riskLevel": "none",
+        "category": "none"
+      },
+      "metrics": [
+        {
+          "role": "safety",
+          "model": "openai/gpt-oss-safeguard-20b",
+          "latencyMs": 151,
+          "status": "rate_limit"
+        }
+      ]
+    }
+  ]
+}
