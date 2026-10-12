@@ -6,14 +6,13 @@ export function renderLanding(root,{chatRoot,startChat,mountCheckin}){
   document.body.classList.add('scenic-home');
   root.innerHTML=`
     <section class="scenic-hero" aria-labelledby="scenic-title">
-      <div class="hero-copy"><p class="nature-eyebrow">YOUR BEST SPACE</p>
+      <div class="hero-copy">
         <h1 id="scenic-title">Welcome to Paasaa.</h1>
         <p class="hero-description">A little space for you.<br>An AI companion for everyday worries, reflection, and calmer moments.</p>
         <div class="hero-links"><button class="nature-button" data-start-chat>Start chatting <span aria-hidden="true">↗</span></button><a class="nature-button outline" href="#breathe">Feel calmer</a></div>
-        <p class="hero-reassurance">Come as you are. Take it at your own pace.</p>
-        <form class="updates-form"><label for="updates-email">Want to stay connected?</label><div><input id="updates-email" name="email" type="email" autocomplete="email" placeholder="Your email address" required maxlength="254"><button type="submit">Get updates →</button></div><small>By selecting Get updates, you agree to save your email for product updates.</small><p role="status"></p></form>
+        <form class="updates-form"><div><input id="updates-email" name="email" type="email" autocomplete="email" placeholder="Your email address" aria-label="Your email address" required maxlength="254"><button type="submit">Connect with Team Paasaa →</button></div><small>By connecting, you agree to save your email for product updates from Team Paasaa.</small><p role="status"></p></form>
       </div>
-      <button class="journey-scroll" data-scroll-chat aria-label="Scroll to chat"><span>YOUR SPACE IS JUST BELOW</span><span aria-hidden="true">↓</span></button>
+      <button class="journey-scroll" data-scroll-chat aria-label="Scroll to chat"><svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m-7-7 7 7 7-7"/></svg></button>
     </section>
     <section id="journey-chat" class="journey-chat" aria-label="Talk to Paasaa">
       <aside class="journey-sidebar"><a class="journey-brand" href="#home">Paasaa.ai</a><p>your best space</p><nav aria-label="Your space"><button data-scroll-chat aria-current="page">◌ <span>Chat</span></button><button data-scroll-checkin>☼ <span>Daily check-in</span></button><a href="#worry">✎ <span>Work through a worry</span></a><a href="#breathe">≈ <span>Breathe</span></a><a href="#progress">▥ <span>Progress</span></a><a href="#help">♡ <span>Help & support</span></a></nav><a class="journey-account" href="#account">Account & sign-in →</a><small>AI self-help prototype.<br>Not a therapist.</small></aside>

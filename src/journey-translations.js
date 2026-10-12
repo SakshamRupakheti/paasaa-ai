@@ -1,5 +1,7 @@
 // Interface translations only; user messages and records remain untouched.
 const rows=[
+['Connect with Team Paasaa →','टीम Paasaa से जुड़ें →','Paasaa टोलीसँग जोडिनुहोस् →','Conecta con el equipo Paasaa →'],
+['By connecting, you agree to save your email for product updates from Team Paasaa.','जुड़ने पर आप टीम Paasaa के उत्पाद अपडेट के लिए अपना ईमेल सहेजने की सहमति देते हैं।','जोडिँदा Paasaa टोलीका उत्पादन अपडेटका लागि आफ्नो इमेल राख्न सहमति दिनुहुन्छ।','Al conectar, aceptas guardar tu correo para recibir novedades del producto del equipo Paasaa.'],
 ['Want to stay connected?','जुड़े रहना चाहते हैं?','सम्पर्कमा रहन चाहनुहुन्छ?','¿Quieres mantener el contacto?'],
 ['Your email address','आपका ईमेल पता','तपाईंको इमेल ठेगाना','Tu correo electrónico'],
 ['Get updates →','अपडेट पाएँ →','अपडेट पाउनुहोस् →','Recibir novedades →'],
