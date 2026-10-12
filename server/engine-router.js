@@ -38,6 +38,9 @@ export function routePlan(candidate,safety,memory,message,{safetyFailed=false}={
     }
   }
   if(memory.firstActionJustAnswered){clear();p.responseMode='REFLECTION';p.shouldAskQuestion=false;}
+  if(memory.practicalHelpRequested&&memory.wantsAdvice&&!safetyFailed&&!['INTRUSIVE_THOUGHT_SUPPORT','OCD_NON_REASSURANCE'].includes(p.responseMode)){
+    clear();p.responseMode='REFLECTION';p.userNeed='DECIDE_WHAT_TO_DO';p.conversationIntent='provide_practical_clarity';p.shouldAskQuestion=false;p.questionPurpose=null;
+  }
   if(p.interventionId){p.responseMode=INTERVENTIONS[p.interventionId].family==='pmr'?'GUIDE_PMR':INTERVENTIONS[p.interventionId].family==='breathing'?'GUIDE_BREATHING':'GUIDE_GROUNDING';}
   if(!p.interventionId&&/^GUIDE_/.test(p.responseMode))p.responseMode=memory.event?'PERFORMANCE_SUPPORT':'CONNECT_AND_EXPLORE';
   if(p.arousal==='high')p.maxSentences=Math.min(p.maxSentences,3);
@@ -45,6 +48,7 @@ export function routePlan(candidate,safety,memory,message,{safetyFailed=false}={
   return p;
 }
 export function fallbackResponse(plan,memory,message){
+  if(plan.conversationIntent==='provide_practical_clarity'&&plan.responseMode==='REFLECTION')return 'For a starting point, separate what you know happened from what remains uncertain. Choose one small, reversible action that addresses the part you can influence today; you don’t have to resolve the uncertainty first.';
   if(plan.responseMode==='SAFETY_CHECK')return plan.shouldAskQuestion?'Are these unwanted thoughts that frighten you, or do you feel you might act on them now?':'I cannot establish your safety here. Please reach a trusted person or health professional now; use urgent help if you might act on these thoughts.';
   if(plan.responseMode==='REFLECTION'&&memory.firstActionJustAnswered)return 'That can be your starting point. You do not have to solve the whole situation before taking that step.';
   if(plan.responseMode==='LISTEN_ONLY')return 'Okay, no exercises or advice. You can say as much or as little as you want.';

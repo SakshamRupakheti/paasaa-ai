@@ -10,6 +10,10 @@ export function updateMemory(previous,message,activeId=null){
   const minutes=t.match(/\bin (\d{1,3}) (?:minutes?|mins?)\b/);if(minutes)m.eventStartsInMinutes=Number(minutes[1]);
   if(/no (?:more )?exercises|no advice|don't want (?:advice|help)|just (?:talk|listen)|stop giving.*exercises|only wanted to tell|just wanted to tell/.test(t))m.wantsAdvice=false;
   if(/(?:want|please|let's|help me|can we).{0,20}(?:try|exercise|breath|relax)/.test(t)&&!/don't|do not|no /.test(t))m.wantsAdvice=true;
+  // A request for practical help applies to this turn, not every later message.
+  m.practicalHelpRequested=/\b(?:give me (?:a |the |some )?(?:solution|advice|steps)|what (?:should|can) i do|tell me what to do|help me (?:decide|figure out what to do)|(?:want|need) (?:a |some )?(?:solution|practical help|advice)|just help me)\b/.test(t)
+    && !/\b(?:no advice|(?:don't|do not|not) (?:want|need)|don't (?:give|tell)|just listen)\b/.test(t);
+  if(m.practicalHelpRequested)m.wantsAdvice=true;
   if(/stop asking|no (?:more )?questions|don't want to answer|cannot answer|can't answer/.test(t))m.questionsAllowed=false;
   if(/you can ask|ask me a question/.test(t))m.questionsAllowed=true;
   const rejectBreathing=/don't.*breath|no breath|stop.*breath|breath.{0,30}(?:worse|dizzy|uncomfortable|breathless)/.test(t);

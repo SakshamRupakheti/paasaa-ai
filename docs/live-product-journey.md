@@ -30,3 +30,9 @@ The live updates form displayed success only after the insert completed. Refresh
 
 ## Homepage copy refinement — October 12
 Removed the hero eyebrow, reassurance line, and visible email-form heading per browser comments. Renamed the CTA to Connect with Team Paasaa and kept its product-update consent explicit. The email placeholder is transparent until hover/focus, with an always-present accessible name. Replaced the labeled scroll pill with a 48px-hit-target SVG arrow animated gently over 2.4 seconds; reduced motion disables it. Local browser verification confirmed transparent/default versus visible/focused placeholder colors, the revised visual layout, and the arrow's scroll action. Syntax check and Vercel frontend build passed. No backend behavior changed.
+
+## Practical-help responses — October 12, 2026
+
+Direct requests such as “give me a solution” now override an earlier listening-only preference for that turn. The router asks for practical clarity without another question, preserves safety and rejected-exercise constraints, and rejects stock invitations to share more in this mode. Original synthetic examples guide specific, modest everyday next steps; no external counseling dataset was imported and no clinical validation is claimed.
+
+Validation: npm run check; all 240 tests; Vercel frontend build; browser test using a synthetic unfinished-assignment scenario and the real Groq connection returned a concrete starting action without a follow-up question. This sample does not establish reliability across all conversations or languages.
