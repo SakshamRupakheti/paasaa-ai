@@ -1,6 +1,7 @@
 import {translations} from './translations.js';
 import {wellnessTranslations} from './wellness-translations.js';
-Object.assign(translations,wellnessTranslations);
+import {journeyTranslations} from './journey-translations.js';
+Object.assign(translations,wellnessTranslations,journeyTranslations);
 export const LANGUAGES=Object.freeze({en:'English',hi:'हिन्दी',ne:'नेपाली',es:'Español'});
 export const LANGUAGE_KEY='paasaa.interface-language.v1';
 let language='en';

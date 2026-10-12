@@ -1,6 +1,7 @@
 import {initLanguage,getLanguage,translate,formatTranslation as tf} from './i18n.js';
 initLanguage();
-import {completeGoogleSignIn} from './auth.js';
+import {completeGoogleSignIn,authConfig,accessToken,startGuest} from './auth.js';
+import {renderLanding} from './landing.js';
 import {createDashboard} from './dashboard.js';
 import {createWellness} from './wellness.js';
 import {mountSafetyList} from './safety-resources.js';
@@ -107,7 +108,8 @@ function resetBreathing() {
   renderBreathing();
 }
 function showScreen(id, fromHistory = false) {
-  document.body.classList.remove('scenic-home');
+  document.body.classList.toggle('scenic-home',id==='home-screen');
+  if(id!=='home-screen'&&$('home-screen').contains($('chat-screen'))){$('main').append($('chat-screen'));chat.leave();}
   if (currentScreen === 'reflection-screen' && id !== currentScreen) checkin.leave();
   if (id === 'transition-screen' && currentScreen === 'breathing-screen') checkin.home();
   if (id !== 'breathing-screen') pauseBreathing();
@@ -115,6 +117,7 @@ function showScreen(id, fromHistory = false) {
   if (currentScreen === 'support-screen' && id !== currentScreen) support.leave();
   if (currentScreen === 'worry-screen' && id !== currentScreen) worry.leave();
   if (currentScreen === 'chat-screen' && id !== currentScreen) chat.leave();
+  if(id==='home-screen')$('chat-screen').hidden=false;
   currentScreen = id;
   document.body.classList.toggle('chat-layout', id === 'chat-screen');
   const hash = hashForScreen(id);
@@ -169,6 +172,28 @@ const worry = createWorry(()=>{ support.safety(); showScreen('support-screen'); 
 const checkin = createCheckIn(showScreen);
 const chat = createChat(checkin,()=>{support.safety();showScreen('support-screen');});
 checkin.home();
+let journey=null,homeGeneration=0;
+document.querySelector('.landing-start').onclick=event=>{if(currentScreen==='home-screen'&&journey){event.preventDefault();journey.start();}};
+function homeJourney(){
+  const generation=++homeGeneration;
+  const live=()=>generation===homeGeneration&&currentScreen==='home-screen';
+  const chatRoot=$('chat-screen');$('main').append(chatRoot);
+  const mountMood=root=>{root.innerHTML='<p class="loading-state">Your daily check-in will open with your space.</p>';};
+  let starting=false;
+  const start=async()=>{
+    if(starting)return;starting=true;
+    const status=chatRoot.querySelector('[role=status]');if(status)status.textContent='Opening your space…';
+    try{await startGuest();if(!live())return;await chat.home();if(live())wellness.mountCheckin($('journey-mood'));}
+    catch{if(status)status.textContent='Your space could not open. Please try again.';}
+    finally{starting=false;}
+  };
+  journey=renderLanding($('home-screen'),{chatRoot,startChat:start,mountCheckin:mountMood});
+  chatRoot.className='journey-entry';
+  chatRoot.innerHTML='<div class="journey-entry-copy"><span class="journey-orbit" aria-hidden="true">❧</span><h2>Hey, I’m Paasaa.</h2><p>What’s on your mind today?</p><button class="nature-button">Start chatting →</button><a href="#account">Or sign in to save your progress</a><p role="status"></p></div><p class="chat-disclaimer">AI self-help prototype, not a therapist. Guest activity disappears on refresh or close. AI messages and mic audio go to Groq. Temporary authentication and usage counters are retained for security.</p>';
+  chatRoot.querySelector('button').onclick=start;
+  const moodButton=document.createElement('button');moodButton.textContent='Open my daily check-in';moodButton.className='nature-button';moodButton.onclick=start;$('journey-mood').append(moodButton);
+  authConfig().then(async c=>{if(live()&&(!c||await accessToken())){await chat.home(null,{focus:false});if(live())wellness.mountCheckin($('journey-mood'));}}).catch(()=>{});
+}
 document.getElementById('review-again').addEventListener('click', () => { checkin.home(); showScreen('transition-screen'); });
 
 document.getElementById('confirm-clear').addEventListener('click', () => {
@@ -180,12 +205,15 @@ function openCheckIn() { checkin.home(); showScreen('transition-screen'); }
 $('open-checkin').addEventListener('click', openCheckIn);
 for (const link of document.querySelectorAll('.main-nav a')) link.addEventListener('click', event => {
   event.preventDefault();
+  if(currentScreen==='home-screen'&&journey&&['#chat','#check-in'].includes(link.hash)){if(link.hash==='#chat')journey.scrollChat();else journey.scrollCheckin();return;}
   if(location.hash===link.hash)followLocation();else location.hash=link.hash;
 });
 function followLocation() {
   if (location.hash === '#main') return;
   const screen = screenForHash(location.hash);
-  if(screen==='home-screen')wellness.home();
+  if(screen!=='home-screen')homeGeneration++;
+  showScreen(screen,true);
+  if(screen==='home-screen')homeJourney();
   if(screen==='progress-screen')wellness.progress();
   if(screen==='help-screen')wellness.help();
   if(screen==='account-screen')wellness.account();
@@ -194,8 +222,8 @@ function followLocation() {
   if (screen === 'worry-screen') worry.home(location.hash.split('/')[1]);
   if (screen === 'chat-screen') chat.home(location.hash.split('/')[1]);
   if (screen === 'dashboard-screen') dashboard.home();
-  showScreen(screen, true);
 }
+
 window.addEventListener('popstate', followLocation);
 window.addEventListener('hashchange', followLocation);
 followLocation();

@@ -18,6 +18,12 @@ function save(s){if(!s?.access_token||!s?.refresh_token)throw Error('Sign-in did
 async function authRequest(path,body,token){const c=await authConfig();const r=await rawFetch(c.supabaseUrl+'/auth/v1/'+path,{method:'POST',headers:{apikey:c.supabasePublishableKey,'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.msg||d.error_description||d.message||'Sign-in failed. Please try again.');return d;}
 export async function accessToken(){const s=saved();if(!s)return null;if(s.expires_at>Date.now()/1000+60)return s.access_token;if(!refreshPromise)refreshPromise=authRequest('token?grant_type=refresh_token',{refresh_token:s.refresh_token}).then(d=>{save(d);return d.access_token;}).catch(e=>{guestSession=null;sessionStorage.removeItem(storageKey);throw e;}).finally(()=>{refreshPromise=null;});return refreshPromise;}
 export async function signOut(){const s=saved();if(s?.isGuest&&!confirm('End this guest session? You will lose access to its temporary chats and check-ins.'))return;try{if(s)await authRequest('logout',{ },s.access_token);}finally{guestSession=null;sessionStorage.removeItem(storageKey);location.reload();}}
+let guestStartPromise;
+export async function startGuest(){
+  if(!await authConfig()||await accessToken())return;
+  if(!guestStartPromise)guestStartPromise=authRequest('signup',{}).then(save).finally(()=>{guestStartPromise=null;});
+  return guestStartPromise;
+}
 const node=(tag,text)=>{const e=document.createElement(tag);if(text)e.textContent=text;return e;};
 export async function completeGoogleSignIn(){
   if(new URL(location.href).searchParams.get('auth')!=='callback')return;
