@@ -107,6 +107,7 @@ function resetBreathing() {
   renderBreathing();
 }
 function showScreen(id, fromHistory = false) {
+  document.body.classList.remove('scenic-home');
   if (currentScreen === 'reflection-screen' && id !== currentScreen) checkin.leave();
   if (id === 'transition-screen' && currentScreen === 'breathing-screen') checkin.home();
   if (id !== 'breathing-screen') pauseBreathing();

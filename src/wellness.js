@@ -1,3 +1,4 @@
+import {renderLanding} from './landing.js';
 import {authConfig,accessToken,requireAccount,isGuest} from './auth.js';
 import {apiFetch} from './api-client.js';
 import {MOODS,localDay,moodWeek} from './mood-model.js';
@@ -23,7 +24,8 @@ function continuation(worries,conversations){const c=card('Continue where you le
 export function createWellness(){
   let generation=0;
   async function account(){const root=document.getElementById('account-screen');root.replaceChildren();if(await requireAccount(root,account))location.hash='#home';}
-  function landing(root){root.replaceChildren();intro(root,'Your space to feel better.','A little support for everyday worries. A place to pause, reflect, and talk.');const hero=card('Meet Paasaa','chat-cta public-hero');hero.append(el('p','An AI support companion, with optional check-ins and self-help tools.'),link('Get started','#account','well-primary'));root.append(hero);const grid=el('div',undefined,'quick-grid');grid.append(tool('Talk','Start anywhere.','#chat','◌','Talk to Paasaa'),tool('Reflect','Make space for your day.','#account','✎','Get started'),tool('Pause','A moment at your own pace.','#breathe','≈','Feel calmer'));root.append(grid,el('p','Self-help prototype for ages 13+. Not a therapist. Clinician review and notifications are not connected.','well-notice'),link('Privacy, safety & support','#help'));}
+  function landing(root){renderLanding(root);}
+
   async function home(){const root=document.getElementById('home-screen'),token=++generation;root.replaceChildren(el('p','Loading your space…','loading-state'));try{if(await authConfig()){if(!await accessToken()){if(token===generation)landing(root);return;}if(!await requireAccount(root,home))return;}}catch{root.replaceChildren();noteState(root,'Account connection is unavailable.',home);return;}
     const results=await Promise.allSettled(['moods','worries','conversations'].map(path=>api(path)));if(token!==generation)return;root.replaceChildren();const hour=new Date().getHours();root.append(el('p',hour<12?'Good morning':hour<17?'Good afternoon':'Good evening','well-greeting'));intro(root,'Your space to feel better.','Check in with yourself, reflect on your day, or talk things through.');const layout=el('div',undefined,'well-grid'),main=el('div',undefined,'well-main'),aside=el('div',undefined,'well-aside');let moods=results[0].status==='fulfilled'?results[0].value.records:null;const worries=results[1].status==='fulfilled'?results[1].value.records:null,conversations=results[2].status==='fulfilled'?results[2].value.records:null;
     let chart=moods?week(moods):card('Your week');
