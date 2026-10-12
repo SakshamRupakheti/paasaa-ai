@@ -24,3 +24,6 @@ The new opt-in table intentionally permits authenticated anonymous identities to
 Existing advisories remain: private AI quota table denies direct access by having no policies; leaked-password protection is disabled: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
 
 RLS guidance checked against https://supabase.com/docs/guides/database/postgres/row-level-security
+
+Production verification: deployment cc2bd65 reached paasaa-ai.vercel.app. One-action Start chatting created a temporary guest session; the real Groq reply answered the capital-of-Nepal test correctly. Inline guest check-in accepted Okay and displayed its refresh/close lifetime. Synthetic updates signup used paasaa-ui-test-20261012@example.invalid; this address is test-only and must never be included in a future email campaign. No outbound email was sent.
+The live updates form displayed success only after the insert completed. Refresh removed the guest conversation and check-in from the interface and restored the guest entry controls. Aggregate database verification found zero saved activity records for guest identities created since the redesign. Google/email authentication flows were preserved but not reauthenticated during this UI verification. Microphone capture itself was not recorded during this pass.
