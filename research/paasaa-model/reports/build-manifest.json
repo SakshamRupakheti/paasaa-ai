@@ -1,0 +1,53 @@
+{
+  "dataset_version": "paasaa-cbt-pilot-v0.1",
+  "generated_at": "2026-10-13T06:29:46.448602+00:00",
+  "git_base_commit": "4e9a1cec9eb388269b12aa618f18122edbb1ffe4",
+  "working_tree_changes_included": true,
+  "seed": 42,
+  "config": {
+    "version": "paasaa-cbt-pilot-v0.1",
+    "seed": 42,
+    "pilot_size": 100,
+    "candidates_per_scenario": 3,
+    "languages": [
+      "en",
+      "es",
+      "hi",
+      "ne"
+    ],
+    "purpose": "review_only",
+    "pilot_approved": false,
+    "semantic_threshold": 0.83,
+    "embedding_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "embedding_revision": "b8ef00830037f9868450f778081ea683e900fe39",
+    "split_ratios": [
+      0.8,
+      0.1,
+      0.1
+    ]
+  },
+  "source_registry_hash": "be8d4a854a32de9596b8bf75f91eacbb979bd04ad92306588bcaeb11c99f617a",
+  "scenario_content_hash": "21b0144cf1ffd13a095cfbb7f9f92d8ed68409df93021bef340648783b669580",
+  "generator_files": {
+    "__init__.py": "b2882246edf2c7e9ac88e173a55db4e20ad1093940a307957156d59df0213a36",
+    "context_responses.py": "270daa8a57cf97b1519e4a343cd3206dddd6205282e84813daf2582032a8c380",
+    "pipeline.py": "316c7feef06554b455c6235885ccabf78e03e76faaad096402c019b7f8a2bc55",
+    "quality.py": "89daebe973973a2bc3f160c8c33438dc5326abef22e2fcf0c046acf5b23db07a",
+    "responses.py": "deecc5de79389e1c2f51c958d5648771e1d191929536b10eb65c0552916d2443",
+    "review.py": "f1aa1f0472a68f737f62ac51ac613e24384a63a96ce7f94128b59bf634321b1f",
+    "schemas.py": "1612867ede40852cf21fe7b33542035b48cce29f5a3e302994bc6892a038383c",
+    "seeds.py": "1dbc80825ad154d8a48fcf9ebe9c808ee1da8413da2464bc0ac81b73e3c7f875",
+    "taxonomy.py": "5944e6d2e248ab7393408713ada9ae168b43840aac54cbee88f5b61794b0af5b",
+    "teachers.py": "c8a72fcaa299256c360a804194faaa5440d3b7da6c29cf6bb2c82c30f8e5476e"
+  },
+  "embedding": {
+    "status": "completed",
+    "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "revision": "b8ef00830037f9868450f778081ea683e900fe39",
+    "dimensions": 384,
+    "threshold": 0.83,
+    "chunked_scenarios": 0,
+    "method": "cosine of mean normalized token-chunk embeddings; CPU; no remote code",
+    "threshold_calibration": "not clinically or linguistically calibrated"
+  }
+}

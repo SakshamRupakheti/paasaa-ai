@@ -1,0 +1,9 @@
+.venv/
+.cache/
+__pycache__/
+*.pyc
+adapters/
+checkpoints/
+data/reviewed/*
+!data/reviewed/.gitkeep
+review_imports/

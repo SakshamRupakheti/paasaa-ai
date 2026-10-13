@@ -1,0 +1,189 @@
+{
+  "mode": "live-presentation-panic",
+  "syntheticOnly": true,
+  "generatedAt": "2026-10-04T00:30:38.248Z",
+  "report": [
+    {
+      "scenario": "presentation panic",
+      "turns": [
+        {
+          "user": "bro speech in 5 mins and my whole body is fucking tight",
+          "assistant": "Try a quick progressive muscle release: tense each muscle for a few seconds then let it go, moving from your feet up to your shoulders, to loosen that tight feeling before you start.",
+          "action": null,
+          "decision": {
+            "turnId": "59269c4b-fb45-41a6-b3f2-8d4dbc3394cc",
+            "timestamp": "2026-10-04T00:29:47.972Z",
+            "planner": {
+              "primaryState": "PERFORMANCE_ANXIETY",
+              "arousal": "high",
+              "userNeed": "REGULATE_BODY",
+              "responseMode": "PERFORMANCE_SUPPORT",
+              "interventionId": null,
+              "confidence": 0.9
+            },
+            "safety": {
+              "riskLevel": "none",
+              "category": "none"
+            },
+            "plannerSuccess": true,
+            "responseSource": "model",
+            "promptVersions": {
+              "conversation": "1.0.0",
+              "planner": "1.0.0",
+              "safety": "1.0.0"
+            },
+            "metrics": [
+              {
+                "role": "safety",
+                "model": "openai/gpt-oss-safeguard-20b",
+                "latencyMs": 604,
+                "status": "ok",
+                "tokens": 875
+              },
+              {
+                "role": "planner",
+                "model": "openai/gpt-oss-20b",
+                "latencyMs": 1309,
+                "status": "ok",
+                "tokens": 2370
+              },
+              {
+                "role": "conversation",
+                "model": "openai/gpt-oss-120b",
+                "latencyMs": 768,
+                "status": "ok",
+                "tokens": 1048
+              }
+            ],
+            "latency": {
+              "safetyLatency": 607,
+              "plannerLatency": 1309,
+              "responseFirstTokenLatency": null,
+              "responseCompleteLatency": 769,
+              "totalResponseLatency": 2690
+            }
+          },
+          "reviewScores": null
+        },
+        {
+          "user": "still bad",
+          "assistant": "We can focus on getting started, even with the nerves still here. What is your first small action?",
+          "action": null,
+          "decision": {
+            "turnId": "146b3e84-0236-421e-a875-1249ba974a3a",
+            "timestamp": "2026-10-04T00:30:12.972Z",
+            "planner": {
+              "primaryState": "PERFORMANCE_ANXIETY",
+              "arousal": "high",
+              "userNeed": "REGULATE_BODY",
+              "responseMode": "PERFORMANCE_SUPPORT",
+              "interventionId": null,
+              "confidence": 0.9
+            },
+            "safety": {
+              "riskLevel": "none",
+              "category": "none"
+            },
+            "plannerSuccess": true,
+            "responseSource": "fallback",
+            "promptVersions": {
+              "conversation": "1.0.0",
+              "planner": "1.0.0",
+              "safety": "1.0.0"
+            },
+            "metrics": [
+              {
+                "role": "safety",
+                "model": "openai/gpt-oss-safeguard-20b",
+                "latencyMs": 561,
+                "status": "ok",
+                "tokens": 964
+              },
+              {
+                "role": "planner",
+                "model": "openai/gpt-oss-20b",
+                "latencyMs": 1405,
+                "status": "ok",
+                "tokens": 2412
+              },
+              {
+                "role": "conversation",
+                "model": "openai/gpt-oss-120b",
+                "latencyMs": 1025,
+                "status": "ok",
+                "tokens": 1316
+              }
+            ],
+            "latency": {
+              "safetyLatency": 561,
+              "plannerLatency": 1405,
+              "responseFirstTokenLatency": null,
+              "responseCompleteLatency": 1025,
+              "totalResponseLatency": 2995
+            }
+          },
+          "reviewScores": null
+        },
+        {
+          "user": "Good morning everyone",
+          "assistant": "I hear you’re feeling a lot of tension right now, especially with the speech just minutes away. Let’s focus on the moment and channel that energy into your delivery.",
+          "action": null,
+          "decision": {
+            "turnId": "c3b55d3d-f297-424a-87b7-15f5f1138de4",
+            "timestamp": "2026-10-04T00:30:38.246Z",
+            "planner": {
+              "primaryState": "PERFORMANCE_ANXIETY",
+              "arousal": "high",
+              "userNeed": "PREPARE_FOR_ACTION",
+              "responseMode": "REFLECTION",
+              "interventionId": null,
+              "confidence": 0.9
+            },
+            "safety": {
+              "riskLevel": "none",
+              "category": "none"
+            },
+            "plannerSuccess": true,
+            "responseSource": "model",
+            "promptVersions": {
+              "conversation": "1.0.0",
+              "planner": "1.0.0",
+              "safety": "1.0.0"
+            },
+            "metrics": [
+              {
+                "role": "safety",
+                "model": "openai/gpt-oss-safeguard-20b",
+                "latencyMs": 513,
+                "status": "ok",
+                "tokens": 905
+              },
+              {
+                "role": "planner",
+                "model": "openai/gpt-oss-20b",
+                "latencyMs": 1678,
+                "status": "ok",
+                "tokens": 2621
+              },
+              {
+                "role": "conversation",
+                "model": "openai/gpt-oss-120b",
+                "latencyMs": 1078,
+                "status": "ok",
+                "tokens": 1226
+              }
+            ],
+            "latency": {
+              "safetyLatency": 513,
+              "plannerLatency": 1678,
+              "responseFirstTokenLatency": null,
+              "responseCompleteLatency": 1078,
+              "totalResponseLatency": 3270
+            }
+          },
+          "reviewScores": null
+        }
+      ]
+    }
+  ]
+}

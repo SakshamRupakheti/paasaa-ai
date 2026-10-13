@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "scenario_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dataset_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "age_group": {
+      "enum": [
+        "adult",
+        "adolescent"
+      ]
+    },
+    "condition_family": {
+      "enum": [
+        "general_anxiety",
+        "chronic_worry",
+        "social_anxiety",
+        "panic_like",
+        "performance_anxiety",
+        "academic_stress",
+        "work_stress",
+        "relationship_worry",
+        "sleep_anxiety",
+        "health_anxiety",
+        "uncertainty",
+        "reassurance_seeking",
+        "cognitive_distortions",
+        "automatic_thoughts",
+        "avoidance",
+        "problem_solving",
+        "coping_confidence",
+        "emotional_overwhelm",
+        "intervention_refusal",
+        "misunderstanding",
+        "rupture_repair",
+        "ordinary_conversation",
+        "factual_questions",
+        "low_mood",
+        "safety_sensitive",
+        "adolescent_specific",
+        "clinician_homework",
+        "multilingual",
+        "ambiguous",
+        "adversarial"
+      ]
+    },
+    "context": {
+      "type": "string",
+      "minLength": 1
+    },
+    "conversation_stage": {
+      "type": "string",
+      "minLength": 1
+    },
+    "risk_level": {
+      "enum": [
+        "routine",
+        "clinical_follow_up",
+        "urgent",
+        "medical_emergency"
+      ]
+    },
+    "language": {
+      "enum": [
+        "en",
+        "es",
+        "hi",
+        "ne"
+      ]
+    },
+    "language_mix": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "en",
+          "es",
+          "hi",
+          "ne"
+        ]
+      },
+      "minItems": 1
+    },
+    "code_switching": {
+      "type": "boolean"
+    },
+    "translation_origin": {
+      "type": "string",
+      "minLength": 1
+    },
+    "native_review_status": {
+      "enum": [
+        "pending",
+        "approved"
+      ]
+    },
+    "desired_skills": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "reflection",
+          "emotion_identification",
+          "open_question",
+          "clarification",
+          "socratic_questioning",
+          "automatic_thought_identification",
+          "feared_prediction_clarification",
+          "evidence_for",
+          "evidence_against",
+          "balanced_alternative",
+          "uncertainty_tolerance",
+          "problem_solving",
+          "behavioral_planning",
+          "coping_confidence",
+          "grounding_offer",
+          "patient_choice",
+          "validation",
+          "rupture_repair",
+          "boundary_setting",
+          "safety_escalation",
+          "clinician_referral"
+        ]
+      },
+      "minItems": 1
+    },
+    "prohibited_behaviors": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "false_reassurance",
+          "overvalidation",
+          "overconfidence",
+          "diagnosis",
+          "premature_advice",
+          "excessive_questioning",
+          "interrogation_style",
+          "toxic_positivity",
+          "dependency_encouragement",
+          "invented_memory",
+          "unsafe_medical_reassurance",
+          "inappropriate_exposure",
+          "moralizing",
+          "judgment",
+          "excessive_verbosity",
+          "generic_empathy",
+          "ignoring_refusal"
+        ]
+      },
+      "minItems": 1
+    },
+    "opening": {
+      "type": "string",
+      "minLength": 1
+    },
+    "followup": {
+      "type": "string",
+      "minLength": 1
+    },
+    "user_message": {
+      "type": "string",
+      "minLength": 1
+    },
+    "clinical_goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scenario_family": {
+      "type": "string",
+      "minLength": 1
+    },
+    "conversation_family": {
+      "type": "string",
+      "minLength": 1
+    },
+    "template_origin": {
+      "type": "string",
+      "minLength": 1
+    },
+    "content_hash": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "scenario_id",
+    "dataset_version",
+    "age_group",
+    "condition_family",
+    "context",
+    "conversation_stage",
+    "risk_level",
+    "language",
+    "language_mix",
+    "code_switching",
+    "translation_origin",
+    "native_review_status",
+    "desired_skills",
+    "prohibited_behaviors",
+    "opening",
+    "followup",
+    "user_message",
+    "clinical_goal",
+    "source_id",
+    "scenario_family",
+    "conversation_family",
+    "template_origin",
+    "content_hash"
+  ],
+  "additionalProperties": false
+}

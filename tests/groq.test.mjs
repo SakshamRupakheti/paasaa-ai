@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {structured,transcribe} from '../server/ai.js';
+test('Groq structured requests use server authorization and strict schema',async()=>{
+  let request;const output=await structured({GROQ_API_KEY:'synthetic-secret'},'Test instruction',{text:'Synthetic input'},{type:'object'},async(url,options)=>{request={url,options,body:JSON.parse(options.body)};return Response.json({choices:[{finish_reason:'stop',message:{content:'{"ok":true}'}}]});});
+  assert.equal(request.url,'https://api.groq.com/openai/v1/chat/completions');assert.equal(request.body.model,'openai/gpt-oss-20b');assert.equal(request.body.response_format.json_schema.strict,true);assert.equal(request.options.headers.Authorization,'Bearer synthetic-secret');assert.deepEqual(output,{ok:true});
+});
+test('free-tier limit does not retry or fall back to paid providers',async()=>{let calls=0;await assert.rejects(()=>structured({GROQ_API_KEY:'synthetic'},'',{},{},async()=>{calls++;return new Response('',{status:429});}),e=>e.status===429&&/free-tier/.test(e.message));assert.equal(calls,1);});
+test('truncated or refused model responses are rejected',async()=>{for(const choice of [{finish_reason:'length',message:{content:'{}'}},{finish_reason:'stop',message:{refusal:'declined',content:'{}'}}])await assert.rejects(()=>structured({GROQ_API_KEY:'synthetic'},'',{},{},async()=>Response.json({choices:[choice]})),/no usable/);});
+test('transcription keeps raw words separate from patient approval',async()=>{let model;const result=await transcribe({GROQ_API_KEY:'synthetic'},new Blob(['synthetic bytes'],{type:'audio/webm'}),async(url,options)=>{assert.equal(url,'https://api.groq.com/openai/v1/audio/transcriptions');model=options.body.get('model');return Response.json({text:'I dunno maybe they thought that.'});});assert.equal(model,'whisper-large-v3-turbo');assert.equal(result.rawTranscript,'I dunno maybe they thought that.');assert.equal(result.cleanedTranscript,null);assert.equal(result.patientApprovedText,null);});

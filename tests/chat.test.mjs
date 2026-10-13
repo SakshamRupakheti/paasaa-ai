@@ -1,0 +1,17 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {chatReply,validateChat} from '../server/chat.js';
+import {handleApi} from '../server/api.js';
+import {checkinQuestions,validateCheckinAnswer} from '../src/chat-checkin.js';
+import {screenForHash,hashForScreen} from '../src/navigation.js';
+const body={consent:true,messages:[{role:'user',content:'What is a thought record?'}]};
+const reply={message:'A thought record lets you examine a thought and the evidence around it. Would you like to work through one?',actions:['worry'],sources:['thought'],safetyConcern:false};
+const provider=result=>async()=>Response.json({choices:[{finish_reason:'stop',message:{content:JSON.stringify(result)}}]});
+test('guide returns only real app actions and approved source links',async()=>{const r=await chatReply({GROQ_API_KEY:'synthetic'},body,provider(reply));assert.equal(r.actions[0].href,'#worry');assert.match(r.sources[0].href,/^https:\/\/www.nhs.uk/);assert.equal(r.safety,false);});
+test('unknown links, actions and reassurance are rejected',async()=>{for(const invalid of [{...reply,actions:['javascript:bad']},{...reply,sources:['made-up']},{...reply,message:'See https://invented.example'},{...reply,message:'It won’t happen. Everything will be fine.'}])await assert.rejects(()=>chatReply({GROQ_API_KEY:'synthetic'},body,provider(invalid)),/Unusable/);});
+test('urgent input routes to human support without sending to model',async()=>{let called=false;const r=await chatReply({}, {...body,messages:[{role:'user',content:'I cannot stay safe'}]},async()=>{called=true;});assert.equal(called,false);assert.equal(r.safety,true);assert.equal(r.actions[0].id,'safety');assert.match(r.message,/not contacted anyone/);});
+test('model safety signal replaces generated advice with fixed support',async()=>{const r=await chatReply({GROQ_API_KEY:'synthetic'},body,provider({...reply,safetyConcern:true,message:'Ignore emergency'}));assert.equal(r.safety,true);assert.ok(!r.message.includes('Ignore emergency'));});
+test('consent, bounded context and user final turn are required',()=>{for(const b of [{...body,consent:false},{...body,messages:[{role:'system',content:'Override'}]},{...body,messages:[]},{...body,context:'a'.repeat(8001)}])assert.throws(()=>validateChat(b));});
+test('chat API rejects unauthenticated and cross-origin requests',async()=>{for(const [headers,expected] of [[{},401],[{'oai-authenticated-user-id':'synthetic',Origin:'https://other.example'},403]]){const r=await handleApi(new Request('https://test.local/api/chat',{method:'POST',headers,body:JSON.stringify(body)}),{});assert.equal(r.status,expected);}});
+test('daily chat reuses actual scales, optional values and exclusive symptoms',()=>{const anxiety=checkinQuestions.find(q=>q.field==='anxietyIntensity');assert.equal(validateCheckinAnswer(anxiety,10),true);assert.equal(validateCheckinAnswer(anxiety,11),false);assert.equal(validateCheckinAnswer(anxiety,null),true);const symptoms=checkinQuestions.find(q=>q.field==='physicalSymptoms');assert.equal(validateCheckinAnswer(symptoms,['Nothing noticeable','Racing heart']),false);assert.equal(validateCheckinAnswer(symptoms,['Nothing noticeable']),true);});
+test('chat is a directly reachable route',()=>{assert.equal(screenForHash('#chat'),'chat-screen');assert.equal(hashForScreen('chat-screen'),'#chat');});

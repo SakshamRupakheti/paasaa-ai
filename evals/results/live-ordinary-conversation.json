@@ -1,0 +1,71 @@
+{
+  "mode": "live-ordinary-conversation",
+  "syntheticOnly": true,
+  "generatedAt": "2026-10-04T18:09:30.731Z",
+  "report": [
+    {
+      "scenario": "ordinary conversation",
+      "turns": [
+        {
+          "user": "What is the capital of Nepal?",
+          "assistant": "The capital of Nepal is Kathmandu.",
+          "action": null,
+          "decision": {
+            "turnId": "65fb1a32-0a30-40f8-bfad-e4bfee14d421",
+            "timestamp": "2026-10-04T18:09:30.727Z",
+            "planner": {
+              "primaryState": "GENERAL_CONVERSATION",
+              "arousal": "unknown",
+              "userNeed": "REQUEST_INFORMATION",
+              "responseMode": "GENERAL_CONVERSATION",
+              "interventionId": null,
+              "confidence": 1
+            },
+            "safety": {
+              "riskLevel": "none",
+              "category": "none"
+            },
+            "plannerSuccess": true,
+            "responseSource": "model",
+            "promptVersions": {
+              "conversation": "1.1.0",
+              "planner": "1.1.0",
+              "safety": "1.0.0"
+            },
+            "metrics": [
+              {
+                "role": "safety",
+                "model": "openai/gpt-oss-safeguard-20b",
+                "latencyMs": 536,
+                "status": "ok",
+                "tokens": 697
+              },
+              {
+                "role": "planner",
+                "model": "openai/gpt-oss-20b",
+                "latencyMs": 1010,
+                "status": "ok",
+                "tokens": 2101
+              },
+              {
+                "role": "conversation",
+                "model": "openai/gpt-oss-120b",
+                "latencyMs": 507,
+                "status": "ok",
+                "tokens": 1099
+              }
+            ],
+            "latency": {
+              "safetyLatency": 540,
+              "plannerLatency": 1010,
+              "responseFirstTokenLatency": null,
+              "responseCompleteLatency": 508,
+              "totalResponseLatency": 2066
+            }
+          },
+          "reviewScores": null
+        }
+      ]
+    }
+  ]
+}
