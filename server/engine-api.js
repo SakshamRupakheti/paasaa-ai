@@ -36,6 +36,7 @@ export async function engineTurn(session,body,env,store){
     if(s.aiConsent&&env.GROQ_API_KEY)allowAI=await store.limit();
     const result=await runConversationEngine(env,s,message,{allowAI,localContext:body.localContext});
     s.mode=result.mode;s.chatChoices=result.choices;s.hasGreetedThisSession=result.hasGreetedThisSession;
+    s.chatSupportAvailable=result.supportAvailable===true;
     s.companion=true;s.state='CHAT';s.status='active';s.aiMessage=result.message;s.engineMemory=result.memory;s.chatAction=result.action;s.awaitingFeedback=false;s.draftText='';
     s.lastInterventionId=result.action?.interventionId||null;
     s.chatSafety=result.safety.needsEmergencyPath?'urgent':result.safety.needsSafetyQuestion?'clarify':'none';

@@ -62,6 +62,7 @@ export function createChat(_checkin,openSafety){
     const prompt=el('p',session.aiMessage||view.message,'conversation-reply');if(!session.aiMessage)prompt.dataset.uiCopy='true';surface.append(prompt);thread.append(surface);
     if(session.companion&&session.chatAction){const mount=el('div');surface.append(mount);exerciseCleanup=mountChatExercise(mount,session.chatAction,event=>send(event));}
     if(session.companion&&session.chatSafety==='urgent')surface.append(button('Get human support now',openSafety,'primary'));
+    else if(session.companion&&session.chatSupportAvailable)surface.append(button('See human support options',openSafety,'primary'));
     if(session.answers.prediction&&['WORK THROUGH','LEARN'].includes(view.phase)&&view.type!=='summary'){const card=el('div',undefined,'conversation-prediction');card.append(el('span','THE PREDICTION','eyebrow'),el('p',session.answers.prediction));surface.append(card);}
     composer=null;predictionInput=null;sliderValue=null;detailsInputs={};historyInputs=[];
     if(view.type==='safety'){surface.append(button('Open human support',openSafety,'primary'),el('p','If you’re a teen, a safe trusted adult or health professional can help you reach support.'));}

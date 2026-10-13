@@ -12,6 +12,7 @@ import {assertNoHumanServiceClaim} from './response-policy.js';
 import {safetyRoute} from './safety-routing.js';
 import {SERVICE_POLICY_VERSION} from './service-policy.js';
 import {exerciseRequest,dialogueContext} from './conversation-intent.js';
+import {isCurrentPanic,panicSupportMessage} from './panic-support.js';
 export function validateResponse(value,plan){
   validate(responseSchema,value);const t=assertNoHumanServiceClaim(value.message.trim());
   if(!t||t.length>(plan.arousal==='high'?420:1100)||(t.match(/\?/g)||[]).length>(plan.shouldAskQuestion?1:0)||/(?:https?:|www\.|<[^>]+>|calm down|just relax|stop worrying|definitely (?:safe|just anxiety)|you (?:would|will) never hurt|100% safe|everything will be fine|you have (?:ocd|panic disorder)|you only need me|i'll never leave|as a human|when i had anxiety|increase your dose|stop taking)/i.test(t))throw Error('Invalid response wording');
@@ -21,6 +22,7 @@ export function validateResponse(value,plan){
   if(/(?:try|do|start) (?:a |the |this )?(?:quick |simple )?(?:grounding|breathing|relaxation|exercise)|name (?:five|four|three|[1-5])|notice what you|notice (?:five|three|the chair|your feet)|look (?:around|for)|anchor you|count (?:five|four|three)/i.test(t))throw Error('Unapproved exercise instructions');
   if(/\btense\s|muscle (?:release|relaxation)|(?:hand|shoulder) release|(?:clench|tighten|lift|lower|stretch|roll|shake).{0,30}(?:each|muscle|shoulder|hand|foot|fist|jaw|toes|forearm|leg)/i.test(t))throw Error('Unapproved physical guidance');
   if(/squeeze|inhale|exhale|inhaling|exhaling|slow breath|deep breath|shoulder roll|roll (?:them|your)|shake (?:them|your)|stretch your|tense your|hold.{0,15}(?:seconds|counts)|lift (?:both|your)|drop your shoulders|unclench|close your eyes/i.test(t))throw Error('Unapproved exercise instructions');
+  if(/\b(?:noticing|naming|counting)\s+(?:five|four|three|[1-5])\b|\bbreathing\s+(?:slowly|deeply|rapidly)\b/i.test(t))throw Error('Unapproved exercise instructions');
   if(plan.responseMode==='LISTEN_ONLY'&&/you should|you need to|try (?:to|a|this)|start by|focus on|(?:do|start|practice) (?:a |an |this |the )?(?:exercise|breathing|grounding)/i.test(t))throw Error('Advice in listen-only response');
   if(!plan.interventionId&&/take (?:a |three |five )?(?:deep )?breath|inhale|exhale|tense your|hold.{0,15}seconds/i.test(t))throw Error('Unapproved intervention');
   return t;
@@ -55,6 +57,7 @@ export async function runConversationEngine(env,session,message,{provider:inject
   const clarifyConsequence=!assessment.failed&&!safety.needsEmergencyPath&&!safety.needsSafetyQuestion&&/what.{0,35}(?:happen|comes?).{0,15}(?:next|after)|what.{0,20}consequences/i.test(previousQuestion)&&/^(?:nothing(?: else| further| really)?|no|none|idk|i don[’']?t know|not sure)[.!?\s]*$/i.test(message.trim());
   if(clarifyConsequence){plan={...plan,interventionId:null,shouldInterveneNow:false,responseMode:memory.questionsAllowed?'CONNECT_AND_EXPLORE':'LISTEN_ONLY',shouldAskQuestion:memory.questionsAllowed};}
   const mode=conversationMode(session,plan,safety,message);
+  const currentPanic=isCurrentPanic(message);
   if(safety.needsSafetyQuestion)memory.safetyPending=true;else if(!safety.needsEmergencyPath&&!assessment.failed)memory.safetyPending=false;
   let response=fallbackResponse(plan,{...memory,questionsAllowed:memory.questionsAllowed&&plan.shouldAskQuestion},message),responseSource='fallback';const responseStart=performance.now();
   if(safety.needsEmergencyPath){response=crisisMessage(safety.category);responseSource='safety';}
@@ -83,6 +86,11 @@ export async function runConversationEngine(env,session,message,{provider:inject
   if(clarifyConsequence){response=memory.questionsAllowed?'Do you mean nothing else would happen, or that you’re not sure what comes next?':'We can leave what happens next open. I won’t assume another consequence.';responseSource='registry';}
   let action=interventionAction(plan.interventionId);
   if(action){response=memory.event?`With ${memory.event} on your mind, we can keep this to one small step.`:'We can try one small step, only as long as it feels comfortable.';responseSource='registry';response+=' '+INTERVENTIONS[action.interventionId].title+' is available below; begin only if comfortable.';memory.interventionsTried.push(action.interventionId);memory.interventionsTried=[...new Set(memory.interventionsTried)];}
+  // A provider/classifier/planner failure must not leave explicit current panic
+  // with only a retry instruction. Never override urgent or unresolved risk,
+  // a safety question, a successful model reply, or an explicitly chosen exercise.
+  const panicFallback=currentPanic&&!safetyContext&&!safety.needsSafetyQuestion&&!action&&['fallback','unavailable'].includes(responseSource);
+  if(panicFallback){response=panicSupportMessage(memory);responseSource='panic-support';}
   const redacted=sensitiveThought(message)||plan.primaryState==='INTRUSIVE_THOUGHT'||plan.primaryState==='POSSIBLE_OCD_REASSURANCE_LOOP';
   const safeMessage=redacted?'[Private thought content omitted; unwanted thoughts or reassurance urges discussed.]':storedText(message);
   const telemetry={turnId:crypto.randomUUID(),timestamp:new Date().toISOString(),planner:{primaryState:plan.primaryState,arousal:plan.arousal,userNeed:plan.userNeed,responseMode:plan.responseMode,interventionId:plan.interventionId,confidence:plan.confidence},safety:{riskLevel:safety.riskLevel,category:safety.category},plannerSuccess,responseSource,promptVersions:PROMPT_VERSIONS,metrics:provider?.metrics||[],latency:{safetyLatency,plannerLatency,responseFirstTokenLatency:null,responseCompleteLatency:Math.round(performance.now()-responseStart),totalResponseLatency:Math.round(performance.now()-start)}};
@@ -91,5 +99,5 @@ export async function runConversationEngine(env,session,message,{provider:inject
   telemetry.safetyAssessment={source:assessment.source,failed:!!assessment.failed,failureCode:assessment.failureCode||null};
   // Classification does not create a review item or notify a clinician.
   // Classifications only. No chain of thought, raw prompts, or external analytics.
-  return {message:response,action,memory,safety,mode,choices:action||assessment.failed?[]:modeChoices(mode,memory),hasGreetedThisSession:!!session.hasGreetedThisSession||greet,telemetry,storedUserText:safeMessage,redacted,notice:!session.aiConsent?'AI replies are off. This reply uses basic scripted support; no conversation text was sent to Groq.':responseSource==='fallback'&&provider?'Paasaa is using its simpler support mode for this reply.':''};
+  return {message:response,action,memory,safety,mode,supportAvailable:panicFallback,choices:action||assessment.failed?[]:modeChoices(mode,memory),hasGreetedThisSession:!!session.hasGreetedThisSession||greet,telemetry,storedUserText:safeMessage,redacted,notice:!session.aiConsent?'AI replies are off. This reply uses basic scripted support; no conversation text was sent to Groq.':panicFallback?'This is basic scripted support; the AI reply is unavailable. Paasaa has not contacted anyone.':responseSource==='fallback'&&provider?'Paasaa is using its simpler support mode for this reply.':''};
 }
