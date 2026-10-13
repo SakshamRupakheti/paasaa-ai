@@ -1,0 +1,19 @@
+status: planned_not_implemented
+training_method: lora
+supported_next_phase: [lora, qlora]
+seed: 42
+max_seq_length: 2048
+learning_rate: 0.0002
+epochs: 2
+batch_size: 1
+gradient_accumulation: 16
+lora_rank: 16
+lora_alpha: 32
+lora_dropout: 0.05
+hardware: null
+# Proposed starting values only. Lock an experiment manifest before running.
+require_pilot_approval: true
+require_source_rights: true
+require_clinical_review: true
+require_native_review: true
+require_frozen_independent_test: true

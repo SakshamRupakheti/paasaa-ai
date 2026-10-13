@@ -1,0 +1,112 @@
+{
+  "dataset_version": "paasaa-cbt-pilot-v0.1",
+  "generated_at": "2026-10-13T06:29:46.448602+00:00",
+  "scenarios": 100,
+  "candidates": 300,
+  "language_counts": {
+    "en": 70,
+    "es": 10,
+    "hi": 10,
+    "ne": 10
+  },
+  "age_counts": {
+    "adult": 84,
+    "adolescent": 16
+  },
+  "risk_counts": {
+    "routine": 82,
+    "clinical_follow_up": 10,
+    "urgent": 3,
+    "medical_emergency": 5
+  },
+  "family_counts": {
+    "general_anxiety": 2,
+    "chronic_worry": 2,
+    "social_anxiety": 3,
+    "panic_like": 2,
+    "performance_anxiety": 4,
+    "academic_stress": 5,
+    "work_stress": 2,
+    "relationship_worry": 5,
+    "sleep_anxiety": 2,
+    "health_anxiety": 2,
+    "uncertainty": 5,
+    "reassurance_seeking": 2,
+    "cognitive_distortions": 2,
+    "automatic_thoughts": 2,
+    "avoidance": 2,
+    "problem_solving": 2,
+    "coping_confidence": 2,
+    "emotional_overwhelm": 2,
+    "intervention_refusal": 5,
+    "misunderstanding": 5,
+    "rupture_repair": 2,
+    "ordinary_conversation": 5,
+    "factual_questions": 2,
+    "low_mood": 3,
+    "safety_sensitive": 12,
+    "adolescent_specific": 3,
+    "clinician_homework": 5,
+    "multilingual": 5,
+    "ambiguous": 3,
+    "adversarial": 2
+  },
+  "code_switched": 5,
+  "schema_validation": "passed",
+  "reviewed_candidates": 0,
+  "training_eligible_candidates": 0,
+  "intentional_negatives": 100,
+  "exact_duplicate_pairs": 0,
+  "normalized_duplicate_pairs": 0,
+  "semantic_pairs": 5,
+  "semantic_clusters": 96,
+  "repeated_candidate_instances_beyond_first": 106,
+  "automatic_flags": {
+    "context_fidelity_review_required": 300,
+    "false_reassurance": 100,
+    "generic_empathy": 80,
+    "unsupported_certainty": 102,
+    "repeated_stock_response": 118,
+    "unsafe_medical_reassurance": 8,
+    "native_language_review_required": 96,
+    "monitoring_claim": 1
+  },
+  "embedding_check": {
+    "status": "completed",
+    "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "revision": "b8ef00830037f9868450f778081ea683e900fe39",
+    "dimensions": 384,
+    "threshold": 0.83,
+    "chunked_scenarios": 0,
+    "method": "cosine of mean normalized token-chunk embeddings; CPU; no remote code",
+    "threshold_calibration": "not clinically or linguistically calibrated"
+  },
+  "split_counts_dry_run": {
+    "train": 80,
+    "validation": 10,
+    "test": 10
+  },
+  "split_groups": 30,
+  "cross_split_pairs_at_threshold": 0,
+  "training_blockers": {
+    "clinical_review_missing": 300,
+    "commercial_rights_missing": 300,
+    "independent_holdout_not_frozen": 300,
+    "license_unresolved": 300,
+    "native_language_review_missing": 300,
+    "pilot_not_approved": 300,
+    "source_review_pending": 300,
+    "training_rights_missing": 300,
+    "intentional_negative_not_sft": 100
+  },
+  "training_run": false,
+  "limitations": [
+    "Draft templates are not independent teacher outputs.",
+    "All source rights, clinical reviews, and native-language reviews pending.",
+    "Pilot is development material, not an independent benchmark.",
+    "Heuristics cannot establish safety; false positives and missed hazards expected.",
+    "Similarity threshold needs calibration; English-heavy and very small per-language samples.",
+    "Repeated assistant histories and response templates reduce effective diversity. No claim of 100 unique therapeutic processes.",
+    "Some user turns explicitly request the target behavior, a shortcut unsuitable for a final benchmark."
+  ]
+}

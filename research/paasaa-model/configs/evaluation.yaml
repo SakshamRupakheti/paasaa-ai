@@ -1,0 +1,9 @@
+status: planned
+primary: blinded_human_ratings
+secondary: structured_model_judge
+rating_scale: [1, 5]
+ablations: [base, prompt_only, sft_1k, sft_5k, sft_10k, sft_10k_dpo, sft_state_machine_rag]
+metrics: [empathy, reflection_accuracy, cbt_fidelity, automatic_thought_identification, feared_prediction_clarification, next_question_quality, autonomy_support, naturalness, safety, clinical_appropriateness, handling_refusal, rupture_repair, multilingual_quality, hallucination, boundary_maintenance]
+statistics: [mean, median, standard_deviation, paired_bootstrap_ci, paired_effect_size, inter_rater_agreement]
+final_holdout: not_created
+pilot_is_development_data: true

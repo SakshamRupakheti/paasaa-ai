@@ -1,0 +1,11 @@
+version: paasaa-cbt-pilot-v0.1
+seed: 42
+pilot_size: 100
+candidates_per_scenario: 3
+languages: [en, es, hi, ne]
+purpose: review_only
+pilot_approved: false
+semantic_threshold: 0.83
+embedding_model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+embedding_revision: b8ef00830037f9868450f778081ea683e900fe39
+split_ratios: [0.8, 0.1, 0.1]
