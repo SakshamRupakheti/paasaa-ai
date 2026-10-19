@@ -1,6 +1,6 @@
 # Team Paasaa connection notifications
 
-Implemented October 19, 2026. Activation requires Resend credentials and a Vercel deployment.
+Implemented and activated October 19, 2026 on https://paasaa-ai.vercel.app/.
 
 The existing homepage form sends an authenticated, same-origin POST to `/api/updates`. After validation and the existing per-owner quota, the endpoint saves the contact to `paasaa_update_interest` under the verified Supabase owner. It then awaits Resend acceptance of a plain-text notification addressed only to `sakshamrupakheti23@gmail.com`.
 
@@ -29,6 +29,10 @@ The notification contains the submitted email and homepage source. The email's t
 - 20 targeted Node tests: passed (notification, updates, Vercel auth/backend).
 - `node scripts/build-vercel.mjs`: passed.
 - Browser: simulated provider failure saves contact and shows retry; retry succeeds and clears the field. No real email or production contact was created during these tests.
-- Live Resend delivery and production activation remain pending credentials.
+- Production implementation commit: `ebd5033`; Vercel deployment `E3qgZNcCvsPhC8i8iXDAtW6W2mv2`.
+- Production variables configured securely: `RESEND_API_KEY`, `PAASAA_TEAM_EMAIL_FROM` (Paasaa's Resend owner-inbox sender).
+- Submitted `paasaa-live-form-test@example.com` in a separate live homepage tab. The form confirmed the email was saved and Team Paasaa notified, then cleared the field.
+- Confirmed that notification arrived in `sakshamrupakheti23@gmail.com` with Gmail `INBOX` and `CATEGORY_UPDATES` labels. Also confirmed the separate synthetic setup notification. Two test emails were sent total; no real visitor data was used.
+- The synthetic live contact remains in the existing interest table. No automatic backfill or durable retry worker was enabled.
 
 References: [Resend Send Email API](https://resend.com/docs/api-reference/emails/send-email), [24-hour idempotency behavior](https://resend.com/docs/dashboard/emails/idempotency-keys).
