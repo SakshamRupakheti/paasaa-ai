@@ -13,6 +13,7 @@ import {safetyRoute} from './safety-routing.js';
 import {SERVICE_POLICY_VERSION} from './service-policy.js';
 import {exerciseRequest,dialogueContext} from './conversation-intent.js';
 import {isCurrentPanic,panicSupportMessage} from './panic-support.js';
+import {isCbtEntryRequest,CBT_ENTRY_MESSAGE,CBT_ENTRY_CHOICES} from './cbt-entry.js';
 export function validateResponse(value,plan){
   validate(responseSchema,value);const t=assertNoHumanServiceClaim(value.message.trim());
   if(!t||t.length>(plan.arousal==='high'?420:1100)||(t.match(/\?/g)||[]).length>(plan.shouldAskQuestion?1:0)||/(?:https?:|www\.|<[^>]+>|calm down|just relax|stop worrying|definitely (?:safe|just anxiety)|you (?:would|will) never hurt|100% safe|everything will be fine|you have (?:ocd|panic disorder)|you only need me|i'll never leave|as a human|when i had anxiety|increase your dose|stop taking)/i.test(t))throw Error('Invalid response wording');
@@ -44,16 +45,20 @@ export async function runConversationEngine(env,session,message,{provider:inject
   context.localContext=validateLocalContext(localContext);
   context.hasGreetedThisSession=!!session.hasGreetedThisSession;
   context.retrievedClinicalKnowledge=retrieveKnowledge(message);
-  const safetyStart=performance.now();const assessment=await classifySafety(provider,message,context.recent,memory);const safetyLatency=Math.round(performance.now()-safetyStart);
+  // Pure navigation has a fixed, non-generative reply. All contextual and mixed
+  // disclosures retain normal assessment; unresolved risk always takes priority.
+  const cbtEntry=isCbtEntryRequest(message)&&session.safetyState!=='needs-human-support'&&!['urgent','clarify'].includes(session.chatSafety)&&!hasSafetyContext(message,context.recent,memory);
+  const safetyStart=performance.now();const assessment=await classifySafety(cbtEntry?null:provider,message,context.recent,memory);const safetyLatency=Math.round(performance.now()-safetyStart);
   const safety=assessment.safety;
   const operationalSafety=safetyRoute(assessment);
   const safetyContext=safety.riskLevel!=='none'||session.safetyState==='needs-human-support'||hasSafetyContext(message,context.recent,memory);
   if(safety.needsEmergencyPath)memory.unresolvedUrgent=safety;
   let plan=fallbackPlan(message,memory),plannerSuccess=false;
   const plannerStart=performance.now();
-  if(provider&&!safety.needsEmergencyPath&&!safety.needsSafetyQuestion&&!assessment.failed){try{plan=validate(planSchema,await provider.planTurn(PLANNER_PROMPT,{...context,safety,availableInterventions:Object.values(INTERVENTIONS).map(({id,family,environmentSupport})=>({id,family,environmentSupport}))},planSchema));plannerSuccess=true;}catch{}}
+  if(provider&&!cbtEntry&&!safety.needsEmergencyPath&&!safety.needsSafetyQuestion&&!assessment.failed){try{plan=validate(planSchema,await provider.planTurn(PLANNER_PROMPT,{...context,safety,availableInterventions:Object.values(INTERVENTIONS).map(({id,family,environmentSupport})=>({id,family,environmentSupport}))},planSchema));plannerSuccess=true;}catch{}}
   const plannerLatency=Math.round(performance.now()-plannerStart);
   plan=routePlan(plan,safety,memory,message,{safetyFailed:assessment.failed});
+  if(cbtEntry)plan={...plan,primaryState:'GENERAL_CONVERSATION',arousal:'unknown',userNeed:'REQUEST_INFORMATION',responseMode:'CONNECT',conversationIntent:'open_cbt_reflection',interventionId:null,shouldInterveneNow:false,shouldAskQuestion:false};
   const clarifyConsequence=!assessment.failed&&!safety.needsEmergencyPath&&!safety.needsSafetyQuestion&&/what.{0,35}(?:happen|comes?).{0,15}(?:next|after)|what.{0,20}consequences/i.test(previousQuestion)&&/^(?:nothing(?: else| further| really)?|no|none|idk|i don[’']?t know|not sure)[.!?\s]*$/i.test(message.trim());
   if(clarifyConsequence){plan={...plan,interventionId:null,shouldInterveneNow:false,responseMode:memory.questionsAllowed?'CONNECT_AND_EXPLORE':'LISTEN_ONLY',shouldAskQuestion:memory.questionsAllowed};}
   const mode=conversationMode(session,plan,safety,message);
@@ -91,6 +96,7 @@ export async function runConversationEngine(env,session,message,{provider:inject
   // a safety question, a successful model reply, or an explicitly chosen exercise.
   const panicFallback=currentPanic&&!safetyContext&&!safety.needsSafetyQuestion&&!action&&['fallback','unavailable'].includes(responseSource);
   if(panicFallback){response=panicSupportMessage(memory);responseSource='panic-support';}
+  if(cbtEntry){response=CBT_ENTRY_MESSAGE;responseSource='registry';}
   const redacted=sensitiveThought(message)||plan.primaryState==='INTRUSIVE_THOUGHT'||plan.primaryState==='POSSIBLE_OCD_REASSURANCE_LOOP';
   const safeMessage=redacted?'[Private thought content omitted; unwanted thoughts or reassurance urges discussed.]':storedText(message);
   const telemetry={turnId:crypto.randomUUID(),timestamp:new Date().toISOString(),planner:{primaryState:plan.primaryState,arousal:plan.arousal,userNeed:plan.userNeed,responseMode:plan.responseMode,interventionId:plan.interventionId,confidence:plan.confidence},safety:{riskLevel:safety.riskLevel,category:safety.category},plannerSuccess,responseSource,promptVersions:PROMPT_VERSIONS,metrics:provider?.metrics||[],latency:{safetyLatency,plannerLatency,responseFirstTokenLatency:null,responseCompleteLatency:Math.round(performance.now()-responseStart),totalResponseLatency:Math.round(performance.now()-start)}};
@@ -99,5 +105,5 @@ export async function runConversationEngine(env,session,message,{provider:inject
   telemetry.safetyAssessment={source:assessment.source,failed:!!assessment.failed,failureCode:assessment.failureCode||null};
   // Classification does not create a review item or notify a clinician.
   // Classifications only. No chain of thought, raw prompts, or external analytics.
-  return {message:response,action,memory,safety,mode,supportAvailable:panicFallback,choices:action||assessment.failed?[]:modeChoices(mode,memory),hasGreetedThisSession:!!session.hasGreetedThisSession||greet,telemetry,storedUserText:safeMessage,redacted,notice:!session.aiConsent?'AI replies are off. This reply uses basic scripted support; no conversation text was sent to Groq.':panicFallback?'This is basic scripted support; the AI reply is unavailable. Paasaa has not contacted anyone.':responseSource==='fallback'&&provider?'Paasaa is using its simpler support mode for this reply.':''};
+  return {message:response,action,memory,safety,mode,supportAvailable:panicFallback,choices:cbtEntry?CBT_ENTRY_CHOICES.map(c=>({...c})):action||assessment.failed?[]:modeChoices(mode,memory),hasGreetedThisSession:!!session.hasGreetedThisSession||greet,telemetry,storedUserText:safeMessage,redacted,notice:!session.aiConsent?'AI replies are off. This reply uses basic scripted support; no conversation text was sent to Groq.':panicFallback?'This is basic scripted support; the AI reply is unavailable. Paasaa has not contacted anyone.':responseSource==='fallback'&&provider?'Paasaa is using its simpler support mode for this reply.':''};
 }
