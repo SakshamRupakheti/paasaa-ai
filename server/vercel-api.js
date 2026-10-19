@@ -57,7 +57,7 @@ export async function handleVercelApi(incoming,env,fetcher=fetch){
     return request.method==='GET'?json(prototypeData()):json({error:'Read-only prototype'},405);
   }
   const store=new SupabaseRecordStore({url:config.supabaseUrl,publishableKey:config.supabasePublishableKey,token,owner:user.id,fetcher});
-  if(url.pathname==='/api/updates')return registerUpdateInterest(request,{config,token,owner:user.id,limit:()=>store.limit(),fetcher});
+  if(url.pathname==='/api/updates')return registerUpdateInterest(request,{config,token,owner:user.id,limit:()=>store.limit(),env,fetcher});
   if(user.is_anonymous===true){
     if(url.pathname==='/api/guest')return guestRequest(request,env,user.id,()=>store.limit());
     if(!['/api/status','/api/transcribe','/api/chat'].includes(url.pathname))return json({error:'Guest records are temporary. Use the guest session endpoint.'},403);

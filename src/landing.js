@@ -1,5 +1,4 @@
-import {startGuest} from './auth.js';
-import {apiFetch} from './api-client.js';
+import {bindTeamConnect} from './team-connect.js';
 // The home journey hosts the same live chat node used by the direct chat route.
 // It never creates a second chat instance or substitutes illustrative messages.
 export function renderLanding(root,{chatRoot,startChat,mountCheckin}){
@@ -10,7 +9,7 @@ export function renderLanding(root,{chatRoot,startChat,mountCheckin}){
         <h1 id="scenic-title">Welcome to Paasaa.</h1>
         <p class="hero-description">A little space for you.<br>An AI companion for everyday worries, reflection, and calmer moments.</p>
         <div class="hero-links"><button class="nature-button" data-start-chat>Start chatting <span aria-hidden="true">↗</span></button><a class="nature-button outline" href="#breathe">Feel calmer</a></div>
-        <form class="updates-form"><div><input id="updates-email" name="email" type="email" autocomplete="email" placeholder="Your email address" aria-label="Your email address" required maxlength="254"><button type="submit">Connect with Team Paasaa →</button></div><small>By connecting, you agree to save your email for product updates from Team Paasaa.</small><p role="status"></p></form>
+        <form class="updates-form"><div><input id="updates-email" name="email" type="email" autocomplete="email" placeholder="Your email address" aria-label="Your email address" required maxlength="254"><button type="submit">Connect with Team Paasaa →</button></div><small>By connecting, you agree to save your email for product updates and send it to Team Paasaa by email.</small><p role="status"></p></form>
       </div>
       <button class="journey-scroll" data-scroll-chat aria-label="Scroll to chat"><svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m-7-7 7 7 7-7"/></svg></button>
     </section>
@@ -26,7 +25,6 @@ export function renderLanding(root,{chatRoot,startChat,mountCheckin}){
   root.querySelectorAll('[data-scroll-chat]').forEach(b=>b.onclick=()=>scroll('#journey-chat'));
   root.querySelector('[data-scroll-checkin]').onclick=()=>scroll('#journey-checkin');
   mountCheckin(root.querySelector('#journey-mood'));
-  const form=root.querySelector('.updates-form');
-  form.onsubmit=async event=>{event.preventDefault();const button=form.querySelector('button'),status=form.querySelector('[role=status]');button.disabled=true;status.textContent='Connecting…';try{await startGuest();const r=await apiFetch('/api/updates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:form.elements.email.value.trim()})});if(!r.ok)throw Error();status.textContent='Your interest is registered. Thank you.';form.reset();}catch{status.textContent='Updates signup is unavailable right now. Please try again later.';}finally{button.disabled=false;}};
+  bindTeamConnect(root.querySelector('.updates-form'));
   return {scrollChat:()=>scroll('#journey-chat'),scrollCheckin:()=>scroll('#journey-checkin'),start:()=>{scroll('#journey-chat');startChat();}};
 }
