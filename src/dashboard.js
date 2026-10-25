@@ -1,5 +1,6 @@
 import {requireAccount} from './auth.js';
 import {apiFetch} from './api-client.js';
+import {mountReviewDraft} from './review-draft.js';
 const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
 function table(headers,rows){const t=el('table');const caption=el('caption','Synthetic examples only');t.append(caption);const head=el('thead'),tr=el('tr');headers.forEach(h=>tr.append(el('th',h)));head.append(tr);t.append(head);const body=el('tbody');for(const row of rows){const line=el('tr');row.forEach(v=>line.append(el('td',String(v??'Not recorded'))));body.append(line);}t.append(body);return t;}
 export function createDashboard(){
@@ -21,6 +22,7 @@ export function createDashboard(){
       else for(const turn of p.transcript)detail.append(el('p',turn.role+': '+turn.text));
     }
     drawList();drawDetail();layout.append(aside,detail);root.append(layout,el('h2','Sample activity'),el('p',data.monitoring),table(['Time','Sample account','Event'],data.events.map(e=>[new Date(e.at).toLocaleString(),e.patient,e.event])));
+    mountReviewDraft(root,data.patients);
     const back=el('a','Back to Paasaa');back.href='#chat';root.append(back);
   }
   async function home(){if(!await requireAccount(root,home))return;root.replaceChildren(el('p','Opening your internal workspace…'));try{const r=await apiFetch('/api/admin/prototype');const d=await r.json();if(!r.ok)throw Error(d.error||'Workspace unavailable');if(d.synthetic!==true)throw Error('This prototype accepts only synthetic data.');data=d;selected=data.patients[0]?.id;render();}catch(e){root.replaceChildren(el('h1','Internal workspace'),el('p',e.message));}}

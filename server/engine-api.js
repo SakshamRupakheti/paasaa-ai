@@ -1,6 +1,8 @@
 import {runConversationEngine} from './conversation-engine.js';
 import {newMemory} from './engine-memory.js';
 import {INTERVENTIONS} from '../src/chat-interventions.js';
+import {selectPatientContext} from './patient-context.js';
+import {providerAvailable} from './ai-provider.js';
 const fail=message=>{throw Object.assign(Error(message),{status:400});};
 export async function engineTurn(session,body,env,store){
   const s=structuredClone(session);let action=body.action;
@@ -33,8 +35,14 @@ export async function engineTurn(session,body,env,store){
     const label=currentId?INTERVENTIONS[currentId]?.title:'that approach';
     if(action)message=action==='another'?'That is not helping. I want a different approach.':action==='exerciseStop'?'Stop the exercise.':action==='exerciseSkip'?'I cannot do that exercise.':`${action==='BETTER'?'A little better':action==='SAME'?'Same, still bad':action==='WORSE'?'Worse':'Not sure'} after ${label}.`;
     let allowAI=false;
-    if(s.aiConsent&&env.GROQ_API_KEY)allowAI=await store.limit();
-    const result=await runConversationEngine(env,s,message,{allowAI,localContext:body.localContext});
+    if(s.aiConsent&&providerAvailable(env))allowAI=await store.limit();
+    let patientContext=null;
+    if(store.durableContext===true){
+      const [memories,outcomes]=await Promise.all([store.list('memory'),store.list('intervention_outcome')]);
+      // User-confirmed records with explicit, per-record Groq opt-in only.
+      patientContext=selectPatientContext(memories,outcomes,message,store.owner);
+    }
+    const result=await runConversationEngine(env,s,message,{allowAI,localContext:body.localContext,patientContext});
     s.mode=result.mode;s.chatChoices=result.choices;s.hasGreetedThisSession=result.hasGreetedThisSession;
     s.chatSupportAvailable=result.supportAvailable===true;
     s.companion=true;s.state='CHAT';s.status='active';s.aiMessage=result.message;s.engineMemory=result.memory;s.chatAction=result.action;s.awaitingFeedback=false;s.draftText='';

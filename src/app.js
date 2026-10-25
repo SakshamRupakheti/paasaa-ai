@@ -1,8 +1,11 @@
+import {icon} from './ui-icons.js';
 import {initLanguage,getLanguage,translate,formatTranslation as tf} from './i18n.js';
 initLanguage();
+for(const a of document.querySelectorAll('.main-nav a')){const span=a.querySelector('span');if(span)span.outerHTML=icon(a.hash.slice(1)==='check-in'?'checkin':a.hash.slice(1));}
 import {completeGoogleSignIn,authConfig,accessToken,startGuest} from './auth.js';
 import {renderLanding} from './landing.js';
 import {createDashboard} from './dashboard.js';
+import {createPatientMemory} from './patient-memory.js';
 import {createWellness} from './wellness.js';
 import {mountSafetyList} from './safety-resources.js';
 await completeGoogleSignIn();
@@ -113,7 +116,7 @@ function showScreen(id, fromHistory = false) {
   if (currentScreen === 'reflection-screen' && id !== currentScreen) checkin.leave();
   if (id === 'transition-screen' && currentScreen === 'breathing-screen') checkin.home();
   if (id !== 'breathing-screen') pauseBreathing();
-  for (const screen of ['home-screen','progress-screen','help-screen','account-screen','breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen', 'support-screen', 'worry-screen', 'chat-screen', 'dashboard-screen']) $(screen).hidden = screen !== id;
+  for (const screen of ['memory-screen','home-screen','progress-screen','help-screen','account-screen','breathing-screen', 'transition-screen', 'reflection-screen', 'finish-screen', 'support-screen', 'worry-screen', 'chat-screen', 'dashboard-screen']) $(screen).hidden = screen !== id;
   if (currentScreen === 'support-screen' && id !== currentScreen) support.leave();
   if (currentScreen === 'worry-screen' && id !== currentScreen) worry.leave();
   if (currentScreen === 'chat-screen' && id !== currentScreen) chat.leave();
@@ -166,6 +169,7 @@ document.addEventListener('paasaa-language-change',()=>{
 });
 
 const dashboard = createDashboard();
+const patientMemory = createPatientMemory();
 const wellness = createWellness();
 const support = createSupport();
 const worry = createWorry(()=>{ support.safety(); showScreen('support-screen'); });
@@ -222,6 +226,7 @@ function followLocation() {
   if (screen === 'worry-screen') worry.home(location.hash.split('/')[1]);
   if (screen === 'chat-screen') chat.home(location.hash.split('/')[1]);
   if (screen === 'dashboard-screen') dashboard.home();
+  if (screen === 'memory-screen') patientMemory.home();
 }
 
 window.addEventListener('popstate', followLocation);

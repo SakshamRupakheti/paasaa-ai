@@ -108,3 +108,12 @@ Sources: [NHS anxiety, fear and panic guidance](https://www.nhs.uk/mental-health
 ## CBT reliability and model research — October 19, 2026
 
 See [selected research review](cbt-reliability-research.md) for source links, inspection depth, populations, protocols, limitations, and proposed evaluations. The current change provides navigation into the existing reflection and bounded provider retries; it does not change model weights or establish clinical efficacy. Computational dialogue benchmarks and synthetic evaluations are distinct from patient outcomes. The reviewed adult genAI-CBT trial reports engagement gains without an overall symptom advantage over workbooks; its findings do not validate Paasaa or adolescents. No external corpus or private chat was imported. Training rights, clinical review, adolescent review, and native-language review remain pending.
+
+
+## Foundation architecture — October 25, 2026
+
+- [Dartmouth Evergreen announcement](https://home.dartmouth.edu/news/2025/10/announcing-evergreen-ai-tool-student-well-being) and [Evergreen product description](https://evergreen.dartmouth.edu/): public descriptions of a voluntary student wellbeing tool, contextual support, research and oversight. These are product/research descriptions, not disclosure of its proprietary implementation and not evidence that Paasaa is clinically effective. Adaptation: separate patient-approved context, independent safety policy, and review architecture. No clinical supervision is currently delivered by Paasaa.
+- [MindScape, arXiv:2409.09570](https://arxiv.org/abs/2409.09570): exploratory eight-week study with 20 college students, contextual journaling and sensing. A small exploratory student study cannot establish causal efficacy or suitability for younger teenagers. Paasaa adapts the question of context relevance; it does not implement passive sensing, infer patient facts, or copy study data.
+- Existing Therabot/CBT references are catalogued in `cbt-reliability-research.md`. Their results are not transferred to Paasaa. No study participants, outcome improvements, training runs or clinical reviews are claimed for this foundation change.
+
+Engineering verification checks owner isolation, explicit per-record Groq opt-in, revision conflicts, expired/revoked context, nullable ratings, review state transitions and schema validation. These checks are not clinical validation. All new corpus examples are synthetic; model weights remain unchanged. Clinical, adolescent, native-language and legal/privacy review remain pending.

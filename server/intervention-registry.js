@@ -1,0 +1,5 @@
+import {INTERVENTIONS} from '../src/chat-interventions.js';
+// Existing self-help tools remain available; this separate clinical registry is
+// inactive until each protocol has qualified approval. Metadata is not approval.
+export const clinicalInterventions=Object.freeze(Object.values(INTERVENTIONS).map(i=>Object.freeze({intervention_id:i.id,name:i.title,condition:null,supported_age_groups:[],required_state:[],contraindications:[],requires_clinician_approval:true,required_context:[],required_consent:['clinical_program'],allowed_next_states:[],version:'draft-1',active:false,clinical_review_status:'pending'})));
+export function eligibleInterventions(entries,context){return entries.filter(i=>i.active===true&&i.clinical_review_status==='approved'&&i.supported_age_groups.includes(context.age_group)&&i.required_state.includes(context.state)&&i.required_context.every(k=>context[k]!=null)&&i.required_consent.every(k=>context.consents?.includes(k))&&(!i.requires_clinician_approval||context.carePlanVerified===true)&&!i.contraindications.some(k=>context.cautions?.includes(k))&&!context.declinedInterventions?.includes(i.intervention_id));}

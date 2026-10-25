@@ -1,0 +1,11 @@
+import {readFile} from 'node:fs/promises';
+import {TRUST_PAGES,renderTrustPage} from '../src/trust-content.js';
+const config=JSON.parse(await readFile('config/launch-readiness.json','utf8'));
+const origin=new URL(config.publicOrigin);
+const blockers=Object.entries(config).filter(([,value])=>value&&typeof value==='object'&&(value.verified!==true||!value.evidence)).map(([key])=>key);
+if(origin.protocol!=='https:')blockers.push('https');
+if(/\.(?:vercel\.app|netlify\.app)$/.test(origin.hostname)&&!blockers.includes('customDomain'))blockers.push('customDomain');
+const pages=Object.keys(TRUST_PAGES).filter(slug=>renderTrustPage(slug));
+const favicon=(await readFile('src/favicon.svg','utf8')).includes('<svg');
+console.log(JSON.stringify({mode:config.deploymentMode,origin:origin.origin,publicTrustPages:pages,favicon,launchReady:!blockers.length&&pages.length===5&&favicon,blockers,note:'This is an evidence checklist, not legal or clinical certification. Owner elected to keep the existing Vercel prototype.'},null,2));
+if(process.argv.includes('--require-ready')&&blockers.length)process.exitCode=1;

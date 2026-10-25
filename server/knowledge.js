@@ -2,7 +2,7 @@ export const KNOWLEDGE_CATEGORIES=['anxiety','gad','panic','cbt','worry','uncert
 // Deliberately empty until a qualified reviewer approves content. Never scrape at runtime.
 export const clinicalDocuments=[];
 export function validDocument(d){
-  return !!d&&['id','title','source','reviewedBy','reviewedAt','content'].every(k=>typeof d[k]==='string'&&d[k].trim())&&KNOWLEDGE_CATEGORIES.includes(d.category)&&/^https:\/\//.test(d.source)&&Number.isFinite(Date.parse(d.reviewedAt))&&Array.isArray(d.tags)&&d.tags.every(t=>typeof t==='string'&&t.length<=80)&&d.content.length<=12000;
+  return !!d&&['id','title','source','version','publication_date','reviewedBy','reviewedAt','clinical_scope','content'].every(k=>typeof d[k]==='string'&&d[k].trim())&&d.approval_status==='approved'&&KNOWLEDGE_CATEGORIES.includes(d.category)&&/^https:\/\//.test(d.source)&&Number.isFinite(Date.parse(d.reviewedAt))&&Number.isFinite(Date.parse(d.publication_date))&&Array.isArray(d.tags)&&d.tags.every(t=>typeof t==='string'&&t.length<=80)&&d.content.length<=12000;
 }
 export function retrieveKnowledge(query,{documents=clinicalDocuments,limit=3}={}){
   const words=new Set(query.toLowerCase().match(/[a-z]{3,}/g)||[]);

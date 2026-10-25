@@ -1,0 +1,15 @@
+{
+  "id": "foundation-synthetic-001",
+  "synthetic": true,
+  "reviewer_label": "engineering-fixture-not-a-clinician",
+  "feedback": {
+    "rating": 1,
+    "appropriate": false,
+    "safety_issue": false,
+    "correction": "Synthetic correction for testing only.",
+    "error_type": "fixture",
+    "clinical_strategy": "No clinical strategy approved.",
+    "clinical_rationale": "Exercises the schema and transitions only.",
+    "reviewer_notes": "Not a clinical review or endorsement."
+  }
+}

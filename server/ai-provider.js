@@ -2,13 +2,19 @@ import {aiConfig} from './ai-config.js';
 import {aiEnabled} from './service-policy.js';
 import {SERVICE_BOUNDARIES_PROMPT} from './response-policy.js';
 import {validate} from './engine-schemas.js';
-// Provider boundary: business policy only depends on these three methods.
+// Provider boundary: business policy uses capabilities, not provider transports.
 export class AIProvider {
+  async generate(){throw Error('Provider does not support unstructured generation');}
+  async generateStructured(){throw Error('Provider not implemented');}
+  async classify(prompt,input,schema){return this.generateStructured('safety',prompt,input,schema);}
+  async embed(){throw Object.assign(Error('Embedding provider is not configured'),{code:'unsupported_capability'});}
   async classifySafety(){throw Error('Provider not implemented');}
   async planTurn(){throw Error('Provider not implemented');}
   async generateResponse(){throw Error('Provider not implemented');}
 }
 export class GroqProvider extends AIProvider {
+  generateStructured(role,prompt,input,schema){return this.complete(role,prompt,input,schema);}
+  async generate(prompt,input){return (await this.generateResponse(prompt,input,{type:'object',additionalProperties:false,properties:{message:{type:'string'}},required:['message']})).message;}
   constructor(env,fetcher=fetch){super();this.key=aiEnabled(env)?env.GROQ_API_KEY:null;this.config=aiConfig(env);this.fetcher=fetcher;this.metrics=[];}
   async complete(role,prompt,input,schema,model=this.config[role+'Model']) {
     if(!this.key)throw Object.assign(Error('AI is not connected'),{code:'unavailable',status:503});
@@ -59,3 +65,4 @@ export class GroqProvider extends AIProvider {
   generateResponse(prompt,input,schema){return this.complete('conversation',prompt,input,schema);}
 }
 export function createProvider(env,fetcher=fetch){if(aiConfig(env).provider!=='groq')throw Error('Unsupported AI provider');return new GroqProvider(env,fetcher);}
+export function providerAvailable(env){return aiEnabled(env)&&aiConfig(env).provider==='groq'&&!!env.GROQ_API_KEY;}

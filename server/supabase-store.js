@@ -7,7 +7,7 @@ const identifier=/^[\w-]{1,160}$/;
 // independent ownership boundary even if an application filter is omitted.
 export class SupabaseRecordStore {
   constructor({url,publishableKey,token,owner,fetcher=fetch}){
-    this.url=url;this.owner=owner;this.fetcher=fetcher;
+    this.url=url;this.owner=owner;this.fetcher=fetcher;this.durableContext=true;
     this.headers={apikey:publishableKey,Authorization:`Bearer ${token}`,'Content-Type':'application/json'};
   }
   async request(path,{method='GET',body,representation=false}={}){
@@ -25,7 +25,7 @@ export class SupabaseRecordStore {
   }
   query(filters){return new URLSearchParams({owner:`eq.${this.owner}`,...filters}).toString();}
   async list(kind){
-    if(!['worry','conversation','mood'].includes(kind))throw Error('Invalid record kind');
+    if(!['worry','conversation','mood','memory','intervention_outcome'].includes(kind))throw Error('Invalid record kind');
     const rows=await this.request(`paasaa_records?${this.query({kind:`eq.${kind}`,select:columns,order:'updated_at.desc',limit:'200'})}`);
     if(!Array.isArray(rows))throw unavailable();return rows.map(row=>this.row(row));
   }
@@ -35,7 +35,7 @@ export class SupabaseRecordStore {
     if(!Array.isArray(rows))throw unavailable();return rows.length?this.row(rows[0]):null;
   }
   async put(record,kind,expected){
-    if(!record||!identifier.test(record.id)||!['worry','conversation','mood'].includes(kind)||!Number.isSafeInteger(expected)||expected<0)throw Error('Invalid record');
+    if(!record||!identifier.test(record.id)||!['worry','conversation','mood','memory','intervention_outcome'].includes(kind)||!Number.isSafeInteger(expected)||expected<0)throw Error('Invalid record');
     const updatedAt=new Date().toISOString();
     const payload={...record,id:record.id,kind,updatedAt,revision:expected+1};
     const body={payload,revision:expected+1,updated_at:updatedAt};

@@ -51,7 +51,7 @@ test('safety pending cannot be bypassed by selecting CBT',async()=>{
   }
 });
 test('knowledge retrieval excludes unreviewed and unrelated material and bounds context',()=>{
-  const d={id:'synthetic-test-only',title:'Synthetic fixture',category:'worry',source:'https://example.test/fixture',reviewedBy:'Synthetic test reviewer',reviewedAt:'2026-10-04',content:'Synthetic fixture only.',tags:['uncertainty']};
+  const d={id:'synthetic-test-only',title:'Synthetic fixture',category:'worry',source:'https://example.test/fixture',version:'test-1',publication_date:'2026-01-01',clinical_scope:'Synthetic test only',approval_status:'approved',reviewedBy:'Synthetic test reviewer',reviewedAt:'2026-10-04',content:'Synthetic fixture only.',tags:['uncertainty']};
   assert.deepEqual(retrieveKnowledge('worry'),[]);
   assert.equal(retrieveKnowledge('worry',{documents:[d,{...d,reviewedBy:''}]}).length,1);
   assert.deepEqual(retrieveKnowledge('photosynthesis',{documents:[d]}),[]);

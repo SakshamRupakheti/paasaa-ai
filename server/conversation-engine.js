@@ -1,5 +1,7 @@
-import {createProvider} from './ai-provider.js';
-import {classifySafety,crisisMessage,hasSafetyContext} from './engine-safety.js';
+import {createProvider,providerAvailable} from './ai-provider.js';
+import {crisisMessage,hasSafetyContext} from './engine-safety.js';
+import {assessSafety,SAFETY_SERVICE_VERSION} from './safety-service.js';
+import {FOUNDATION_VERSIONS} from './foundation-contracts.js';
 import {planSchema,responseSchema,validate} from './engine-schemas.js';
 import {PLANNER_PROMPT,CONVERSATION_PROMPT,EVERYDAY_STYLE,PROMPT_VERSIONS} from './engine-prompts.js';
 import {updateMemory,compactContext,storedText,sensitiveThought} from './engine-memory.js';
@@ -28,11 +30,14 @@ export function validateResponse(value,plan){
   if(!plan.interventionId&&/take (?:a |three |five )?(?:deep )?breath|inhale|exhale|tense your|hold.{0,15}seconds/i.test(t))throw Error('Unapproved intervention');
   return t;
 }
-export async function runConversationEngine(env,session,message,{provider:injected,allowAI=true,localContext=null}={}){
+export async function runConversationEngine(env,session,message,{provider:injected,allowAI=true,localContext=null,patientContext=null}={}){
   const start=performance.now();let provider=injected;
-  if(!provider&&allowAI&&session.aiConsent&&env.GROQ_API_KEY){try{provider=createProvider(env);}catch{}}
+  if(!provider&&allowAI&&session.aiConsent&&providerAvailable(env)){try{provider=createProvider(env);}catch{}}
   if(!allowAI||!session.aiConsent||env.PAASAA_AI_ENABLED==='false')provider=null;
   const memory=updateMemory(session.engineMemory,message,session.chatAction?.interventionId||session.lastInterventionId);
+  // Durable opt-ins are read again each turn. Never copy them into session memory.
+  const conversationRejections=[...memory.interventionsRejected];
+  if(patientContext)memory.interventionsRejected=[...new Set([...memory.interventionsRejected,...patientContext.declinedInterventions])];
   const dialogue=dialogueContext(session,message);
   memory.exercisePermission=exerciseRequest(message,dialogue.previousReply);
   memory.questionStreak=dialogue.questionStreak;
@@ -45,10 +50,11 @@ export async function runConversationEngine(env,session,message,{provider:inject
   context.localContext=validateLocalContext(localContext);
   context.hasGreetedThisSession=!!session.hasGreetedThisSession;
   context.retrievedClinicalKnowledge=retrieveKnowledge(message);
+  context.patientConfirmedContext=patientContext?{memories:patientContext.memories,outcomes:patientContext.outcomes}:null;
   // Pure navigation has a fixed, non-generative reply. All contextual and mixed
   // disclosures retain normal assessment; unresolved risk always takes priority.
   const cbtEntry=isCbtEntryRequest(message)&&session.safetyState!=='needs-human-support'&&!['urgent','clarify'].includes(session.chatSafety)&&!hasSafetyContext(message,context.recent,memory);
-  const safetyStart=performance.now();const assessment=await classifySafety(cbtEntry?null:provider,message,context.recent,memory);const safetyLatency=Math.round(performance.now()-safetyStart);
+  const safetyStart=performance.now();const assessment=await assessSafety(cbtEntry?null:provider,{current_message:message,recent_conversation:context.recent,known_patient_context:memory});const safetyLatency=Math.round(performance.now()-safetyStart);
   const safety=assessment.safety;
   const operationalSafety=safetyRoute(assessment);
   const safetyContext=safety.riskLevel!=='none'||session.safetyState==='needs-human-support'||hasSafetyContext(message,context.recent,memory);
@@ -102,7 +108,10 @@ export async function runConversationEngine(env,session,message,{provider:inject
   const telemetry={turnId:crypto.randomUUID(),timestamp:new Date().toISOString(),planner:{primaryState:plan.primaryState,arousal:plan.arousal,userNeed:plan.userNeed,responseMode:plan.responseMode,interventionId:plan.interventionId,confidence:plan.confidence},safety:{riskLevel:safety.riskLevel,category:safety.category},plannerSuccess,responseSource,promptVersions:PROMPT_VERSIONS,metrics:provider?.metrics||[],latency:{safetyLatency,plannerLatency,responseFirstTokenLatency:null,responseCompleteLatency:Math.round(performance.now()-responseStart),totalResponseLatency:Math.round(performance.now()-start)}};
   telemetry.operationalSafety=operationalSafety;
   telemetry.servicePolicyVersion=SERVICE_POLICY_VERSION;
+  telemetry.foundationVersions=FOUNDATION_VERSIONS;telemetry.safetyServiceVersion=SAFETY_SERVICE_VERSION;
+  telemetry.contextRecordIds=patientContext?[...patientContext.memories,...patientContext.outcomes].map(r=>r.id):[];
   telemetry.safetyAssessment={source:assessment.source,failed:!!assessment.failed,failureCode:assessment.failureCode||null};
+  memory.interventionsRejected=conversationRejections;
   // Classification does not create a review item or notify a clinician.
   // Classifications only. No chain of thought, raw prompts, or external analytics.
   return {message:response,action,memory,safety,mode,supportAvailable:panicFallback,choices:cbtEntry?CBT_ENTRY_CHOICES.map(c=>({...c})):action||assessment.failed?[]:modeChoices(mode,memory),hasGreetedThisSession:!!session.hasGreetedThisSession||greet,telemetry,storedUserText:safeMessage,redacted,notice:!session.aiConsent?'AI replies are off. This reply uses basic scripted support; no conversation text was sent to Groq.':panicFallback?'This is basic scripted support; the AI reply is unavailable. Paasaa has not contacted anyone.':responseSource==='fallback'&&provider?'Paasaa is using its simpler support mode for this reply.':''};
