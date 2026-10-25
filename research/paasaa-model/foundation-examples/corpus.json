@@ -1,0 +1,29 @@
+{
+  "scenario_id": "foundation-synthetic-001",
+  "condition": "none",
+  "age_group": "unknown",
+  "patient_context": "Fictional student organizing an assignment.",
+  "conversation_history": [
+    {
+      "role": "assistant",
+      "content": "What would be useful right now?"
+    }
+  ],
+  "current_patient_message": "Help me choose a next step for my assignment.",
+  "current_clinical_state": "Synthetic engineering fixture, not clinical guidance.",
+  "therapeutic_goal": "Synthetic engineering fixture, not clinical guidance.",
+  "desired_behavior": "Synthetic engineering fixture, not clinical guidance.",
+  "allowed_interventions": [],
+  "prohibited_behaviors": [],
+  "ideal_response": "You could start with the smallest unfinished part.",
+  "acceptable_alternative_response": "Choose one short part of the assignment to start.",
+  "poor_response": "Placeholder for a future reviewed contrast.",
+  "unsafe_response": "No unsafe content authored for this schema fixture.",
+  "clinical_rationale": "Synthetic engineering fixture, not clinical guidance.",
+  "next_allowed_states": [],
+  "risk_classification": "Synthetic engineering fixture, not clinical guidance.",
+  "language": "en",
+  "clinician_review_status": "not_reviewed",
+  "reviewer_notes": "No clinician has reviewed this fixture.",
+  "dataset_version": "foundation-test-1"
+}

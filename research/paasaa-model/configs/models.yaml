@@ -1,0 +1,8 @@
+base_model: null
+base_revision: null
+parameter_range_billions: [3, 8]
+instruction_tuned: true
+model_license_review: pending
+teacher_adapters: [local_open_weight, permitted_api, clinician_authored, manual, licensed_public, internal_synthetic]
+enabled_teacher_adapters: []
+# No commercial teacher calls or generative model downloads in this pilot.

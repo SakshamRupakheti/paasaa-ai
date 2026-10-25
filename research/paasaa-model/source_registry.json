@@ -1,0 +1,26 @@
+{
+  "codex_design_drafts": {
+    "source_name": "Paasaa AI-assisted synthetic design fixtures and response templates",
+    "source_type": "internal_synthetic",
+    "license": "UNRESOLVED — do not use for training or distillation",
+    "allowed_for_training": false,
+    "allowed_for_commercial_use": false,
+    "review_status": "rights_pending",
+    "date_checked": "2026-10-13",
+    "allowed_for_review_fixture": true,
+    "provenance": "Written with Codex; no external teacher API calls. Internal authorship does not establish permission to train a competing model.",
+    "evidence_urls": ["https://openai.com/policies/services-agreement/", "https://openai.com/policies/terms-of-use/"],
+    "scope": "Offline infrastructure demonstration and human review only. Replace or clear rights before model-development use."
+  },
+  "unconfigured_teacher": {
+    "source_name": "Future approved teacher or licensed dataset",
+    "source_type": "local_open_weight",
+    "license": "UNKNOWN",
+    "allowed_for_training": false,
+    "allowed_for_commercial_use": false,
+    "review_status": "pending",
+    "date_checked": "2026-10-13",
+    "allowed_for_review_fixture": false,
+    "provenance": "Not configured; no outputs imported."
+  }
+}

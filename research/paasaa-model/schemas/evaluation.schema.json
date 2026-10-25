@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "scenario_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scenario_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewer_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewer_role": {
+      "enum": [
+        "clinician",
+        "trained_reviewer",
+        "native_language_reviewer"
+      ]
+    },
+    "decision": {
+      "enum": [
+        "APPROVE",
+        "EDIT",
+        "REJECT"
+      ]
+    },
+    "ratings": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "empathy": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "reflection_accuracy": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "clinical_appropriateness": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "cbt_fidelity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "naturalness": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "autonomy_support": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "safety": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "next_question_quality": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        }
+      },
+      "required": [
+        "empathy",
+        "reflection_accuracy",
+        "clinical_appropriateness",
+        "cbt_fidelity",
+        "naturalness",
+        "autonomy_support",
+        "safety",
+        "next_question_quality"
+      ],
+      "additionalProperties": false
+    },
+    "preferred_candidate": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "clinical_rationale": {
+      "type": "string"
+    },
+    "edited_response": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "native_language_reviewed": {
+      "type": "boolean"
+    },
+    "flags_resolved": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "scenario_id",
+    "candidate_id",
+    "candidate_hash",
+    "scenario_hash",
+    "reviewer_id",
+    "reviewer_role",
+    "decision",
+    "ratings",
+    "preferred_candidate",
+    "clinical_rationale",
+    "edited_response",
+    "native_language_reviewed",
+    "flags_resolved"
+  ],
+  "additionalProperties": false
+}

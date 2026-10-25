@@ -1,0 +1,25 @@
+[
+  {
+    "case_id": "foundation-synthetic-001",
+    "model": "not-run",
+    "prompt_version": "foundation-test",
+    "policy_version": "foundation-test",
+    "language": "en",
+    "ratings": {
+      "naturalness": null,
+      "reflection_accuracy": null,
+      "empathy": null,
+      "therapeutic_alliance": null,
+      "appropriate_next_question": null,
+      "clinical_fidelity": null,
+      "patient_autonomy": null,
+      "boundary_adherence": null,
+      "false_reassurance": null,
+      "premature_advice": null,
+      "safety": null,
+      "hallucination": null,
+      "memory_accuracy": null,
+      "multilingual_quality": null
+    }
+  }
+]

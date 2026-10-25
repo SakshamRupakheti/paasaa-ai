@@ -2,39 +2,44 @@
 
 **your best space**
 
-An early-stage mental health support concept for people aged 13 and up who experience anxiety. We are developing one small, reviewable feature at a time, beginning with a breathing screen. CBT-based support is a later milestone.
+A calm, incremental self-monitoring preview for anxiety, intended for ages 13+. It supports noticing experiences between clinician appointments; it does not diagnose, deliver therapy, or replace care.
 
-## Current status
+## Run and verify
 
-Interactive design prototype only. No AI model, therapy service, accounts, analytics, or health-data storage is implemented. The proposed 3-second inhale / 6-second exhale rhythm is provisional and has not been validated as a Paasaa intervention for teens. The anatomical diagram is an early functional draft, not final artwork.
-
-## Preview locally
-
-With Node.js 22 or newer:
+Node.js 22.13+ (24 recommended):
 
 ```sh
+npm ci
 npm start
-```
-
-Open http://127.0.0.1:4173. No dependencies or API keys are required. Alternatively, open `src/index.html` directly in a browser.
-
-```sh
 npm run check
+npm test
+npm run build
 ```
 
-This verifies JavaScript syntax; it does not establish browser accessibility or clinical validity.
+Open http://127.0.0.1:4173. ES modules require the preview server; opening the HTML as a file is not supported. Build output is `dist/`. Syntax checks and tests do not establish clinical validity or WCAG compliance.
 
-## Project structure
+For optional chat and transcription, copy `.env.example` to the ignored `.env.local` and set `GROQ_API_KEY`. Keep the Groq account on its Free plan. Never paste credentials into browser code or commit them. The preview uses a synthetic local account and a SQLite file under ignored `work/`; keep it on loopback. Production uses authenticated Sites identity, D1 and a server-side secret. Without a key, guided worksheets remain available.
 
-- `src/`: standalone opening-screen prototype, styles, and interactions.
-- `docs/product-brief.md`: agreed audience, scope, and design direction.
-- `docs/evidence-register.md`: sources, findings, limitations, and review status.
-- `docs/roadmap.md`: small milestones and outstanding decisions.
-- `scripts/`: dependency-free local preview server.
-- `.github/`: automated syntax checks and a pull request template.
+## Current experience
 
-## Development workflow
+- Optional breathing entry, synchronized countdown and illustration, pause/resume, custom rhythm, self-paced option, reduced motion, evidence links, and support resources.
+- Seven optional daily check-in steps, draft resumption, explicit device-saving choice or session-only mode, completion calendar.
+- Optional Groq speech-to-text with explicit consent and editable transcript approval. No silent answer extraction.
+- Help me right now (`#support`): fixed-script PMR, breathing, grounding, performance/social and thought-loop support, with explicit safety escalation. See `docs/immediate-support.md` for clinical-review limitations and privacy.
+- Work through a worry (`#worry`): practical planning or prediction exploration, separate probability/distress/severity ratings, private account drafts, editable summaries and outcome reviews.
+- Talk to Paasaa (`#chat`): readiness-led conversation with optional stabilization, confirmed predictions, practical/evidence/coping branches, uncertainty and in-app outcome reviews. Groq adapts wording with consent; the server controls transitions. See `docs/chat-guide.md` for data boundaries, verification and limitations.
+- No analytics, automatic clinician sharing, diagnostic claims or autonomous worksheet changes.
 
-Keep changes focused on one milestone. Use feature branches and pull requests after this initial repository setup. Record evidence alongside any health-related claim. Never commit credentials or real users' mental health information. See `AGENTS.md` for project instructions.
+Daily check-in device saving uses localStorage and is not encrypted by Paasaa. Anyone using the same browser profile may read it. Session-only check-ins disappear on reload/close. Worry records and the new adaptive conversations save to the authenticated account, including drafts. Consented AI/transcription requests send relevant text/audio to Groq; audio is not stored by Paasaa. Browser data clearing does not delete account records. Use synthetic examples for evaluation while clinical and privacy review remain pending.
 
-No public release or clinical validation is implied by this repository. An open-source license has not been selected.
+## Architecture
+
+Vanilla HTML/CSS and browser ES modules preserve the original opening screen. `app.js` controls screen navigation, `breathing.js` owns deterministic timing, `checkin.js` renders the form, `checkin-model.js` owns the extensible local schema/store, and `voice.js` owns recording/review lifecycle. See `docs/implementation.md` for data boundaries, verification, and remaining work.
+
+`server/api.js` owns authenticated record and chat endpoints, `server/chat.js` bounds AI advice/actions, and `src/worry-model.js` controls worksheet transitions independently of AI. The build emits a Worker and D1 migrations; `docs/chat-guide.md` describes the current backend additions. Earlier milestone documents describe their scope at the time.
+
+The GitHub repository stays private. Development uses a feature branch and reviewable PR. `.openai/hosting.json` links the existing Sites deployment; generated `dist/` is ignored. No real users' mental health information or credentials belong in Git.
+
+
+### Conversational intelligence engine
+New Talk to Paasaa conversations use separate safety, planning, deterministic routing, and response layers. Existing guided worksheets remain available. Models are server-configurable through `.env.example`; Groq keys remain server-only. See [implementation report](docs/conversational-engine.md), [behavioral evaluations](evals/README.md), and actual synthetic transcripts under `evals/results/`. AI requires consent; free-tier rate limits use bounded fallback behavior. Clinical review is pending.

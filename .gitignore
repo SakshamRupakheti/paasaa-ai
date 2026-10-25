@@ -1,5 +1,7 @@
 node_modules/
 dist/
+dist-vercel/
+.vercel/
 coverage/
 .env
 .env.*
@@ -8,3 +10,5 @@ coverage/
 .DS_Store
 Thumbs.db
 work/
+
+supabase/.temp/

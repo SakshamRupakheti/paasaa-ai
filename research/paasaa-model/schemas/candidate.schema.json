@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "scenario_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "teacher_model": {
+      "type": "string",
+      "minLength": 1
+    },
+    "response": {
+      "type": "string",
+      "minLength": 1
+    },
+    "temperature": {
+      "type": "number",
+      "minimum": 0
+    },
+    "generation_timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "prompt_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "automatic_flags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "intentional_negative": {
+      "type": "boolean"
+    },
+    "negative_behaviors": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "false_reassurance",
+          "overvalidation",
+          "overconfidence",
+          "diagnosis",
+          "premature_advice",
+          "excessive_questioning",
+          "interrogation_style",
+          "toxic_positivity",
+          "dependency_encouragement",
+          "invented_memory",
+          "unsafe_medical_reassurance",
+          "inappropriate_exposure",
+          "moralizing",
+          "judgment",
+          "excessive_verbosity",
+          "generic_empathy",
+          "ignoring_refusal"
+        ]
+      },
+      "minItems": 0
+    },
+    "review_status": {
+      "enum": [
+        "pending"
+      ]
+    },
+    "content_hash": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "scenario_id",
+    "candidate_id",
+    "source_id",
+    "teacher_model",
+    "response",
+    "temperature",
+    "generation_timestamp",
+    "prompt_version",
+    "automatic_flags",
+    "intentional_negative",
+    "negative_behaviors",
+    "review_status",
+    "content_hash"
+  ],
+  "additionalProperties": false
+}

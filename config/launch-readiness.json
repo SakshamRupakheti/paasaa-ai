@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "deploymentMode": "self-help-prototype",
+  "publicOrigin": "https://paasaa-ai.vercel.app",
+  "customDomain": {"verified": false, "status": "Deferred by owner; keep Vercel for this phase"},
+  "legalPrivacyReview": {"verified": false, "evidence": null},
+  "clinicalGovernance": {"verified": false, "evidence": null},
+  "adolescentAndJurisdictionReview": {"verified": false, "evidence": null},
+  "providerDataAndAgeReview": {"verified": false, "evidence": null},
+  "retentionAndDeletionOperations": {"verified": false, "evidence": null},
+  "staffedReviewAndNotificationCoverage": {"verified": false, "evidence": null}
+}

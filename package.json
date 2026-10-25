@@ -4,9 +4,20 @@
   "private": true,
   "type": "module",
   "description": "Paasaa.ai opening-screen design prototype",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "node scripts/serve.mjs",
-    "check": "node --check src/app.js && node --check scripts/serve.mjs"
+    "check": "node scripts/check.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.11",
+    "esbuild": "^0.28.2"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.3"
   }
 }

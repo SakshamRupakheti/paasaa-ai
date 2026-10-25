@@ -1,0 +1,506 @@
+{
+  "status": "proposal_only_NOT_a_frozen_test_set",
+  "all_pilot_records_are_development_data": true,
+  "assignments": [
+    {
+      "scenario_id": "pilot_0001",
+      "group": 0,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0002",
+      "group": 1,
+      "proposed_split": "validation"
+    },
+    {
+      "scenario_id": "pilot_0003",
+      "group": 2,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0004",
+      "group": 3,
+      "proposed_split": "validation"
+    },
+    {
+      "scenario_id": "pilot_0005",
+      "group": 4,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0006",
+      "group": 5,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0007",
+      "group": 6,
+      "proposed_split": "validation"
+    },
+    {
+      "scenario_id": "pilot_0008",
+      "group": 7,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0009",
+      "group": 8,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0010",
+      "group": 9,
+      "proposed_split": "test"
+    },
+    {
+      "scenario_id": "pilot_0011",
+      "group": 10,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0012",
+      "group": 11,
+      "proposed_split": "test"
+    },
+    {
+      "scenario_id": "pilot_0013",
+      "group": 12,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0014",
+      "group": 13,
+      "proposed_split": "validation"
+    },
+    {
+      "scenario_id": "pilot_0015",
+      "group": 14,
+      "proposed_split": "test"
+    },
+    {
+      "scenario_id": "pilot_0016",
+      "group": 15,
+      "proposed_split": "test"
+    },
+    {
+      "scenario_id": "pilot_0017",
+      "group": 16,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0018",
+      "group": 17,
+      "proposed_split": "validation"
+    },
+    {
+      "scenario_id": "pilot_0019",
+      "group": 18,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0020",
+      "group": 19,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0021",
+      "group": 20,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0022",
+      "group": 21,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0023",
+      "group": 22,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0024",
+      "group": 23,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0025",
+      "group": 24,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0026",
+      "group": 25,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0027",
+      "group": 26,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0028",
+      "group": 27,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0029",
+      "group": 28,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0030",
+      "group": 29,
+      "proposed_split": "test"
+    },
+    {
+      "scenario_id": "pilot_0031",
+      "group": 0,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0032",
+      "group": 1,
+      "proposed_split": "validation"
+    },
+    {
+      "scenario_id": "pilot_0033",
+      "group": 2,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0034",
+      "group": 3,
+      "proposed_split": "validation"
+    },
+    {
+      "scenario_id": "pilot_0035",
+      "group": 4,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0036",
+      "group": 5,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0037",
+      "group": 6,
+      "proposed_split": "validation"
+    },
+    {
+      "scenario_id": "pilot_0038",
+      "group": 7,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0039",
+      "group": 8,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0040",
+      "group": 9,
+      "proposed_split": "test"
+    },
+    {
+      "scenario_id": "pilot_0041",
+      "group": 10,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0042",
+      "group": 11,
+      "proposed_split": "test"
+    },
+    {
+      "scenario_id": "pilot_0043",
+      "group": 12,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0044",
+      "group": 13,
+      "proposed_split": "validation"
+    },
+    {
+      "scenario_id": "pilot_0045",
+      "group": 14,
+      "proposed_split": "test"
+    },
+    {
+      "scenario_id": "pilot_0046",
+      "group": 15,
+      "proposed_split": "test"
+    },
+    {
+      "scenario_id": "pilot_0047",
+      "group": 16,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0048",
+      "group": 17,
+      "proposed_split": "validation"
+    },
+    {
+      "scenario_id": "pilot_0049",
+      "group": 18,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0050",
+      "group": 19,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0051",
+      "group": 20,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0052",
+      "group": 21,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0053",
+      "group": 22,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0054",
+      "group": 23,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0055",
+      "group": 24,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0056",
+      "group": 25,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0057",
+      "group": 26,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0058",
+      "group": 27,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0059",
+      "group": 28,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0060",
+      "group": 29,
+      "proposed_split": "test"
+    },
+    {
+      "scenario_id": "pilot_0061",
+      "group": 24,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0062",
+      "group": 24,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0063",
+      "group": 24,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0064",
+      "group": 24,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0065",
+      "group": 24,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0066",
+      "group": 24,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0067",
+      "group": 24,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0068",
+      "group": 25,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0069",
+      "group": 26,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0070",
+      "group": 28,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0071",
+      "group": 5,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0072",
+      "group": 7,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0073",
+      "group": 18,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0074",
+      "group": 10,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0075",
+      "group": 19,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0076",
+      "group": 23,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0077",
+      "group": 2,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0078",
+      "group": 21,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0079",
+      "group": 24,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0080",
+      "group": 27,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0081",
+      "group": 4,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0082",
+      "group": 5,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0083",
+      "group": 7,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0084",
+      "group": 18,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0085",
+      "group": 19,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0086",
+      "group": 26,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0087",
+      "group": 10,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0088",
+      "group": 21,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0089",
+      "group": 24,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0090",
+      "group": 27,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0091",
+      "group": 4,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0092",
+      "group": 5,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0093",
+      "group": 7,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0094",
+      "group": 18,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0095",
+      "group": 19,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0096",
+      "group": 26,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0097",
+      "group": 10,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0098",
+      "group": 21,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0099",
+      "group": 24,
+      "proposed_split": "train"
+    },
+    {
+      "scenario_id": "pilot_0100",
+      "group": 27,
+      "proposed_split": "train"
+    }
+  ]
+}

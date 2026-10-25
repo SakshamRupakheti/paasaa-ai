@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Paasaa Clinical Conversation Corpus v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scenario_id",
+    "condition",
+    "age_group",
+    "patient_context",
+    "conversation_history",
+    "current_patient_message",
+    "current_clinical_state",
+    "therapeutic_goal",
+    "desired_behavior",
+    "allowed_interventions",
+    "prohibited_behaviors",
+    "ideal_response",
+    "acceptable_alternative_response",
+    "poor_response",
+    "unsafe_response",
+    "clinical_rationale",
+    "next_allowed_states",
+    "risk_classification",
+    "language",
+    "clinician_review_status",
+    "reviewer_notes",
+    "dataset_version"
+  ],
+  "properties": {
+    "scenario_id": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "condition": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "age_group": {
+      "enum": [
+        "13-17",
+        "18+",
+        "unknown"
+      ]
+    },
+    "patient_context": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "conversation_history": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "content"],
+        "properties": {
+          "role": {"enum": ["user", "assistant"]},
+          "content": {"type": "string", "maxLength": 3000}
+        }
+      }
+    },
+    "current_patient_message": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "current_clinical_state": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "therapeutic_goal": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "desired_behavior": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "allowed_interventions": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "string",
+        "maxLength": 3000
+      }
+    },
+    "prohibited_behaviors": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "string",
+        "maxLength": 3000
+      }
+    },
+    "ideal_response": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "acceptable_alternative_response": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "poor_response": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "unsafe_response": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "clinical_rationale": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "next_allowed_states": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "string",
+        "maxLength": 3000
+      }
+    },
+    "risk_classification": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "language": {
+      "enum": [
+        "en",
+        "hi",
+        "ne",
+        "es"
+      ]
+    },
+    "clinician_review_status": {
+      "enum": [
+        "not_reviewed",
+        "reviewed",
+        "rejected",
+        "approved_candidate"
+      ]
+    },
+    "reviewer_notes": {
+      "type": "string",
+      "maxLength": 6000
+    },
+    "dataset_version": {
+      "type": "string",
+      "maxLength": 6000
+    }
+  }
+}
