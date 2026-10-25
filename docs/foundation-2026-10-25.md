@@ -78,3 +78,11 @@ Qualified clinical review and staffed operations; verified reviewer identities a
 Provider credentials remain server-only and unchanged. Optional `PRIMARY_MODEL`, `FAST_MODEL`, `SAFETY_MODEL` override existing role defaults; `EMBEDDING_MODEL` is reserved and does not activate embeddings. The approved-knowledge store remains empty. Future provider adapters must implement the same contract and pass safety, output-policy, opt-out and regression evaluations before replacement.
 
 Public research sources and limits are in `docs/evidence-register.md`. No Dartmouth affiliation, proprietary implementation, clinical review, efficacy or professional legal approval is implied.
+
+## Vercel release verification
+
+Released application commit `095e86d` to existing project `paasaa-ai`, team `team_KrOwtd5nbDks4mSDEILOoUqw`. Deployment: `https://paasaa-iexnpq6a9-sakshamrupakheti23-1844s-projects.vercel.app`; public alias: `https://paasaa-ai.vercel.app`.
+
+All five public trust routes returned HTTP 200 with their expected new content. New frontend assets returned 200. Unauthenticated `/api/memory` and `/api/intervention-outcomes` returned 401. Public service status remained `self-help-prototype`, with clinical service and notifications disabled. Live browser verification confirmed the refined homepage, guest chat entry, discoverable Saved context & outcomes link, and the guest message refusing durable storage. No browser console errors were recorded during that flow.
+
+Authenticated create/edit/outcome verification used the local synthetic owner; no real signed-in production patient records were created or inspected. Production schema/RLS was inspected separately. Screenshot proof is retained locally in `work/foundation-live.png` and is intentionally excluded from deployment and Git. The code and report are on the existing GitHub feature branch. The Vercel connector lacked team scope; deployment used the owner's previously authorized CLI with an explicit matching team and project.
