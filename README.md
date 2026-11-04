@@ -37,4 +37,8 @@ This verifies JavaScript syntax; it does not establish browser accessibility or 
 
 Keep changes focused on one milestone. Use feature branches and pull requests after this initial repository setup. Record evidence alongside any health-related claim. Never commit credentials or real users' mental health information. See `AGENTS.md` for project instructions.
 
-No public release or clinical validation is implied by this repository. An open-source license has not been selected.
+Public source availability does not imply clinical validation or readiness for public use.
+
+## License
+
+Original source code in this repository is licensed under the [MIT license](LICENSE). Third-party libraries, models, datasets, and assets retain their own licenses and attribution.
